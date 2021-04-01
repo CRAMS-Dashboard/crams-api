@@ -1,0 +1,7 @@
+use mysql;
+GRANT ALL PRIVILEGES ON *.* TO 'root'@'172.21.%' IDENTIFIED BY 'root_password';
+CREATE USER 'db_user'@'%' IDENTIFIED BY 'yourpassword!';
+GRANT ALL PRIVILEGES ON *.* TO 'db_user'@'%' IDENTIFIED BY 'db_user_password!';
+GRANT ALL PRIVILEGES ON *.* TO 'db_user'@'172.21.%' IDENTIFIED BY 'db_user_password!';
+
+CREATE DATABASE db_name CHARACTER SET utf8 COLLATE utf8_general_ci;

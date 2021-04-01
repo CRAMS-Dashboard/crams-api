@@ -1,0 +1,1 @@
+default_app_config = 'crams_api.apps.CramsAPIConfig'

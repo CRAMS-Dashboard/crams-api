@@ -1,0 +1,7 @@
+Dear {{ request.invitee_name }},
+
+Your membership user role in project {{ request.project_full_title }} has been changed:
+
+{% if request.old_role %}From {{ request.old_role }} to {{ request.new_role }}.{% else %}{{ request.new_role }} role has been added.{% endif %}
+
+Kind regards.

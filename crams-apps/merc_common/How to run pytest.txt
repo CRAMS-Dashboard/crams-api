@@ -1,0 +1,11 @@
+1. setup pytest.ini
+2. add test-requirements.txt
+3. run pytest command:
+
+pytest -v --junitxml=result.xml
+
+4 run test coverage:
+# display test coverage in the console
+$] pytest --cov=.
+# create coverage report xml file
+$] pytest --cov-report xml --cov=.

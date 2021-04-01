@@ -1,0 +1,32 @@
+version: '3.5'
+
+services:
+  crams-db:
+    image: 'mysql/mysql-server:5.7'
+    container_name: crams-mysql
+    environment:
+      TIMEZONE: Australia/Melbourne
+      MYSQL_ROOT_PASSWORD: $MYSQL_ROOT_PASSWORD
+    ports:
+      - "3306:3306"
+    restart: always
+    networks:
+      - crams-network
+    volumes:
+      - /etc/localtime:/etc/localtime
+      - /mnt/crams_config/mysql_db/config/my.cnf:/etc/my.cnf
+      - /mnt/crams_config/mysql_db/init:/docker-entrypoint-initdb.d/
+      - /var/run/mysqld:/var/run/mysqld
+      - /var/lib/mysql:/var/lib/mysql
+      - /var/log/mysql:/var/log/mysql
+      - /mnt/crams_db_backup/:/mysql/db_backup
+      - /mnt/crams_db_import:/mysql/db_import
+
+networks:
+  crams-network:
+    name: crams-apps-network
+    driver: bridge
+    ipam:
+      driver: default
+      config:
+        - subnet: 172.21.0.0/24

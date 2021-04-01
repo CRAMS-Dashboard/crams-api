@@ -1,0 +1,8 @@
+1. build merc-common:
+2. build crams_log:
+3. build crams_contact:
+4. build crams_notification
+5. build crams_collection
+6. build crams_compute
+7. build crams_storage
+8. build crams_allocation

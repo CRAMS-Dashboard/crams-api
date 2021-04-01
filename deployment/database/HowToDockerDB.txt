@@ -1,0 +1,16 @@
+kill all the processes using the port 3306:
+
+sudo kill `sudo lsof -t -i:3306`
+
+
+How to dockerize the dev database:
+
+1. Go to deployment/database/dev/config folder, copy the my.cnf.sample file and save it as my.cnf
+2. Go to deployment/database/dev/init folder, copy the init.sql.sample file and save it as init.sql,
+   replace the root user password, replace the db_user name and password, replace the db_name with what you want.
+3. Copy the .env.sample file, as it as .env file, and replace the root password with the same as in init.sql file
+
+4. To start the MySQL database, run the following docker-compose command:
+    docker-compose -f docker-compose-dev.yml up -d
+5. To stop the MYSQL database, run the following docker-compose command:
+    docker-compose -f docker-compose-dev.yml down

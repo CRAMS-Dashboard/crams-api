@@ -1,0 +1,29 @@
+* Please read deployment/database/HowToDockerDB.txt file and setup the database first.
+
+
+1. Under deployment folder, copy the .env.sample file and save it as .env file, replace the following key values:
+    # the network name is define in deployment/databases/docker-compose-dev.yml
+    NETWORK_NAME=crams-apps-network
+
+2. Make sure you have updated the local_settings.py under crams-apps/crams_api/local folder
+
+
+3. Make sure the Django db config settings are right in crams-apps/crams_api/local/local_settings.py
+   Make sure the db host is the same network as in deployment/database/docker-compose-dev.yml (network section)
+
+4. Run docker compose commands:
+
+   # bring the docker container down:
+   > docker-compose -f docker-compose-dev.yml down
+
+   # build the docker container
+   > docker-compose -f docker-compose-dev.yml build
+
+   # start the crams api without deamon:
+   > docker-compose -f docker-compose-dev.yml up
+
+   # start the crams api with deamon:
+   > docker-compose -f docker-compose-dev.yml up -d
+
+   # stop the crams api:
+   > docker-compose -f docker-compose-dev.yml down

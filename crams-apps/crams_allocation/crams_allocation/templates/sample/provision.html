@@ -1,0 +1,32 @@
+{% load crams_tags %}
+{% with project=request.project project_ids=request.project.project_ids project_contacts=request.project.project_contacts %}
+
+Hi,
+
+Congratulations on obtaining Research Cloud resources for your
+project.  Your request has been processed and the details are below.
+
+
+Name: {{ project.title }}
+Description: {{ project.description }}
+Expires: {{ request.end_date }}
+
+New Quota:
+----------
+{% for compute_request in request.compute_requests %}
+Instances:      {{ compute_request.instances }}
+Cores:          {{ compute_request.cores }}
+{% endfor %}
+{% spaceless %}
+{% for storage_request in request.storage_requests %}
+{{ storage_request.storage_product.name }}: ({{ storage_request.storage_product.zone.name }}): {{ storage_request.approved_quota_total }} GB
+{% endfor %}
+{% endspaceless %}
+
+
+For hints on the next steps to access these resources, add users and launch VMs, please visit
+
+
+Kind Regards,
+
+{% endwith %}

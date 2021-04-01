@@ -1,0 +1,61 @@
+{% load crams_tags %}
+{% with project=request.project user_email=request.updated_by.email %}
+Allocation request [{{ project.title }}]
+
+{% block preamble %}{% endblock %}
+Allocation Request Received
+---------------------------
+{% spaceless %}
+{% with status=request.request_status.code %}
+{% if status == 'N' %}
+An allocation request has been created by "{{user_email}}"
+on {{request.last_modified_ts|date:"D d M Y"}}.
+{% elif status == 'E' %}
+An allocation request has been edited by "{{user_email}}".
+{% elif status == 'X' %}
+A request for an extension/change to the allocation for project {{project.description}} on the tenant {{ project.title }} has been created by "{{user_email}}".
+{% else %}
+An allocation request has been created by "{{user_email}}".
+{% endif %}
+{%  endwith %}
+{% endspaceless %}
+
+Project name: {{ project.title }}
+Start date:   {{ request.start_date }}
+End date:     {{ request.end_date }}
+
+Quota
+-----
+{% for compute_request in request.compute_requests %}
+Instances:      {{ compute_request.instances }}
+Cores:          {{ compute_request.cores }}
+Hours:          {{ compute_request.core_hours }}
+{% endfor %}
+
+{% spaceless %}
+{% for storage_request in request.storage_requests %}
+{{ storage_request.storage_product.name }} ({{ storage_request.storage_product.zone.name }}): {{ storage_request.requested_quota_total }} GB
+{% endfor %}
+{% endspaceless %}
+
+Use Case Details
+----------------
+Use Case
+{{ request.request_question_responses|filter_question_response:"researchcase" }}
+
+Usage pattern:
+{{ request.request_question_responses|filter_question_response:"usagepattern" |default:"Not given."}}
+
+Geographical Requirements:
+{{ request.request_question_responses|filter_question_response:"homerequirements" |default:"None given." }}
+
+Fields Of Research breakdown:
+{% spaceless %}
+    {% for domain in project.domains %}
+    {{ domain.for_code.description }} ({{ domain.percentage }})
+    {% endfor %}
+{% endspaceless %}
+
+Kind Regards,
+
+{% endwith %}

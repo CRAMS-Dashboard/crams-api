@@ -1,0 +1,26 @@
+[run]
+source = .
+omit =
+    # omit any wsgi.py, apps.py asgi.py and admin.py files
+    *wsgi.py
+    *apps.py
+    *asgi.py
+    *admin.py
+    *manage.py
+    *setup.py
+    # omit any settings.py files
+    *settings.py
+    # omit anything in a local directory anywhere
+    *local/*
+    # omit everything in migrations
+    *migrations/*
+    # omit any __init__.py files
+    *__init__.*
+    *urls.py
+
+[report]
+ignore_errors = True
+show_missing = True
+
+[xml]
+output = coverage.xml

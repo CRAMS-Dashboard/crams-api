@@ -1,0 +1,33 @@
+{% load crams_tags %}
+{% with project_title=request.project.title project_ids=request.project.project_ids project_contacts=request.project.project_contacts %}
+
+Please set up an allocation for {{ project_title }}
+
+
+Hello Research Cloud Admins,
+
+An allocation request for the {{ project_title }} project has been approved. Please set up the following allocation:
+
+{{ project_title }}, {{ contact_email }}
+
+Quota
+-----
+{% for compute_request in request.compute_requests %}
+Instances:      {{ compute_request.approved_instances }}
+Cores:          {{ compute_request.approved_cores }}
+{% endfor %}
+{% spaceless %}
+{% for storage_request in request.storage_requests %}
+{{ storage_request.storage_product.name }} ({{ storage_request.storage_product.zone.name }}): {{ storage_request.approved_quota_total }} GB
+{% endfor %}
+{% endspaceless %}
+
+You can view the request at:
+{{ request.client_request_url }}
+
+NOTE {{ contact_email }}: you will receive another email once this has been provisioned.
+
+Kind Regards,
+
+
+{% endwith %}

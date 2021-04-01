@@ -1,0 +1,44 @@
+version: "3"
+services:
+  crams-python:
+    build:
+      context: ubuntu_python
+    image: crmas_python
+
+  crams-web:
+    build:
+      context: ../crams-apps
+      dockerfile: ../deployment/apps/Dockerfile
+
+    container_name: crams-web
+    command: bash -c "cd /crams-apps/crams_api && python3 manage.py collectstatic --no-input &&
+                      python3 manage.py migrate &&
+                      cd /crams-apps/crams_api &&
+                      gunicorn --timeout=600 --workers=4 --bind :8080 crams_api.wsgi:application"
+    volumes:
+      - crams-api-static-volume:/crams-apps/crams_api/staticfiles
+    expose:
+      - "8080"
+    restart: always
+    depends_on:
+      - crams-python
+
+  nginx:
+    image: nginx:latest
+    container_name: crams-nginx
+    ports:
+      - "8080:8080"
+    restart: always
+    volumes:
+      - crams-api-static-volume:/crams-apps/static
+      - ./nginx/dev:/etc/nginx/conf.d
+    depends_on:
+      - crams-web
+
+networks:
+  default:
+    external:
+      name: $NETWORK_NAME
+
+volumes:
+  crams-api-static-volume:

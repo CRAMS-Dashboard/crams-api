@@ -1,0 +1,9 @@
+python-dateutil==2.8.1
+pytz==2020.4
+asgiref==3.2.10
+Django==3.1.1
+djangorestframework==3.11.1
+sqlparse==0.3.1
+mysqlclient  # sudo apt-get install libmysqlclient-dev, for mac: brew install mysql-client (or upgrade)
+pyyaml==5.4.1  # required For API Documentation
+uritemplate==3.0.1  # required For API Documentation

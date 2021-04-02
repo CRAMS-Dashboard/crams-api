@@ -1,6 +1,6 @@
 asgiref==3.2.10
 Django==3.1.1
-djangorestframework==3.11.1
+djangorestframework==3.11.2
 merc_common==1.0.0
 crams_contact==1.0.0
 crams_log==1.0.0

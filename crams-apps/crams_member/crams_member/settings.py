@@ -61,6 +61,8 @@ INSTALLED_APPS = [
 
 AUTH_USER_MODEL = 'crams.User'
 
+DEFAULT_AUTO_FIELD = 'django.db.models.AutoField'
+
 MIDDLEWARE = [
     'django.contrib.sessions.middleware.SessionMiddleware',
     'corsheaders.middleware.CorsMiddleware',

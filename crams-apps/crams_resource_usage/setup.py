@@ -39,7 +39,7 @@ setup(
 
         'License :: OSI Approved :: Apache Software License',
 
-        'Framework :: Django :: 3.1',
+        'Framework :: Django :: 3.2',
 
         'Programming Language :: Python :: 3.5',
         'Programming Language :: Python :: 3.6',

@@ -15,5 +15,5 @@ router.register(r'project_storage_product_usage', ProjectStorageUsageViewset)
 
 urlpatterns = [
     path('', include(router.urls)),
-    path('admin/', admin.site.urls),
+    # path('admin/', admin.site.urls),
 ]

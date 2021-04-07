@@ -37,5 +37,5 @@ urlpatterns = [
     path('', include(router.urls)),
     url(r'api-token-auth', CramsBasicLoginAuthToken.as_view(), name='api_token_auth'),
     url(r'user_roles', CurrentUserRolesView.as_view(), name='user_roles'),
-    path('admin/', admin.site.urls),
+    # path('admin/', admin.site.urls),
 ]

@@ -6,12 +6,12 @@ from django.db.models import Q, Prefetch
 
 from crams.utils import date_utils
 from crams.models import EResearchBody, EResearchBodySystem
+from crams_allocation.models import Request
 from crams_allocation.constants.db import REQUEST_STATUS_PROVISIONED
 from crams_storage.models import StorageProduct, StorageProductProvisionId
 from crams_collection.models import Project
 from crams_allocation.product_allocation.models import StorageRequest
 from crams_resource_usage.storage.models import StorageUsageIngest
-from crams_allocation.models import Request
 
 
 def get_crams_transaction_id_map():

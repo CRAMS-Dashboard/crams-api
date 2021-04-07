@@ -25,7 +25,7 @@ SECRET_KEY = 'vix)4vqajw@i5=2ed0&3_7nq6zw#x5fl*&0sezzjbw148j%9-z'
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ['*']
+ALLOWED_HOSTS = ['localhost', '127.0.0.1', '*']
 
 NECTAR_NOTIFICATION_REPLY_TO = "email@me"
 CRAMS_APP_CONFIG_LIST = []
@@ -59,6 +59,8 @@ INSTALLED_APPS = [
 ]
 
 AUTH_USER_MODEL = 'crams.User'
+
+DEFAULT_AUTO_FIELD = 'django.db.models.AutoField'
 
 MIDDLEWARE = [
     'django.contrib.sessions.middleware.SessionMiddleware',

@@ -24,7 +24,7 @@ SECRET_KEY = 'c-9$++zk-0_itm-id&ktljtnjidajn(os@#w7vlr(-uw-s_*=-'
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ['*', 'localhost', '127.0.0.1']
 
 # Application definition
 
@@ -45,6 +45,8 @@ INSTALLED_APPS = [
 ]
 
 AUTH_USER_MODEL = 'crams.User'
+
+DEFAULT_AUTO_FIELD = 'django.db.models.AutoField'
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',

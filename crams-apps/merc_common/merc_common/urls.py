@@ -13,22 +13,17 @@ Including another URLconf
     1. Import the include() function: from django.urls import include, path
     2. Add a URL to urlpatterns:  path('blog/', include('blog.urls'))
 """
-from django.contrib import admin
-from django.urls import include
-from django.urls import path, re_path
-from django.contrib.auth import views as auth_views
-
-from rest_framework import routers
-from rest_framework.renderers import JSONOpenAPIRenderer
-from rest_framework.schemas import get_schema_view
-from django.views.generic import TemplateView
-
+from crams.views.auth import rapid_connect_auth_view
+from crams.views.funding_body import PrevUserFundingBodyRoleList
 from crams.views.lookup_api import EResearchBodySystemViewSet
 from crams.views.lookup_api import fb_scheme_list
 from crams.views.lookup_api import for_codes
-from crams.views.auth import rapid_connect_auth_view
-from crams.views.funding_body import PrevUserFundingBodyRoleList
-
+from django.contrib.auth import views as auth_views
+from django.urls import include
+from django.urls import path, re_path
+from django.views.generic import TemplateView
+from rest_framework import routers
+from rest_framework.schemas import get_schema_view
 
 router = routers.SimpleRouter()
 router.register(r'e_research_body', EResearchBodySystemViewSet, basename='e_r_b')
@@ -53,7 +48,6 @@ urlpatterns = [
     ), name='swagger-ui'),
 
     path('', include(router.urls)),
-    # path('admin/', admin.site.urls),
     re_path(r'^accounts/login/$', auth_views.LoginView.as_view()),
     re_path(r'^rapid_connect_token_auth', rapid_connect_auth_view),
     re_path(r'funding_scheme/(?P<fb_name>\w+)', fb_scheme_list, name='funding_scheme'),

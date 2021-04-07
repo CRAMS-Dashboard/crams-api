@@ -13,10 +13,8 @@ Including another URLconf
     1. Import the include() function: from django.urls import include, path
     2. Add a URL to urlpatterns:  path('blog/', include('blog.urls'))
 """
-from django.contrib import admin
-from django.urls import path
-
 from crams_storage.views import ingest
+from django.urls import path
 
 urlpatterns = [
     path('recent_provision_id', ingest.recent_provision_id, name='recent_provision_id'),

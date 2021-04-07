@@ -53,27 +53,22 @@ class StorageProductIngestInfo:
 
 class SPUIstore:
     def __init__(self, storage_ingest):
-        if storage_ingest:
-            self.allocated_gb = storage_ingest.allocated_gb
+        # self.allocated_gb = delete_calc_total_allocated_gb(
+        #     storage_ingest.project,
+        #     storage_ingest.storage_product)
+        self.allocated_gb = storage_ingest.allocated_gb
 
-            self.available_gb = \
-                self.allocated_gb - storage_ingest.total_ingested_gb
-
-            self.unit_cost = \
-                storage_ingest.storage_product.unit_cost
-            self.used_disk = storage_ingest.ingested_gb_disk
-            self.used_tape = storage_ingest.ingested_gb_tape
-        else:
-            self.allocated_gb = 0
-            self.available_gb = 0
-            self.unit_cost = 0
-            self.used_disk = 0
-            self.used_tape = 0
-
+        self.available_gb = \
+            self.allocated_gb - storage_ingest.total_ingested_gb
         self.overdraft_gb = 0
         if self.available_gb < 0:
             self.overdraft_gb = -1 * self.available_gb
             self.available_gb = 0
+
+        self.unit_cost = \
+            storage_ingest.storage_product.unit_cost
+        self.used_disk = storage_ingest.ingested_gb_disk
+        self.used_tape = storage_ingest.ingested_gb_tape
 
 
 class StorageProductUsageReportSerializer(BaseReportSerializer):
@@ -161,10 +156,12 @@ class ConsolidatedSUI:
         pk = None
         provision_id = None
         if self.sui_sr_tuple_list:
+            print('processing sui .....', self.sui_sr_tuple_list)
             sui, sr, history_exists = self.sui_sr_tuple_list[0]
             if sui:
                 pk = sui.provision_id.id
                 provision_id = sui.provision_id.provision_id
+        print('returning pid', pk, provision_id)
         return {
             'id': pk,
             'provision_id': provision_id
@@ -424,4 +421,6 @@ class ProjectSPUsageSerializer(AbstractSPUsageSerializer):
 
     def get_storage_product(self, project_obj):
         project_qs = Project.objects.filter(pk=project_obj.id)
-        return self.calculate_product_usage(project_qs)
+        val = self.calculate_product_usage(project_qs)
+        print(' ======= calc val ====', val)
+        return val

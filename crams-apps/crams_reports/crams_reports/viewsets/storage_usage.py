@@ -12,10 +12,6 @@ from crams_storage.models import StorageProduct
 class ProjectStorageUsageViewset(ProjectRequestViewSet, CramsReportViewSet):
     serializer_class = ProjectSPUsageSerializer
 
-    def retrieve(self, request, *args, **kwargs):
-        ret = super().retrieve(request, *args, **kwargs)
-        return ret
-
     def get_request_param_storage_product_qs(self):
         if not self.e_research_system_param_qs:
             return StorageProduct.objects.all()

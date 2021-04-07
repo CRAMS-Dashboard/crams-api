@@ -118,6 +118,8 @@ CRAMS_ASPECT_CONFIG_LIST = [
     'crams_member.config.aspect_config',
 ]
 
+DEFAULT_AUTO_FIELD = 'django.db.models.AutoField'
+
 REST_FRAMEWORK = {
     'DEFAULT_AUTHENTICATION_CLASSES': (
         'rest_framework.authentication.TokenAuthentication',

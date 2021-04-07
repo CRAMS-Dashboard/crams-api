@@ -7,7 +7,7 @@ class TestFundingScheme(CommonBaseTestCase):
         self.client = self.non_auth_client()
 
     def test_funding_scheme_by_erb_body(self):
-        funding_scheme_api_url = reverse("funding_scheme", kwargs={"fb_name": "monash"})
+        funding_scheme_api_url = reverse("funding_scheme", kwargs={"fb_name": "crams"})
         response = self.client.get(funding_scheme_api_url)
         assert response.status_code == 200
         json_data = response.data

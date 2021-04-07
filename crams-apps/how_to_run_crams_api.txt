@@ -1,0 +1,23 @@
+How TO Run CRAMS API
+
+1. setup python3 virtual env
+
+go to crams-apps direcoty
+2. run setup_dev_libs.sh
+
+go to crams_api directory
+change the database setting in the local_settings.py under local folder
+run migrations
+3. python manager.py migrate
+
+start the Django application:
+4. python manager.py runserver localhost:8080
+
+create superuser
+5. python manager.py createsuperuser
+
+update the sueruser
+# assume you are using mysql
+6. python manager.py dbshell
+use yourdatabase;
+update crams_user set is_staff=1, is_superuser=1 where email='your_email'

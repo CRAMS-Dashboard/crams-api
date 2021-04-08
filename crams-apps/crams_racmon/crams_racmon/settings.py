@@ -122,7 +122,9 @@ USE_TZ = True
 
 STATIC_URL = '/static/'
 
-import logging
+CRAMS_DEMO_ERB = 'CRAMS-ERB'
+
+CRAMS_DEMO_ERB_SYSTEM = 'CRAMS-ERB-SYS'
 
 # Import the local_settings.py to override some of the default settings,
 # like database settings

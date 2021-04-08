@@ -604,6 +604,9 @@ class CramsRequestWithoutProjectSerializer(ReadOnlyCramsRequestWithoutProjectSer
 
         # any other project/request meta data that is changed will also be moved
         # or updated to the "Application Updated" status
+        # Note:
+        # checking on request_system_name alone is not correct, need to include erb_name as well
+        #  - TODO change EXTEND_ON_QUOTA_CHANGE to hold ERB System DB object instead of just erb system name
         if (request_system_name.lower() in allocation_config.EXTEND_ON_QUOTA_CHANGE and
                 existing_request_instance):
             status_codes = [db.REQUEST_STATUS_PROVISIONED,

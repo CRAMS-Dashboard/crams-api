@@ -19,15 +19,15 @@ User = auth.get_user_model()
 
 
 class RoleFreeContactDetailsLookupSerializer(model_serializers.ModelLookupSerializer):
-    title = serializers.CharField()
+    title = serializers.CharField(required=False)
 
-    given_name = serializers.CharField()
+    given_name = serializers.CharField(required=False)
 
-    surname = serializers.CharField()
+    surname = serializers.CharField(required=False)
 
-    orcid = serializers.CharField()
+    orcid = serializers.CharField(required=False)
 
-    scopusid = serializers.CharField()
+    scopusid = serializers.CharField(required=False)
 
     email = serializers.EmailField(validators=[])
 

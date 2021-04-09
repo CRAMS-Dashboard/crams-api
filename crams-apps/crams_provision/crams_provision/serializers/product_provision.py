@@ -154,7 +154,7 @@ class StorageRequestProvisionIdUpdateSerializer(StorageRequestProvisionSerialize
     def create(self, validated_data):
         raise exceptions.ValidationError('Create not allowed')
 
-    def update_provisionable(self, instance, validated_data):
+    def update(self, instance, validated_data):
         provision_id_obj = validated_data.get('provision_id').get('provision_id', None)
 
         if not instance.provision_id == provision_id_obj:

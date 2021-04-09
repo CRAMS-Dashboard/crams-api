@@ -16,7 +16,6 @@ from rest_framework import exceptions
 
 LOG = logging.getLogger(__name__)
 
-
 PROVISION_ENABLE_REQUEST_STATUS = [
     REQUEST_STATUS_APPROVED, REQUEST_STATUS_LEGACY_APPROVED]
 

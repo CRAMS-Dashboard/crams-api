@@ -2,4 +2,4 @@ from django.apps import AppConfig
 
 
 class ComputeConfig(AppConfig):
-    name = 'compute'
+    name = 'crams_resource_usage.compute'

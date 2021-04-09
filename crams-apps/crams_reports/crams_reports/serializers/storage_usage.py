@@ -296,7 +296,7 @@ class AbstractSPUsageSerializer(BaseReportSerializer):
 
             provision_dict = consolidated_sui.get_first_provision_dict()
             provision_id = provision_dict.get('provision_id')
-            product_dict['provision'] = product_dict
+            product_dict['provision'] = provision_dict
 
             flags = {
                 'alert_user': False,
@@ -422,5 +422,4 @@ class ProjectSPUsageSerializer(AbstractSPUsageSerializer):
     def get_storage_product(self, project_obj):
         project_qs = Project.objects.filter(pk=project_obj.id)
         val = self.calculate_product_usage(project_qs)
-        print(' ======= calc val ====', val)
         return val

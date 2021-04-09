@@ -2,32 +2,16 @@
 """
 
 """
-
-
 import collections
 
-from crams.serializers.model_serializers import ReadOnlyModelSerializer
-from crams_resource_usage.storage.models import StorageUsageIngest
 from crams_collection.models import Project
-from crams_reports.constants import report_constants
+from crams_resource_usage.storage.models import StorageUsageIngest
 from crams_storage.models import StorageProduct
-from rest_framework import serializers, exceptions
+from rest_framework import serializers
 
+from crams_reports.constants import report_constants
+from crams_reports.serializers.base import BaseReportSerializer
 from crams_reports.utils import ingest_utils, product_utils
-
-
-class BaseReportSerializer(ReadOnlyModelSerializer):
-    USER_ERB_SYSTEMS_CONTEXT_KEY = 'user_erb_system_list'
-    CONTACT_CONTEXT_KEY = 'contact'
-
-    def __delete__(self, instance):
-        raise exceptions.APIException('Delete not Allowed')
-
-    def create(self, validated_data):
-        raise exceptions.APIException('Create not allowed')
-
-    def update(self, instance, validated_data):
-        raise exceptions.APIException('Update not allowed')
 
 
 class StorageProductIngestInfo:
@@ -156,12 +140,10 @@ class ConsolidatedSUI:
         pk = None
         provision_id = None
         if self.sui_sr_tuple_list:
-            print('processing sui .....', self.sui_sr_tuple_list)
             sui, sr, history_exists = self.sui_sr_tuple_list[0]
             if sui:
                 pk = sui.provision_id.id
                 provision_id = sui.provision_id.provision_id
-        print('returning pid', pk, provision_id)
         return {
             'id': pk,
             'provision_id': provision_id
@@ -296,7 +278,7 @@ class AbstractSPUsageSerializer(BaseReportSerializer):
 
             provision_dict = consolidated_sui.get_first_provision_dict()
             provision_id = provision_dict.get('provision_id')
-            product_dict['provision'] = product_dict
+            product_dict['provision'] = provision_dict
 
             flags = {
                 'alert_user': False,
@@ -422,5 +404,4 @@ class ProjectSPUsageSerializer(AbstractSPUsageSerializer):
     def get_storage_product(self, project_obj):
         project_qs = Project.objects.filter(pk=project_obj.id)
         val = self.calculate_product_usage(project_qs)
-        print(' ======= calc val ====', val)
         return val

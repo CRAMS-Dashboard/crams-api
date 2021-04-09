@@ -60,6 +60,8 @@ INSTALLED_APPS = [
     'crams_provision',
     'crams_member',
     'crams_resource_usage',
+    'crams_resource_usage.storage',
+    'crams_resource_usage.compute',
     'crams_reports',
     'crams_api'
 

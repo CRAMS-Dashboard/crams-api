@@ -1,0 +1,34 @@
+# coding=utf-8
+"""
+
+"""
+
+DATABASES = {
+   'default': {
+       'ENGINE': 'django.db.backends.mysql',
+       'NAME': 'database_name',
+       'USER': 'database_user',
+       'PASSWORD': 'database_user_pwd',
+       'HOST': '127.0.0.1',       # Empty for localhost through domain sockets or '127.0.0.1' for localhost through TCP.
+       'PORT': '3306',                # Set to empty string for default.
+   },
+}
+
+NORM_PASS = 'XXXXX'
+
+TEST_USERS = [
+    ('user1_admin@crams.com.au', NORM_PASS, True),
+    ('user2_admin@crams.com.au', NORM_PASS, True),
+    ('crams_admin@crams.com.au', NORM_PASS),
+    ('crams_approver@crams.com.au', NORM_PASS),
+    ('crams_provisioner@crams.com.au', NORM_PASS),
+    ('TestUser1@crams.com.au', NORM_PASS),
+    ('TestUser2@crams.com.au', NORM_PASS),
+]
+
+ERB_ADMINS = ['user1_admin@crams.com.au', 'crams_admin@crams.com.au']
+ERB_SYSTEM_ADMINS = ['user2_admin@crams.com.au']
+ERB_APPROVERS = ['crams_approver@crams.com.au']
+ERB_PROVIDERS = ['crams_provisioner@crams.com.au']
+CRAMS_DEMO_ERB = 'CRAMS-ERB'
+CRAMS_DEMO_ERB_SYSTEM = 'CRAMS-ERB-SYS'

@@ -52,22 +52,16 @@ class ProjectListViewTest(UnitTestCase):
         assert response.status_code == 200
         
         # check for submission project
-        sub_prj = next((x for x in response.data if x['id'] == self.prj_submit.id), None)
-        assert sub_prj['title'] == self.prj_submit.title
-        sub_req = self.prj_submit.requests.all().first()
-        assert sub_prj['requests'][0]['request_status']['code'] == sub_req.request_status.code
+        sub_prj = next((x for x in response.data if x['project']['id'] == self.prj_submit.id), None)
+        assert sub_prj['project']['title'] == self.prj_submit.title
 
         # check for approved project
-        appr_prj = next((x for x in response.data if x['id'] == self.prj_approved.id), None)
-        assert appr_prj['title'] == self.prj_approved.title
-        appr_req = self.prj_approved.requests.all().first()
-        assert appr_prj['requests'][0]['request_status']['code'] == appr_req.request_status.code
+        appr_prj = next((x for x in response.data if x['project']['id'] == self.prj_approved.id), None)
+        assert appr_prj['project']['title'] == self.prj_approved.title
 
         # check for provisioned project
-        prov_prj = next((x for x in response.data if x['id'] == self.prj_prov.id), None)
-        assert prov_prj['title'] == self.prj_prov.title
-        prov_req = self.prj_prov.requests.all().first()
-        assert prov_prj['requests'][0]['request_status']['code'] == prov_req.request_status.code
+        prov_prj = next((x for x in response.data if x['project']['id'] == self.prj_prov.id), None)
+        assert prov_prj['project']['title'] == self.prj_prov.title
     
     def test_project_list_department(self):
         url = "/project_request_list/department/"

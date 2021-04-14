@@ -24,9 +24,9 @@ class UnitTestCase(UnitTestCase):
         self.erb = mixer.blend(crams_models.EResearchBody, name='ERB')
         self.erbs = mixer.blend(crams_models.EResearchBodySystem, 
                                 name='ERBS', e_research_body=self.erb)
-        self.funding_body = mixer.blend(crams_models.FundingBody, name='Funding Body')
+        self.funding_body = mixer.blend(crams_models.FundingBody, name='FundingBody')
         self.funding_scheme = mixer.blend(crams_models.FundingScheme, 
-                                          FundingScheme='Funding Scheme', 
+                                          FundingScheme='FundingScheme', 
                                           funding_body=self.funding_body)
         # set up a provider for products
         self.provider = mixer.blend(crams_models.Provider,
@@ -459,6 +459,13 @@ class UnitTestCase(UnitTestCase):
         prov_cp_req = None
         prov_sp_req = self.generate_sp_request(prov_req, 100, 0, 0)
 
+        # create storage provision id
+        prov_sp_req.provision_id = mixer.blend(
+            storage_models.StorageProductProvisionId,
+            provision_id=get_random_string(15),
+            storage_product=self.storage_prod)
+        prov_sp_req.save()
+
         # generate the questions
         self.generate_question_responses(prov_project, prov_req, prov_cp_req, prov_sp_req)
         
@@ -466,6 +473,7 @@ class UnitTestCase(UnitTestCase):
 
     def generate_allocation_extended(self):
         prj_prov = self.generate_provisioned_allocation()
+        req_prov = prj_prov.requests.all().first()
         
         req_status = allocation_models.RequestStatus.objects.get(
             code=db.REQUEST_STATUS_UPDATE_OR_EXTEND)
@@ -476,11 +484,10 @@ class UnitTestCase(UnitTestCase):
         req_alloc_ext = prj_alloc_ext.requests.all().first()
 
         # get the submission/approve project and request
-        req_prov = prov_prj.requests.all().first()
-        prj_appr = collection_models.Project.objects.filter(current_project=prj_alloc_ext, request__request_status.code='A').first()
-        req_appr = prj_appr.requests.all().first()
-        prj_sub = collection_models.Project.objects.filter(current_project=prj_alloc_ext, request__request_status.code='E').first()
-        req_sub = prj_sub.requests.all().first()
+        req_appr = allocation_models.Request.objects.filter(current_request=req_prov, request_status__code='A').first()
+        prj_appr = req_appr.project
+        req_sub = allocation_models.Request.objects.filter(current_request=req_prov, request_status__code='E').first()
+        prj_sub = req_sub.project
 
         # update the current_project and current_request
         prj_prov.current_project = prj_alloc_ext
@@ -496,19 +503,11 @@ class UnitTestCase(UnitTestCase):
         req_sub.current_request = req_alloc_ext
         req_sub.save()
 
-        # create provision_details
-        prov_det = mixer.blend(crams_models.ProvisionDetails,
-                               status='P',
-                               message='provision notes',
-                               parent_provision_details=None,
-                               created_by=self.admin_user,
-                               updated_by=self.admin_user)
-
         # create and set the approved quotas
-        # prov_cp_req = self.generate_cp_request(prov_req, 4, 4, 8, 8, 1250, 1250)
+        # prov_cp_req = self.generate_cp_request(req_prov, 4, 4, 8, 8, 1250, 1250)
         cp_req_alloc_ext = None
         # current quota is 100gb, extending an additional 100 gb and 0 approved
-        sp_req_alloc_ext = self.generate_sp_request(prov_req, 100, 100, 0)
+        sp_req_alloc_ext = self.generate_sp_request(req_prov, 100, 100, 0)
 
         # generate the questions
         self.generate_question_responses(prj_alloc_ext, req_alloc_ext, cp_req_alloc_ext, sp_req_alloc_ext)

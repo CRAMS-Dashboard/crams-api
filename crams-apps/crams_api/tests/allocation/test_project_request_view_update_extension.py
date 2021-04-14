@@ -18,6 +18,14 @@ class ProjectRequestViewUpdateExtensionTest(UnitTestCase):
         self.generate_allocation_test_data()
         self.client = self.auth_client(user=self.app_user)
 
+        # set the erbs to allow project meta change from
+        # extending the allocation unless its a quota change
+        from django.conf import settings
+        settings.CRAMS_DEMO_ERB_SYSTEM = self.erbs.name
+        from crams_racmon.config import config_init
+        # config_init.EXTEND_ON_QUOTA_CHANGE.append(self.erbs.lower())
+        
+
     def test_project_request_view_meta_update(self):
         # get payload
         url = "/project_request/{}/".format(self.prj_prov.id)
@@ -47,7 +55,7 @@ class ProjectRequestViewUpdateExtensionTest(UnitTestCase):
         # update storage request quota extension 
         payload['requests'][0]['storage_requests'][0]['current_quota'] = 100
         payload['requests'][0]['storage_requests'][0]['requested_quota_change'] = 100
-        payload['requests'][0]['storage_requests'][0]['request_quota_total'] = 200
+        payload['requests'][0]['storage_requests'][0]['requested_quota_total'] = 200
         payload['requests'][0]['storage_requests'][0]['approved_quota_change'] = 0
         payload['requests'][0]['storage_requests'][0]['approved_quota_total'] = 100
 

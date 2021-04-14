@@ -81,17 +81,19 @@ class AllocationListViewset(BaseProjectListViewset):
 
     @classmethod
     def build_view_response(cls, http_request, project_qs):
-        erb_param = cls.get_eresearch_body_param(http_request)
-        if erb_param:
-            project_qs = project_qs.filter(
-                requests__e_research_system__e_research_body__name=erb_param,
-                requests__current_request__isnull=True
-            )
-        qs = cls.optimise_project_qs(project_qs)
-        sz_class = cls.get_list_serializer_class()
-        context = {'request': http_request}
-        sz = sz_class(qs, many=True, context=context)
-        return response.Response(sz.data)
+        if project_qs:
+            erb_param = cls.get_eresearch_body_param(http_request)
+            if erb_param:
+                project_qs = project_qs.filter(
+                    requests__e_research_system__e_research_body__name=erb_param,
+                    requests__current_request__isnull=True
+                )
+            qs = cls.optimise_project_qs(project_qs)
+            sz_class = cls.get_list_serializer_class()
+            context = {'request': http_request}
+            sz = sz_class(qs, many=True, context=context)
+            return response.Response(sz.data)
+        return response.Response([])
 
 
 class ProjectRequestListViewSet(BaseProjectListViewset):

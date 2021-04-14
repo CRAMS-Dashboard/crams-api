@@ -10,7 +10,6 @@ from crams.utils.role import AbstractCramsRoleUtils
 from crams_allocation.constants.db import REQUEST_STATUS_APPROVED, REQUEST_STATUS_LEGACY_APPROVED
 from crams_allocation.constants.db import REQUEST_STATUS_PROVISIONED
 from crams_allocation.models import RequestStatus
-from django.db import transaction
 from django.db.models import Q
 from rest_framework import exceptions
 
@@ -80,8 +79,8 @@ class BaseProvisionProductUtils:
             cls.get_request_status_obj_for_code(REQUEST_STATUS_PROVISIONED)
         request_obj.save()
 
-    @transaction.atomic
-    def update_provisionable_item(self, instance, validated_data, user_obj):
+    @classmethod
+    def update_provisionable_item(cls, instance, validated_data, user_obj):
         pd = BaseProvisionUtils.build_new_provision_details(
             instance, validated_data, user_obj)
         pd.save()
@@ -92,5 +91,5 @@ class BaseProvisionProductUtils:
             old_pd.save()
         instance.provision_details = pd
         instance.save()
-        self.update_request_status(instance.request)
+        cls.update_request_status(instance.request)
         return instance

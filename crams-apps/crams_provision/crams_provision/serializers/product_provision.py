@@ -1,4 +1,5 @@
 import logging
+import copy
 
 from crams.models import ProvisionDetails
 from crams.serializers import model_serializers
@@ -16,6 +17,7 @@ from django.db.models import Q
 from rest_framework import exceptions
 from rest_framework import serializers
 
+from crams_provision.serializers.base import BaseProvisionSerializer
 from crams_provision.log.provision_log import ProvisionMetaLogger
 from crams_provision.utils import provision_utils
 from crams_provision.utils.product_utils import BaseProvisionProductUtils
@@ -51,6 +53,9 @@ class ComputeRequestProvisionSerializer(compute_request.ComputeRequestSerializer
                             'instances', 'approved_instances', 'cores',
                             'approved_cores', 'core_hours',
                             'approved_core_hours']
+
+    def get_provisioned(self, cr_obj):
+        return BaseProvisionSerializer.get_provisioned(cr_obj, self.get_current_user())
 
     def validate(self, attrs):
         if not self.instance:
@@ -102,6 +107,9 @@ class StorageRequestProvisionSerializer(storage_request_serializers.StorageReque
     #         return sz(qs, many=True, context=self.context).data
     #     return list()
 
+    def get_provisioned(self, sr_obj):
+        return BaseProvisionSerializer.get_provisioned(sr_obj, self.get_current_user())
+
     def validate_common(self, attrs):
         if not self.instance:
             pk = self.initial_data.get('id')
@@ -118,7 +126,8 @@ class StorageRequestProvisionSerializer(storage_request_serializers.StorageReque
     def validate(self, attrs):
         attrs = self.validate_common(attrs)
         in_provisioned_status = self.initial_data.get('provisioned', None)
-        provisioned = BaseProvisionProductUtils.validate_provisioned(provisioned_status=in_provisioned_status, instance=self.instance)
+        provisioned = BaseProvisionProductUtils.validate_provisioned(
+            provisioned_status=in_provisioned_status, instance=self.instance)
         if provisioned:
             attrs['provisioned'] = provisioned
         return attrs
@@ -163,6 +172,11 @@ class StorageRequestProvisionIdUpdateSerializer(StorageRequestProvisionSerialize
             instance.save()
             user_obj = self.get_current_user()
             ProvisionMetaLogger.log_provision_id_change(instance, prev_provision_id, user_obj=user_obj)
+
+        if instance.request.request_status.code == REQUEST_STATUS_APPROVED:
+            # update request_status and provision_status
+            validated_data['provisioned'] = True
+            super().update_provisionable(instance, validated_data)
 
         return instance
 

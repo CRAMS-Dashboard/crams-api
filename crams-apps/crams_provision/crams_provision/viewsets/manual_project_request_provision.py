@@ -17,26 +17,26 @@ from crams_provision.serializers.manual_provision import provision_serializers
 from crams_provision.serializers.product_provision import PROVISION_ENABLE_REQUEST_STATUS
 
 
-class UpdateProvisionProjectViewSet(django_utils.CramsModelViewSet):
-    """
-    class UpdateProvisionProjectViewSet
-    """
-    permission_classes = (IsCramsAuthenticated, IsActiveProvider)
-    serializer_class = provision_serializers.UpdateProvisionProjectSerializer
-    queryset = Project.objects.filter(
-        current_project__isnull=True,
-        requests__current_request__isnull=True,
-        requests__request_status__code__in=PROVISION_ENABLE_REQUEST_STATUS)
-
-    # noinspection PyProtectedMember
-    def list(self, request, **kwargs):
-        """
-
-        :param request:
-        :param kwargs:
-        :return:
-        """
-        return response.Response([])
+# class UpdateProvisionProjectViewSet(django_utils.CramsModelViewSet):
+#     """
+#     class UpdateProvisionProjectViewSet
+#     """
+#     permission_classes = (IsCramsAuthenticated, IsActiveProvider)
+#     serializer_class = provision_serializers.UpdateProvisionProjectSerializer
+#     queryset = Project.objects.filter(
+#         current_project__isnull=True,
+#         requests__current_request__isnull=True,
+#         requests__request_status__code__in=PROVISION_ENABLE_REQUEST_STATUS)
+#
+#     # noinspection PyProtectedMember
+#     def list(self, request, **kwargs):
+#         """
+#
+#         :param request:
+#         :param kwargs:
+#         :return:
+#         """
+#         return response.Response([])
 
 
 class AbstractListProvisionViewSet(viewsets.ReadOnlyModelViewSet):

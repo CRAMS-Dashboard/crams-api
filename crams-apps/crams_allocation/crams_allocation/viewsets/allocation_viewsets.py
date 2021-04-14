@@ -129,9 +129,7 @@ class ProjectRequestViewSet(AbstractProjectRequestViewSet):
     /project_request_list/faculty: <BR>
     list all projects (with metadata and allocation information) the user is entitled to see as Faculty manager <BR>
     """
-    permission_classes = [
-        And(IsCramsAuthenticated,
-            Or(IsProjectContact, IsRequestApprover))]
+    permission_classes = [IsCramsAuthenticated]    # Project level access is checked in the list view
     queryset = Project.objects.all()
     serializer_class = ProjectRequestSerializer
     ordering_fields = ('project', 'creation_ts')

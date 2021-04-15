@@ -84,19 +84,64 @@ class StorageRequestProvisionViewSet(ProvisionCommonViewSet):
         return Response(self.provision_product_for_http_request(
             request, request.data, self.serializer_class))
 
-    @decorators.action(detail=True, methods=['get', 'post'], url_path='update_provision_id')
-    def update_provision_id(self, http_request, pk, *args, **kwargs):
+    def common_provision_id(self, http_request, storage_request_provision_data):
         context = {'request': http_request}
         sz_class = product_provision.StorageRequestProvisionIdUpdateSerializer
         self.serializer_class = sz_class
         try:
+            pk = storage_request_provision_data.get('id')
             sr = StorageRequest.objects.get(pk=pk)
         except StorageRequest.DoesNotExist:
             return exceptions.ValidationError('Storage Request does not exist for pk {}'.format(pk))
 
-        sz = sz_class(sr, data=http_request.data, context=context)
-        sz.is_valid(raise_exception=True)
-        return Response(sz_class(sz.save()).data)
+        sz = sz_class(sr, data=storage_request_provision_data, context=context)
+        sz.is_valid(raise_exception=False)
+        ret_data = dict()
+        ret_data['success'] = True
+        ret_data["errors"] = None
+        if sz.errors:
+            ret_data['success'] = False
+            ret_data["errors"] = sz.errors
+        else:
+            ret_data['sp_provision'] = sz_class(sz.save()).data
+        return ret_data
+
+    @decorators.action(detail=True, methods=['get', 'post'], url_path='update_provision_id')
+    def update_provision_id(self, http_request, pk, *args, **kwargs):
+        """
+        expected input json:
+          {
+            "id": 4,
+            "provision_id": "ms-1000123",
+            "storage_product": {
+              "id": 3,
+              "zone": null,
+              "name": "Market-SONAS",
+            }
+          }
+         output json:
+              {
+                "success": false or true
+                "error": "Provision Id /comp/0003 in use by Project: Project test 1", <== if success is false
+                "sp_provision": <input data>
+              }
+        """
+        storage_request_provision_data = http_request.data
+        storage_request_provision_data['id'] = pk
+        return Response(self.common_provision_id(http_request, storage_request_provision_data))
+
+    @decorators.action(detail=False, methods=['get', 'post'], url_path='update_provision_id_bulk')
+    def update_provision_id_bulk(self, http_request, *args, **kwargs):
+        """
+        expected input json:
+          - a list of inputs similar to update_provision_id defined above
+        output json:
+          - a list of output json similar to update_provision_id defined above
+        """
+        ret_data = list()
+        for storage_request_provision_data in http_request.data:
+            ret_data.append(self.common_provision_id(http_request, storage_request_provision_data))
+        return Response(ret_data)
 
 
 class ComputeRequestProvisionViewSet(ProvisionCommonViewSet):

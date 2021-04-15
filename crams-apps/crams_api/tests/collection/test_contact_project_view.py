@@ -47,7 +47,7 @@ class ContactProjectViewTest(UnitTestCase):
         assert response.data['email'] == self.app_contact.email
 
     def test_admin_contact_project_list(self):
-        url = '/admin/contact/'
+        url = '/contact/'
         response = self.admin_client.get(url)
         assert response.status_code == 200
 
@@ -76,7 +76,7 @@ class ContactProjectViewTest(UnitTestCase):
         assert prjmbr3_contact['email'] == self.prjmbr3_contact.email
         
     def test_admin_contact_project_contact_id_project(self):
-        url = "/admin/contact/{}/".format(self.app_contact.id)
+        url = "/contact/{}/".format(self.app_contact.id)
         response = self.admin_client.get(url)
         assert response.status_code == 200
         assert response.data['given_name'] == self.app_contact.given_name
@@ -85,7 +85,7 @@ class ContactProjectViewTest(UnitTestCase):
 
     def test_admin_contact_project_email(self):
         # get test applicant user contact details
-        url = "/admin/contact/{}/".format(self.app_contact.email)
+        url = "/contact/{}/".format(self.app_contact.email)
         response = self.admin_client.get(url)
         assert response.status_code == 200
         assert len(response.data) == 1

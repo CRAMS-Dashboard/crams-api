@@ -16,7 +16,7 @@ def validate_current_use_return_provision_id(provision_id, sr_instance):
     """
     if not provision_id:
         return
-    msg = 'Provision Id "{}" in use by Project: {}'
+    msg = 'Provision Id {} in use by Project: {}'
     try:
         spp_obj = StorageProductProvisionId.objects.get(
             provision_id=provision_id,

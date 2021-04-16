@@ -14,6 +14,9 @@ class ProjectRequestViewTest(UnitTestCase):
         self.generate_allocation_test_data()
         self.app_client = self.auth_client(user=self.app_user)
         self.admin_client = self.auth_client(user=self.admin_user)
+        self.appr_client = self.auth_client(user=self.approver_user)
+        self.prov_client = self.auth_client(user=self.provisioner_user)
+        self.testuser_client = self.auth_client(user=self.test_user)
 
     def test_project_request_view_list(self):
         url = reverse("project-request-list")
@@ -35,6 +38,13 @@ class ProjectRequestViewTest(UnitTestCase):
         assert prov_prj['title'] == self.prj_prov.title
         assert prov_prj['requests'][0]['request_status']['code'] == self.prj_prov.requests.all().first().request_status.code
 
+    def test_project_request_view_list_testuser(self):
+        url = reverse("project-request-list")
+        response = self.testuser_client.get(url)
+        assert response.status_code == 200
+        # test user should have zero projects in list
+        assert len(response.data) == 0
+
     def test_project_request_view_detail(self):
         url = reverse("project-request-detail", args=[self.prj_prov.requests.all().first().id])
         response = self.app_client.get(url) 
@@ -45,3 +55,41 @@ class ProjectRequestViewTest(UnitTestCase):
         assert prov_prj['title'] == self.prj_prov.title
         assert prov_prj['requests'][0]['id'] == self.prj_prov.requests.all().first().id
         assert prov_prj['requests'][0]['request_status']['code'] == self.prj_prov.requests.all().first().request_status.code
+
+    def test_project_request_view_detail_admin(self):
+        url = reverse("project-request-detail", args=[self.prj_prov.requests.all().first().id])
+        response = self.admin_client.get(url) 
+        assert response.status_code == 200
+        
+        prov_prj = response.data
+        assert prov_prj['id'] == self.prj_prov.id
+        assert prov_prj['title'] == self.prj_prov.title
+        assert prov_prj['requests'][0]['id'] == self.prj_prov.requests.all().first().id
+        assert prov_prj['requests'][0]['request_status']['code'] == self.prj_prov.requests.all().first().request_status.code
+
+    def test_project_request_view_detail_approver(self):
+        url = reverse("project-request-detail", args=[self.prj_prov.requests.all().first().id])
+        response = self.appr_client.get(url) 
+        assert response.status_code == 200
+        
+        prov_prj = response.data
+        assert prov_prj['id'] == self.prj_prov.id
+        assert prov_prj['title'] == self.prj_prov.title
+        assert prov_prj['requests'][0]['id'] == self.prj_prov.requests.all().first().id
+        assert prov_prj['requests'][0]['request_status']['code'] == self.prj_prov.requests.all().first().request_status.code
+
+    def test_project_request_view_detail_provisioner(self):
+        url = reverse("project-request-detail", args=[self.prj_prov.requests.all().first().id])
+        response = self.prov_client.get(url) 
+        assert response.status_code == 200
+        
+        prov_prj = response.data
+        assert prov_prj['id'] == self.prj_prov.id
+        assert prov_prj['title'] == self.prj_prov.title
+        assert prov_prj['requests'][0]['id'] == self.prj_prov.requests.all().first().id
+        assert prov_prj['requests'][0]['request_status']['code'] == self.prj_prov.requests.all().first().request_status.code
+
+    def test_project_request_view_detail_unauth(self):
+        url = reverse("project-request-detail", args=[self.prj_prov.requests.all().first().id])
+        response = self.testuser_client.get(url)
+        assert response.status_code == 403

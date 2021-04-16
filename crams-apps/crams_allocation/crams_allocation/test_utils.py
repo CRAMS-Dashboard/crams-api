@@ -132,6 +132,10 @@ class UnitTestCase(UnitTestCase):
             self.generate_user_and_contact(org=self.org)
         self.prjmbr3_user, self.prjmbr3_contact = \
             self.generate_user_and_contact(org=self.org)
+
+        # setup a test user - not associated with any projects
+        self.test_user, self.test_contact = \
+            self.generate_user_and_contact(org=self.org)
         
         # set up an allocation new/draft status
         self.prj_draft = self.generate_submission_allocation(draft=True)

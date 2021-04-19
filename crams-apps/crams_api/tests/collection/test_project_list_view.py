@@ -13,6 +13,7 @@ class ProjectListViewTest(UnitTestCase):
         super().setUp()
         self.generate_allocation_test_data()
         self.app_client = self.auth_client(user=self.app_user)
+        self.faculty_client = self.auth_client(user=self.faculty_user)
         self.admin_client = self.auth_client(user=self.admin_user)
 
     def test_project_list(self):
@@ -68,11 +69,21 @@ class ProjectListViewTest(UnitTestCase):
         response = self.admin_client.get(url)
         assert response.status_code == 200
     
-    # admin not working
-    def _test_project_list_faculty(self):
+    def test_project_list_faculty(self):
         url = "/project_request_list/faculty/"
-        response = self.admin_client.get(url)
+        response = self.faculty_client.get(url)
         assert response.status_code == 200
+        # check for submission project
+        sub_prj = next((x for x in response.data['projects'] if x['id'] == self.prj_submit.id), None)
+        assert sub_prj['title'] == self.prj_submit.title
+
+        # check for approved project
+        appr_prj = next((x for x in response.data['projects'] if x['id'] == self.prj_approved.id), None)
+        assert appr_prj['title'] == self.prj_approved.title
+
+        # check for provisioned project
+        prov_prj = next((x for x in response.data['projects'] if x['id'] == self.prj_prov.id), None)
+        assert prov_prj['title'] == self.prj_prov.title
 
     def test_project_list_organisation(self):
         url = "/project_request_list/organisation/"

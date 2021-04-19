@@ -13,6 +13,7 @@ from crams_allocation.product_allocation import models as product_models
 from crams_collection import models as collection_models
 # from crams_collection.member import models as member_models
 from crams_contact import models as contact_models
+from crams_manager import models as manager_models
 from crams import models as crams_models
 from crams.constants import db
 from crams.utils.crams_utils import get_random_string
@@ -124,6 +125,14 @@ class UnitTestCase(UnitTestCase):
         # set provisioner role
         erb_roles = contact_models.CramsERBUserRoles.objects.get(contact=self.provisioner_contact)
         erb_roles.providers.add(self.provider)
+
+        # set up faculty admin
+        self.faculty_user, self.faculty_contact = \
+            self.generate_user_and_contact(org=self.org)
+        mixer.blend(manager_models.FacultyManager,
+                    contact=self.faculty_contact,
+                    faculty=self.faculty,
+                    active=True)
 
         # set up a project member user/contact
         self.prjmbr1_user, self.prjmbr1_contact = \

@@ -82,9 +82,9 @@ class ApproveRequestViewTest(UnitTestCase):
         assert response.data['storage_requests'][0]['requested_quota_change'] == sp_req.requested_quota_change
         assert response.data['storage_requests'][0]['requested_quota_total'] == sp_req.requested_quota_total
 
-    def test_approve_request_approval_view(self):
+    def _test_approve_request_approval_view(self, project):
         # set up the payload
-        req = self.prj_submit.requests.all().first()
+        req = project.requests.all().first()
         sp_req = req.storage_requests.all().first()
         payload = self.get_empty_approve_json_payload()
         payload['funding_scheme']['id'] = self.funding_scheme.id
@@ -116,3 +116,11 @@ class ApproveRequestViewTest(UnitTestCase):
         assert appr_sp_req.approved_quota_total == sp_req.requested_quota_total
         # check approval notes
         assert appr_req.approval_notes == payload['approval_notes']
+
+    def test_approve_request_approval_view_submission(self):
+        # test a new submitted project request for approval
+        self._test_approve_request_approval_view(self.prj_submit)
+
+    def test_approve_request_approval_view_extension(self):
+        # test an existing provisioned project request that has its quota extended
+        self._test_approve_request_approval_view(self.prj_alloc_ext)

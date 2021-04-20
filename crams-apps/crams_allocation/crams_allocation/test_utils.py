@@ -285,14 +285,14 @@ class UnitTestCase(UnitTestCase):
         return request
 
     def generate_sp_request(self, request, current_quota, 
-                            requested_quota_change, approved_quota_change, prov_det=None):
+                            requested_quota_change, approved_quota_change, provision_id=None, prov_det=None):
         sp_request = mixer.blend(product_models.StorageRequest,
                                  current_quota=current_quota,
                                  requested_quota_change=requested_quota_change,
                                  approved_quota_change=approved_quota_change,
                                  storage_product=self.storage_prod,
                                  request=request,
-                                 provision_id=None,
+                                 provision_id=provision_id,
                                  provision_details=prov_det)
         return sp_request
 
@@ -520,7 +520,11 @@ class UnitTestCase(UnitTestCase):
         # prov_cp_req = self.generate_cp_request(req_prov, 4, 4, 8, 8, 1250, 1250)
         cp_req_alloc_ext = None
         # current quota is 100gb, extending an additional 100 gb and 0 approved
-        sp_req_alloc_ext = self.generate_sp_request(req_prov, 100, 100, 0)
+        sp_req_prov = req_prov.storage_requests.all().first()
+        sp_req_alloc_ext = self.generate_sp_request(
+            req_alloc_ext, 100, 100, 0, 
+            provision_id=sp_req_prov.provision_id, 
+            prov_det=sp_req_prov.provision_details)
 
         # generate the questions
         self.generate_question_responses(prj_alloc_ext, req_alloc_ext, cp_req_alloc_ext, sp_req_alloc_ext)

@@ -163,6 +163,9 @@ class UnitTestCase(UnitTestCase):
 
         # set up an allocation extended/updated status
         self.prj_alloc_ext = self.generate_allocation_extended()
+
+        # set up an allocation extension that has been approved status
+        self.prj_alloc_ext_appr = self.generate_allocation_extended_approved()
     
     def generate_question(self, type, idx):
         type_idx = type + '_' + str(idx)
@@ -530,6 +533,58 @@ class UnitTestCase(UnitTestCase):
         self.generate_question_responses(prj_alloc_ext, req_alloc_ext, cp_req_alloc_ext, sp_req_alloc_ext)
         
         return prj_alloc_ext
+    
+    def generate_allocation_extended_approved(self):
+        prj_alloc_ext = self.generate_allocation_extended()
+        req_alloc_ext = prj_alloc_ext.requests.all().first()
+        
+        req_status = allocation_models.RequestStatus.objects.get(
+            code=db.REQUEST_STATUS_APPROVED)
+        
+        # create a new extension approved
+        prj_alloc_ext_appr = self.generate_copy_allocation(prj_alloc_ext, req_status, self.admin_user)
+        req_alloc_ext_appr = prj_alloc_ext_appr.requests.all().first()
+
+        # get the submission/approve/prov project and request
+        req_prov = allocation_models.Request.objects.filter(current_request=req_alloc_ext, request_status__code='P').first()
+        prj_prov = req_prov.project
+        req_appr = allocation_models.Request.objects.filter(current_request=req_alloc_ext, request_status__code='A').first()
+        prj_appr = req_appr.project
+        req_sub = allocation_models.Request.objects.filter(current_request=req_alloc_ext, request_status__code='E').first()
+        prj_sub = req_sub.project
+
+        # update the current_project and current_request
+        prj_alloc_ext.current_project = prj_alloc_ext_appr
+        prj_alloc_ext.save()
+        req_alloc_ext.current_request = req_alloc_ext_appr
+        req_alloc_ext.save()
+        prj_prov.current_project = prj_alloc_ext_appr
+        prj_prov.save()
+        req_prov.current_request = req_alloc_ext_appr
+        req_prov.save()
+        prj_appr.current_project = prj_alloc_ext_appr
+        prj_appr.save()
+        req_appr.current_request = req_alloc_ext_appr
+        req_appr.save()
+        prj_sub.current_project = prj_alloc_ext_appr
+        prj_sub.save()
+        req_sub.current_request = req_alloc_ext_appr
+        req_sub.save()
+
+        # create and set the approved quotas
+        # prov_cp_req = self.generate_cp_request(req_prov, 4, 4, 8, 8, 1250, 1250)
+        cp_req_alloc_ext_appr = None
+        # current quota is 100gb, extending an additional 100 gb and 100 approved
+        sp_req_alloc_ext = req_alloc_ext.storage_requests.all().first()
+        sp_req_alloc_ext_appr = self.generate_sp_request(
+            req_alloc_ext_appr, 100, 100, 100, 
+            provision_id=sp_req_alloc_ext.provision_id, 
+            prov_det=sp_req_alloc_ext.provision_details)
+
+        # generate the questions
+        self.generate_question_responses(prj_alloc_ext_appr, req_alloc_ext_appr, cp_req_alloc_ext_appr, sp_req_alloc_ext_appr)
+        
+        return prj_alloc_ext_appr
 
     def get_submit_json_payload(self):
         status = allocation_models.RequestStatus.objects.get(

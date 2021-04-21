@@ -21,6 +21,12 @@ class UnitTestCase(CommonBaseTestCase):
     def get_compute_request_provision(self):
         return None
 
+    def get_provision_id_update_json(self, storage_prod, prov_id):
+        return {
+            "storage_product": self._get_storage_product(storage_prod),
+            "provision_id": prov_id
+        }
+
     def _get_storage_product(self, storage_product):
         return {
                 "id": storage_product.id,

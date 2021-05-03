@@ -128,7 +128,6 @@ class AllocationListAllocationSerializer(READONLY_SZ_CLS):
 
     @classmethod
     def get_request_status(cls, request_obj):
-        print(' 5654656  in AllocationListAllocationSerializer')
         return request_utils.get_erb_request_status_dict(request_obj)
 
     def get_related_allocations(self, obj):

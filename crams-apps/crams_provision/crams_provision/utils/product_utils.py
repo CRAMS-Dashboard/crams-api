@@ -3,10 +3,13 @@
 
 """
 import logging
+import copy
 
+from crams.constants.api import OVERRIDE_READONLY_DATA
 from crams.models import ProvisionDetails
 from crams_provision.utils.base import BaseProvisionUtils
 from crams.utils.role import AbstractCramsRoleUtils
+from crams_allocation.serializers.admin_serializers import BaseAdminSerializer
 from crams_allocation.constants.db import REQUEST_STATUS_APPROVED, REQUEST_STATUS_LEGACY_APPROVED
 from crams_allocation.constants.db import REQUEST_STATUS_PROVISIONED
 from crams_allocation.models import RequestStatus
@@ -58,7 +61,7 @@ class BaseProvisionProductUtils:
             raise exceptions.ValidationError(msg.format(code))
 
     @classmethod
-    def update_request_status(cls, request_obj):
+    def update_request_status(cls, request_obj, sz_context_obj):
         if not request_obj.request_status.code == REQUEST_STATUS_APPROVED:
             msg = 'Cannot update status for non Approved Requests'
             raise exceptions.ValidationError(msg)
@@ -67,17 +70,31 @@ class BaseProvisionProductUtils:
 
         sr_qs = request_obj.storage_requests.exclude(filter_qs)
         cr_qs = request_obj.compute_requests.exclude(filter_qs)
-        if sr_qs.exists() or cr_qs.exists():
-            # TODO check partial provision email send
-            # notify_cls = allocation_notification.AllocationNotificationUtils
-            # notify_cls.send_partial_provision_notification(
-            #     request_obj, serializer_context)
-            return
+        update_request_status = True
+        if sr_qs.exists():
+            update_request_status = False
+        if cr_qs.exists():
+            update_request_status = False
 
-        # update request status to provisioned
-        request_obj.request_status = \
-            cls.get_request_status_obj_for_code(REQUEST_STATUS_PROVISIONED)
-        request_obj.save()
+        # TODO check partial provision email send
+        # notify_cls = allocation_notification.AllocationNotificationUtils
+        # notify_cls.send_partial_provision_notification(
+        #     request_obj, serializer_context)
+
+        if update_request_status:
+            # update request status to provisioned
+            # Instead of updating Approve to Provision status,
+            #   - we need to use archive the current Approved Request and create a new record
+            if sz_context_obj and isinstance(sz_context_obj, dict):
+                partial_request_context_obj = copy.copy(sz_context_obj)
+                partial_request_context_obj[OVERRIDE_READONLY_DATA] = {'request_status': REQUEST_STATUS_PROVISIONED}
+                req_sz_class = BaseAdminSerializer.get_crams_request_serializer_class()
+                requestSerializer = req_sz_class(
+                    instance=request_obj, data={id: request_obj.id}, partial=True, context=partial_request_context_obj)
+                requestSerializer.is_valid(raise_exception=True)
+                requestSerializer.save(project=request_obj.project)
+            else:
+                raise exceptions.ValidationError('cannot update request status without serializer context object')
 
     @classmethod
     def update_provisionable_item(cls, instance, validated_data, user_obj):
@@ -91,5 +108,4 @@ class BaseProvisionProductUtils:
             old_pd.save()
         instance.provision_details = pd
         instance.save()
-        cls.update_request_status(instance.request)
         return instance

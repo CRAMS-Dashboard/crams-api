@@ -209,5 +209,4 @@ class AbstractCramsRoleUtils(abc.ABC):
     @classmethod
     def is_user_a_provider(cls, user_obj):
         user_roles_dict = cls.fetch_cramstoken_roles_dict(user_obj)
-        print('user roles dict is', user_roles_dict)
         return user_roles_dict and cls.PROVIDER_ROLE_KEY in user_roles_dict

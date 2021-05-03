@@ -1,5 +1,4 @@
 import logging
-import copy
 
 from crams.models import ProvisionDetails
 from crams.serializers import model_serializers
@@ -78,7 +77,8 @@ class ComputeRequestProvisionSerializer(compute_request.ComputeRequestSerializer
 
     def update_provisionable(self, instance, validated_data):
         current_user = self.get_current_user()
-        return BaseProvisionProductUtils.update_provisionable_item(instance, validated_data, current_user)
+        BaseProvisionProductUtils.update_provisionable_item(instance, validated_data=validated_data, user_obj=current_user)
+        return BaseProvisionProductUtils.update_request_status(instance.request, sz_context_obj=self.context)
 
 
 class StorageRequestProvisionSerializer(storage_request_serializers.StorageRequestSerializer):
@@ -138,7 +138,8 @@ class StorageRequestProvisionSerializer(storage_request_serializers.StorageReque
 
     def update_provisionable(self, instance, validated_data):
         current_user = self.get_current_user()
-        return BaseProvisionProductUtils.update_provisionable_item(instance, validated_data, current_user)
+        BaseProvisionProductUtils.update_provisionable_item(instance, validated_data, current_user)
+        return BaseProvisionProductUtils.update_request_status(instance.request, sz_context_obj=self.context)
 
 
 class StorageRequestProvisionIdUpdateSerializer(StorageRequestProvisionSerializer):

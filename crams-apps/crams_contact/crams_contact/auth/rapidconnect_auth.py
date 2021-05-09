@@ -26,8 +26,8 @@ def redirect_to_rapid_conn(request):
     response = HttpResponseRedirect(settings.AAF_RAPID_CONN_URL)
     # save the origin address of where the request came from
     # the origin address is used to redirect back after auth is successful
-    response.set_cookie('HTTP_REFERER', request.META['HTTP_REFERER'])
-
+    request.session["HTTP_REFERER"] = request.META['HTTP_REFERER']
+    request.session.modified = True
     return response
 
 
@@ -38,15 +38,20 @@ def rapid_conn_auth_view(request):
     :param request: request should contain a jwt
     :return:
     """
-
     # decode a jwt using the secret key
-    server = request.META['SERVER_NAME']
     try:
-        # set header for url
-        if request.is_secure():
+        # fetch the server and port number
+        try:
+            host = request.headers['Host']
+            server = host.split(':')[0]
+            port = host.split(':')[1]
+        except:
+            server = host
+            port = None
+        
+        # set the header HTTPS if port is 443
+        if port == '443':
             header = 'https://'
-            if not request.META['SERVER_PORT'] == '443':
-                server += ':' + request.META['SERVER_PORT']
         else:
             header = 'http://'
 
@@ -95,8 +100,8 @@ def rapid_conn_auth_view(request):
     crams_token = ContactErbRoleSerializer.setup_crams_token_and_roles(user)
     query_string = "?username=%s&rest_token=%s" % (user.username,
                                                    crams_token.key)
-
-    response = HttpResponseRedirect(request.COOKIES.get('HTTP_REFERER') +
+    
+    response = HttpResponseRedirect(request.session.get("HTTP_REFERER") +
                                     '/#/ks-login' +
                                     query_string)
     response['token'] = crams_token.key

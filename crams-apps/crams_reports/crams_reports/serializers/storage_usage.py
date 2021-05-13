@@ -4,6 +4,8 @@
 """
 import collections
 
+from crams.constants import db
+from crams_allocation.models import RequestStatus
 from crams_collection.models import Project
 from crams_resource_usage.storage.models import StorageUsageIngest
 from crams_storage.models import StorageProduct
@@ -360,6 +362,40 @@ class AbstractSPUsageSerializer(BaseReportSerializer):
         self.build_product_summary(sp_list, summary_dict)
 
         return sp_list
+
+    # checks request against provision status param 
+    # if param not exist then filter is ignored
+    def request_status_provision_filter(self, stor_req):
+        # check for request_status in the request query param
+        req_status_obj = None
+        if self.context:
+            context_request = self.context['request']
+            req_status = context_request.query_params.get(
+                'request_status', None)
+            # try and fetch status
+            req_status_obj = RequestStatus.objects.filter(
+                status__iexact=req_status).first()
+
+        if req_status_obj:
+            # if provision status then apply filtering rules below
+            if req_status_obj.code == db.REQUEST_STATUS_PROVISIONED:
+                # the request is from storage_request_prefetch_qs 
+                # only provisioned storage request will appear
+                # if request == none then it is not provisioned
+                if not stor_req:  
+                    return True
+                # check the status from the request
+                status_code = stor_req.request.request_status.code
+                # valid provisioned statuses
+                valid_statuses = [db.REQUEST_STATUS_PROVISIONED,
+                                  db.REQUEST_STATUS_UPDATE_OR_EXTEND,
+                                  db.REQUEST_STATUS_APPLICATION_UPDATED]
+                # if status is valid provision state return True
+                if status_code not in valid_statuses:
+                    return True
+        
+        # return false the above are not matched
+        return False
 
     def fetch_e_research_system_param(self):
         e_research_system = None

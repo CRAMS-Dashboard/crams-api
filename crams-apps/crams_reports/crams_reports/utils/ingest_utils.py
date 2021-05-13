@@ -7,7 +7,7 @@ from django.db.models import Q, Prefetch
 from crams.utils import date_utils
 from crams.models import EResearchBody, EResearchBodySystem
 from crams_allocation.models import Request
-from crams_allocation.constants.db import REQUEST_STATUS_PROVISIONED
+from crams_allocation.constants import db
 from crams_storage.models import StorageProduct, StorageProductProvisionId
 from crams_collection.models import Project
 from crams_allocation.product_allocation.models import StorageRequest
@@ -20,7 +20,7 @@ def get_crams_transaction_id_map():
     ret_dict = dict()
     for r in Request.objects.filter(
             e_research_system=CRAMS_ERBS,
-            request_status__code=REQUEST_STATUS_PROVISIONED):
+            request_status__code=db.REQUEST_STATUS_PROVISIONED):
         pid_qs = r.project.project_ids.filter(system__e_research_body=CRAMS_ERB)
         if pid_qs.exists():
             ret_dict[r.transaction_id] = pid_qs.first()
@@ -92,7 +92,10 @@ def sum_project_product_latest_allocated_gb(
     sr_qs = StorageRequest.objects.filter(qs_filter).select_related('storage_product')
     for sr in sr_qs:
         sp = sr.storage_product
-        allocated_gb = sp_allocated_dict.get(sp) + sr.approved_quota_total
+        if sr.request.request_status.code == db.REQUEST_STATUS_APPROVED:
+            allocated_gb = sp_allocated_dict.get(sp) + sr.current_quota
+        else:
+            allocated_gb = sp_allocated_dict.get(sp) + sr.approved_quota_total
         sp_allocated_dict[sp] = allocated_gb
     return sp_allocated_dict
 
@@ -125,7 +128,7 @@ def get_storage_requests(request_status_code, project_qs,
 
 
 def get_provisioned_storage_requests(project_qs, storage_product_qs):
-    return get_storage_requests(REQUEST_STATUS_PROVISIONED, project_qs, storage_product_qs)
+    return get_storage_requests(db.REQUEST_STATUS_PROVISIONED, project_qs, storage_product_qs)
 
 
 def get_provision_id_latest_sui_dict(storage_request_prefetch_qs):

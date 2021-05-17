@@ -58,7 +58,7 @@ class User(auth_models.AbstractBaseUser, auth_models.PermissionsMixin):
         # The user is identified by their email address
         return self.email
 
-    def __str__(self):              # __unicode__ on Python 2
+    def __str__(self):  # __unicode__ on Python 2
         return self.email
 
     def has_perm(self, perm, obj=None):
@@ -553,3 +553,23 @@ class AbstractAllocation(ProvisionableItem):
     @property
     def approved_quota_total(self):
         return self.current_quota + self.approved_quota_change
+
+
+class AbstractNotificationTemplate(models.Model):
+    funding_body = models.ForeignKey(FundingBody, blank=True, null=True, default=None,
+                                     related_name='notification_templates', on_delete=models.DO_NOTHING)
+    system_key = models.ForeignKey(EResearchBodyIDKey,
+                                   blank=True, null=True, default=None, on_delete=models.DO_NOTHING)
+    template_file_path = models.CharField(max_length=99)
+    alert_funding_body = models.BooleanField(default=False)
+    e_research_system = models.ForeignKey(
+        EResearchBodySystem, blank=True, null=True, default=None,
+        related_name='notification_templates', on_delete=models.DO_NOTHING)
+    e_research_body = models.ForeignKey(
+        EResearchBody, blank=True, null=True, default=None, on_delete=models.DO_NOTHING)
+
+    class Meta:
+        abstract = True
+
+    def __str__(self):
+        return '{} {}'.format(self.template_file_path, self.e_research_system)

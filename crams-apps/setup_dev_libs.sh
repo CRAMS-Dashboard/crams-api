@@ -1,5 +1,5 @@
 #!/bin/bash
-source  ~/.pyenv/versions/crams_env/bin/activate
+source  ~/.pyenv/versions/crams_py38/bin/activate
 
 export PATH=/usr/local/mysql/bin:$PATH
 
@@ -50,7 +50,7 @@ cd ../crams_api
 pip install ../merc_common/dist/merc_common-1.0.0.tar.gz
 pip install ../crams_log/dist/crams_log-1.0.0.tar.gz
 pip install ../crams_contact/dist/crams_contact-1.0.0.tar.gz
-pip install ../crams_notification/dist/crams_notification-1.0.tar.gz
+pip install ../crams_notification/dist/crams_notification-1.0.0.tar.gz
 pip install ../crams_compute/dist/crams_compute-1.0.0.tar.gz
 pip install ../crams_storage/dist/crams_storage-1.0.0.tar.gz
 pip install ../crams_collection/dist/crams_collection-1.0.0.tar.gz

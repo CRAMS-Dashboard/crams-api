@@ -18,6 +18,8 @@ from crams.views.funding_body import PrevUserFundingBodyRoleList
 from crams.views.lookup_api import EResearchBodySystemViewSet
 from crams.views.lookup_api import fb_scheme_list
 from crams.views.lookup_api import for_codes
+from crams.views.lookup_api import SupportEmailContactViewSet
+
 from django.contrib.auth import views as auth_views
 from django.urls import include
 from django.urls import path, re_path
@@ -27,9 +29,8 @@ from rest_framework.schemas import get_schema_view
 
 router = routers.SimpleRouter()
 router.register(r'e_research_body', EResearchBodySystemViewSet, basename='e_r_b')
-router.register(r'user_funding_body',
-                PrevUserFundingBodyRoleList, basename='funding_body')
-
+router.register(r'user_funding_body', PrevUserFundingBodyRoleList, basename='funding_body')
+router.register(r'support_email_list', SupportEmailContactViewSet, basename='support-emails')
 
 urlpatterns = [
     # Use the `get_schema_view()` helper to add a `SchemaView` to project URLs.

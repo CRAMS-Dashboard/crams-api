@@ -15,7 +15,8 @@ Including another URLconf
 """
 from django.contrib import admin
 from django.urls import path
-
+from crams_notification.views.support_email import SupportEmailViewSet
 urlpatterns = [
     # path('admin/', admin.site.urls),
+    path('support_email', SupportEmailViewSet.as_view()),
 ]

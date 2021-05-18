@@ -1,12 +1,13 @@
-from rest_framework import viewsets, decorators
-from rest_framework.decorators import api_view
-from rest_framework.views import Response
-
 from crams import models
 from crams.models import FORCode
 from crams.models import FundingScheme
-from crams.serializers.lookup_serializers import FundingSchemeSerializer, EResearchSystemSerializer
+from crams.permissions import IsCramsAuthenticated
+from crams.serializers import lookup_serializers
 from crams.utils.model_lookup_utils import LookupDataModel
+from rest_framework import mixins
+from rest_framework import viewsets, decorators
+from rest_framework.decorators import api_view
+from rest_framework.views import Response
 
 
 @api_view(http_method_names=['GET'])
@@ -23,7 +24,7 @@ def fb_scheme_list(request, fb_name):
 
     fs_list = []
     for fs in qs.order_by('id'):
-        fs_list.append(FundingSchemeSerializer(fs).data)
+        fs_list.append(lookup_serializers.FundingSchemeSerializer(fs).data)
     return Response(fs_list)
 
 
@@ -71,7 +72,7 @@ class EResearchBodySystemViewSet(viewsets.ViewSet):
         """
         ret_list = []
         lookup = LookupDataModel(models.EResearchBody)
-        serializer_class = EResearchSystemSerializer
+        serializer_class = lookup_serializers.EResearchSystemSerializer
         try:
             search_key = {'name__iexact': e_research_body}
             body_obj = lookup.get_lookup_data(search_key)
@@ -81,3 +82,21 @@ class EResearchBodySystemViewSet(viewsets.ViewSet):
             pass
 
         return Response(ret_list)
+
+
+class SupportEmailContactViewSet(viewsets.GenericViewSet, mixins.ListModelMixin):
+    permission_classes = [IsCramsAuthenticated]
+    serializer_class = lookup_serializers.SupportEmailContactSerializer
+    queryset = models.SupportEmailContact.objects.all()
+
+    def get_queryset(self):
+        queryset = self.queryset
+        if 'erb' in self.request.query_params:
+            erb = self.request.query_params['erb']
+            queryset = self.queryset.filter(e_research_body__name=erb)
+
+        if 'erbs' in self.request.query_params:
+            erbs = self.request.query_params['erbs']
+            queryset = self.queryset.filter(e_research_system__name=erbs)
+
+        return queryset

@@ -12,7 +12,7 @@ def send_email_notification(sender, subject, mail_content, recipient_list, cc_li
 
 def send_email(sender, subject, mail_content, recipient_list, cc_list=None, bcc_list=None,
                reply_to=None, fail_silently=False):
-    if settings.MQ_ENABLED:
+    if settings.MQ_MAIL_ENABLED:
         send_email_notification.delay(sender, subject, mail_content, recipient_list, cc_list=None, bcc_list=None,
                                       reply_to=None, fail_silently=False)
     else:

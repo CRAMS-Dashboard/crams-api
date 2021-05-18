@@ -158,24 +158,46 @@ AUTH_PASSWORD_VALIDATORS = [
     },
 ]
 
+# Run environment settings
+DEV_ENVIRONMENT = 'development'
+STAGING_ENVIRONMENT = 'staging'
+QAT_ENVIRONMENT = 'qat'
+PROD_ENVIRONMENT = 'production'
+CURRENT_RUN_ENVIRONMENT = DEV_ENVIRONMENT
+
 # Internationalization
 # https://docs.djangoproject.com/en/3.1/topics/i18n/
 
-LANGUAGE_CODE = 'en-us'
-
-TIME_ZONE = 'UTC'
-
+LANGUAGE_CODE = 'en-au'
+TIME_ZONE = 'Australia/Melbourne'
 USE_I18N = True
-
 USE_L10N = True
-
 USE_TZ = True
-
 import logging
+
+# Celery broker configuration for Rabbit MQ
+CELERY_BROKER_URL = 'amqp://mq_admin:mq_admin_pwd@mq_ip_address:5672/crams_opensource'
+CELERY_ACCEPT_CONTENT = ['application/json']
+CELERY_RESULT_SERIALIZER = 'json'
+CELERY_TASK_SERIALIZER = 'json'
+CELERY_TIMEZONE = TIME_ZONE
+# ref to http://docs.celeryproject.org/en/latest/userguide/periodic-tasks.html#crontab-schedules
+# CELERY Cron Job
+CELERY_BEAT_SCHEDULE = {}
+# end of Celery Configuration
+
+# Enable Rabbit MQ to send email, default is False
+MQ_MAIL_ENABLED = False
+# Send email to the console by default
+EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
+# EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
+# Or have an smtp backend, it will send email to admin user
+EMAIL_HOST = 'smtp.crams.com'
+MAILER_EMAIL_BACKEND = EMAIL_BACKEND
+EMAIL_SENDER = 'sender@crams.com'
 
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/3.1/howto/static-files/
-
 
 STATIC_URL = '/static/'
 
@@ -190,6 +212,12 @@ STATICFILES_FINDERS = [
 # Import the local_settings.py to override some of the default settings,
 # like database settings
 try:
-    from crams_api.local.local_settings import *  # noqa
+    from crams_api.local.local_settings import *
 except ImportError:
     logging.debug("No local_settings file found.")
+
+# override the celery settings
+try:
+    from crams_api.local.celery_settings import *
+except ImportError:
+    logging.debug("No celery_settings file found.")

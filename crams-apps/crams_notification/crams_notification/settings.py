@@ -126,16 +126,8 @@ STATIC_URL = '/static/'
 # Default primary key field type
 # https://docs.djangoproject.com/en/3.2/ref/settings/#default-auto-field
 
-
-
-DEV_ENVIRONMENT = 'development'
-STAGING_ENVIRONMENT = 'staging'
-QAT_ENVIRONMENT = 'qat'
-PROD_ENVIRONMENT = 'production'
-CURRENT_RUN_ENVIRONMENT = DEV_ENVIRONMENT
-
-MQ_ENABLED = True
-
+# Enable Rabbit MQ to send email, default is False
+MQ_MAIL_ENABLED = False
 # EMAIL
 # Send email to the console by default
 EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
@@ -143,4 +135,4 @@ EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
 EMAIL_HOST = 'smtp.crams.com'
 # EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
 MAILER_EMAIL_BACKEND = EMAIL_BACKEND
-EMAIL_SENDER = 'testu@crams.com'
+EMAIL_SENDER = 'sender@crams.com'

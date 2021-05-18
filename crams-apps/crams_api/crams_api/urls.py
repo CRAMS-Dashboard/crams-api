@@ -14,7 +14,7 @@ from django.contrib import admin
 from django.urls import path, include
 from merc_common import urls as common_urls
 from rest_framework import routers
-
+from crams_notification import urls as notification_urls
 
 router = routers.SimpleRouter()
 
@@ -29,5 +29,6 @@ urlpatterns = [
     path('ingest/', include(storage_urls)),
     path('reports/', include(report_urls)),
     path('', include(common_urls)),
+    path('', include(notification_urls)),
     # path('', include(resource_usage_urls)),
 ]

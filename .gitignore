@@ -6,6 +6,7 @@
 **/__pycache__
 **/db.sqlite3*
 **/local_settings.py
+**/celery_settings.py
 **/.coverage
 **.venv/
 **/schema.yml

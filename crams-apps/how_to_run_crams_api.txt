@@ -1,23 +1,44 @@
-How TO Run CRAMS API
+HOW TO RUN CRAMS API in the development
 
 1. setup python3 virtual env
 
-go to crams-apps direcoty
-2. run setup_dev_libs.sh
+2. go to crams-apps direcoty
+
+~]run setup_dev_libs.sh
 
 go to crams_api directory
-change the database setting in the local_settings.py under local folder
-run migrations
-3. python manager.py migrate
 
-start the Django application:
-4. python manager.py runserver localhost:8080
+change the database setting in the local_settings.py under local directory
+update the Rabbit MQ setting in the celery_settings.py under local directory
 
-create superuser
-5. python manager.py createsuperuser
+3. run db migration
 
-update the sueruser
+~] python manage.py migrate
+
+4. start the Django application:
+~] python manage.py runserver localhost:8080
+
+5. create superuser
+~] python manage.py createsuperuser
+
+6. update the sueruser
 # assume you are using mysql
-6. python manager.py dbshell
-use yourdatabase;
-update crams_user set is_staff=1, is_superuser=1 where email='your_email'
+~] python manage.py dbshell
+~] use yourdatabase;
+~] update crams_user set is_staff=1, is_superuser=1 where email='your_email'
+
+7. update he support email contact:
+
+~] python manage.py dbshell
+~] use your_database;
+~] update crams_supportemailcontact set email='your_support_eamil' where id=1
+
+8. how to run Rabbit MQ celery worker
+
+Open terminal, go to crams_api directory,
+
+~] source your_python_virtualenv/bin/activate
+
+~] export DJANGO_SETTINGS_MODULE=crams_api.settings
+
+~] celery worker -A crams_api --loglevel=debug

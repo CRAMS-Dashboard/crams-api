@@ -32,3 +32,19 @@ ERB_APPROVERS = ['crams_approver@crams.com.au']
 ERB_PROVIDERS = ['crams_provisioner@crams.com.au']
 CRAMS_DEMO_ERB = 'CRAMS-ERB'
 CRAMS_DEMO_ERB_SYSTEM = 'CRAMS-ERB-SYS'
+
+
+MQ_MAIL_ENABLED = False
+# Send email to the console by default
+# EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
+# Or have an smtp backend, it will send email to admin user
+EMAIL_HOST = 'smtp.crams.com'
+EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
+MAILER_EMAIL_BACKEND = EMAIL_BACKEND
+EMAIL_SENDER = 'sender@crams.com'
+
+DEV_ENVIRONMENT = 'development'
+STAGING_ENVIRONMENT = 'staging'
+QAT_ENVIRONMENT = 'qat'
+PROD_ENVIRONMENT = 'production'
+CURRENT_RUN_ENVIRONMENT = DEV_ENVIRONMENT

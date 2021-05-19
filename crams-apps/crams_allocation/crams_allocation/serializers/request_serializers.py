@@ -24,7 +24,7 @@ from crams_allocation.config import transaction_id as transaction_id_config
 from crams_allocation.config.allocation_config import CRAMS_REQUEST_PARENT
 from crams_allocation.log.allocation_request_log import RequestMetaLogger
 from crams_allocation.models import Request, AllocationHome
-from crams_allocation.models import RequestStatus
+from crams_allocation.models import RequestStatus, NotificationTemplate
 from crams_allocation.product_allocation.models import StorageRequest
 from crams_allocation.product_allocation.serializers.compute_request import ComputeRequestSerializer
 from crams_allocation.product_allocation.serializers.storage_request_serializers import StorageRequestSerializer
@@ -32,6 +32,7 @@ from crams_allocation.serializers import question_serializers
 from crams_allocation.serializers.base import ReadOnlyCramsRequestWithoutProjectSerializer
 from crams_allocation.serializers.product_request import ProductRequestSerializer
 from crams_allocation.utils import lookup_data
+from datetime import datetime
 
 User = get_user_model()
 LOG = logging.getLogger(__name__)
@@ -788,7 +789,7 @@ class CramsRequestWithoutProjectSerializer(ReadOnlyCramsRequestWithoutProjectSer
                 contact=current_contact, sz_context=self.context)
 
         # # send admin email if any question changes that require an admin alert
-        # TODO self.send_admin_email_alert(existing_request_instance, request)
+        self.send_admin_email_alert(existing_request_instance, request)
 
         # send support email to an external ticketing system
         # TODO self.send_support_email(request)
@@ -1161,102 +1162,101 @@ class CramsRequestWithoutProjectSerializer(ReadOnlyCramsRequestWithoutProjectSer
     # # Detects any question changes in the allocation that would require
     # # an email notification alert to be sent to the erb admin
     # @classmethod
-    # def send_admin_email_alert(cls, existing_req, new_request):
-    #     ds_alert = dict()
-    #     # stores list of question that have changed and trigger an alert
-    #     q_alert = list()
-    #     # skip if no previous existing project - this is a new application
-    #     if not existing_req:
-    #         return
-    #
-    #     if not new_request.request_question_responses.exists():
-    #         return
-    #
-    #     # get erb object and name in lower case
-    #     erb = existing_req.e_research_system.e_research_body
-    #     erb_str = erb.name.lower()
-    #
-    #     # get email template from erb, if no template exist skip this process
-    #     notification_temp = NotificationTemplate.objects.filter(
-    #         e_research_body=erb,
-    #         system_key__key='ADMIN_ALERT_EMAIL').first()
-    #
-    #     # if no email template found, with nothing to send exit function here
-    #     if not notification_temp:
-    #         return
-    #
-    #     # get the data sensitive request flag
-    #     new_response_dict = dict()
-    #     for q_response in new_request.request_question_responses.all():
-    #         new_response_dict[q_response.question] = q_response.question_response
-    #
-    #     existing_response_dict = dict()
-    #     for q_response in new_request.request_question_responses.all():
-    #         existing_response_dict[q_response.question] = q_response.question_response
-    #
-    #     if erb_str in allocation_config.ADMIN_ALERT_DATA_SENSITIVE:
-    #         # check if data sensitive has changed
-    #         if not new_request.data_sensitive == existing_req.data_sensitive:
-    #             # trigger email
-    #             ds_alert = {'new_resp': new_request.data_sensitive,
-    #                         'old_resp': existing_req.data_sensitive}
-    #
-    #     # get the question keys that require an alert to be sent to admin
-    #     q_key_list = []
-    #     for q_key in allocation_config.ADMIN_ALERT_QUESTION_KEYS:
-    #         for key, value in q_key.items():
-    #             if erb_str == key:
-    #                 if value not in q_key_list:
-    #                     q_key_list.append(value)
-    #
-    #     if q_key_list:
-    #         # request questions
-    #         for question, new_response in new_response_dict.items():
-    #             if question.key in q_key_list:
-    #                 # compare question with existing_req and has changed
-    #                 old_response = existing_response_dict.get(question, None)
-    #                 if not old_response == new_response:
-    #                     # trigger email
-    #                     q_alert.append(
-    #                         {'question': question.question,
-    #                          'new_resp': new_response,
-    #                          'old_resp': old_response})
-    #
-    #     # ToDO fix send email
-    #     if ds_alert or q_alert:
-    #         reply_to = allocation_config.eSYSTEM_REPLY_TO_EMAIL_MAP.get(
-    #             erb_str)
-    #         prj_title = new_request.project.title
-    #         subject = 'Application Updated - ' + prj_title
-    #
-    #         # list of email content attribute
-    #         mail_content = dict()
-    #         # ds_alert
-    #         mail_content['ds_alert'] = ds_alert
-    #         # q_alert
-    #         mail_content['q_alert'] = q_alert
-    #         # updated by user
-    #         mail_content['user_email'] = new_request.updated_by.email
-    #         # date when updated
-    #         mail_content['date_updated'] = datetime.now()
-    #         # project title
-    #         mail_content['prj_title'] = prj_title
-    #
-    #         template = notification_temp.template_file_path
-    #         # notif_util = allocation_notification.AllocationNotificationUtils
-    #         # recipient_list = notif_util.get_request_notification_recipient_list(
-    #         #     existing_req, notification_temp)
-    #         # send_email_notification.delay(
-    #         #     sender=reply_to,
-    #         #     subject=subject,
-    #         #     mail_content=mail_content,
-    #         #     template_name=template,
-    #         #     recipient_list=recipient_list,
-    #         #     cc_list=None,
-    #         #     bcc_list=None,
-    #         #     reply_to=reply_to)
-    #         # print('  ===> sent admin email', recipient_list)
-    #         print(' ', mail_content)
+    def send_admin_email_alert(cls, existing_req, new_request):
+        ds_alert = dict()
+        # stores list of question that have changed and trigger an alert
+        q_alert = list()
+        # skip if no previous existing project - this is a new application
+        if not existing_req:
+            return
+
+        if not new_request.request_question_responses.exists():
+            return
+
+        # get erb object and name in lower case
+        erb = existing_req.e_research_system.e_research_body
+        erb_str = erb.name.lower()
+
+        # get email template from erb, if no template exist skip this process
+        notification_temp = NotificationTemplate.objects.filter(e_research_body=erb,
+            system_key__key='ADMIN_ALERT_EMAIL').first()
+
+        # if no email template found, with nothing to send exit function here
+        if not notification_temp:
+            return
+
+        # get the data sensitive request flag
+        new_response_dict = dict()
+        for q_response in new_request.request_question_responses.all():
+            new_response_dict[q_response.question] = q_response.question_response
+
+        existing_response_dict = dict()
+        for q_response in new_request.request_question_responses.all():
+            existing_response_dict[q_response.question] = q_response.question_response
+
+        if erb_str in allocation_config.ADMIN_ALERT_DATA_SENSITIVE:
+            # check if data sensitive has changed
+            if not new_request.data_sensitive == existing_req.data_sensitive:
+                # trigger email
+                ds_alert = {'new_resp': new_request.data_sensitive,
+                            'old_resp': existing_req.data_sensitive}
+
+        # get the question keys that require an alert to be sent to admin
+        q_key_list = []
+        for q_key in allocation_config.ADMIN_ALERT_QUESTION_KEYS:
+            for key, value in q_key.items():
+                if erb_str == key:
+                    if value not in q_key_list:
+                        q_key_list.append(value)
+
+        if q_key_list:
+            # request questions
+            for question, new_response in new_response_dict.items():
+                if question.key in q_key_list:
+                    # compare question with existing_req and has changed
+                    old_response = existing_response_dict.get(question, None)
+                    if not old_response == new_response:
+                        # trigger email
+                        q_alert.append(
+                            {'question': question.question,
+                             'new_resp': new_response,
+                             'old_resp': old_response})
+
+        # ToDO fix send email
+        if ds_alert or q_alert:
+            reply_to = allocation_config.eSYSTEM_REPLY_TO_EMAIL_MAP.get(
+                erb_str)
+            prj_title = new_request.project.title
+            subject = 'Application Updated - ' + prj_title
+
+            # list of email content attribute
+            mail_content = dict()
+            # ds_alert
+            mail_content['ds_alert'] = ds_alert
+            # q_alert
+            mail_content['q_alert'] = q_alert
+            # updated by user
+            mail_content['user_email'] = new_request.updated_by.email
+            # date when updated
+            mail_content['date_updated'] = datetime.now()
+            # project title
+            mail_content['prj_title'] = prj_title
+
+            template = notification_temp.template_file_path
+            # notif_util = allocation_notification.AllocationNotificationUtils
+            # recipient_list = notif_util.get_request_notification_recipient_list(
+            #     existing_req, notification_temp)
+            # send_email_notification.delay(
+            #     sender=reply_to,
+            #     subject=subject,
+            #     mail_content=mail_content,
+            #     template_name=template,
+            #     recipient_list=recipient_list,
+            #     cc_list=None,
+            #     bcc_list=None,
+            #     reply_to=reply_to)
+            # print('  ===> sent admin email', recipient_list)
+            print(' ', mail_content)
 
     @classmethod
     def evaluate_new_request_status(cls, request_system_name, crams_action_state):

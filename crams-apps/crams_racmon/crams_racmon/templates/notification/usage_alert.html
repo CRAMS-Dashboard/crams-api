@@ -1,0 +1,18 @@
+
+Dear Project Contacts,
+
+This alert email was sent to all contacts because a storage usage threshold was exceeded.
+
+Project: {{ request.project.title }}
+Product: {{ request.storage_request.product.name }}
+Allocation:  {{ request.usage_alert.reported_quota }} GB
+Reported Usage: {{ request.usage_alert.used_quota }} GB
+{{ request.usage_alert.used_percent }} % of the allocated {{ request.usage_alert.reported_quota }} GB has been used
+
+Alert Threshold Setting:  {{ request.usage_alert.threshold }} %
+Alert Frequency Setting: {{ request.usage_alert.frequency }}
+
+You can modify or disable this setting using the Data Dashboard.
+
+Kind Regards
+The Monash University Research Data Storage Team

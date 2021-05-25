@@ -1,0 +1,21 @@
+Dear racmon admin team,
+
+The collection: {{ request.prj_title }} has had its details updated.
+
+{% if request.ds_alert %}Sensitive Data Handling
+----
+{% if request.ds_alert.old_resp != None %}
+Has been changed to: {% if request.ds_alert.new_resp == True %}Collection owner believes that this is an appropriate means of access given the sensitivity{% else %}This collection is free, and will continue to be free, of sensitive data{% endif %}
+Previous value: {% if request.ds_alert.old_resp == True %}Collection owner believes that this is an appropriate means of access given the sensitivity{% else %}This collection is free, and will continue to be free, of sensitive data{% endif %}
+{% else %}
+Has been changed to: {% if request.ds_alert.new_resp == True %}Collection owner believes that this is an appropriate means of access given the sensitivity{% else %}This collection is free, and will continue to be free, of sensitive data{% endif %}
+{% endif %}{% endif %}
+{% for q in request.q_alert %}{{ q.question }}
+----
+Has been changed to: {{ q.new_resp }}
+Previous value:  {{ q.old_resp }}
+
+{% endfor %}The collection details were modified by {{ request.user_email }} on {{ request.date_updated }}.
+
+Regards.
+CRAMS

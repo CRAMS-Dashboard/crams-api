@@ -86,7 +86,6 @@ CORS_ORIGIN_ALLOW_ALL = True
 APPEND_SLASH = True
 
 ROOT_URLCONF = 'crams_api.urls'
-print('---- BASE_DIR: {}'.format(BASE_DIR))
 
 TEMPLATES = [
     {
@@ -209,6 +208,15 @@ STATICFILES_FINDERS = [
     "django.contrib.staticfiles.finders.FileSystemFinder",
     "django.contrib.staticfiles.finders.AppDirectoriesFinder",
 ]
+
+DEFAULT_CLIENT_VIEW_REQUEST_PATH = '/#/allocations/view_request/'
+DEFAULT_CLIENT_VIEW_APPROVAL_PATH = '/#/approval/view_request/'
+
+RACMON_CLIENT_BASE_URL = 'https://127.0.0.1'
+RACMON_CLIENT_VIEW_REQUEST_PATH = DEFAULT_CLIENT_VIEW_REQUEST_PATH
+RACMON_CLIENT_VIEW_APPROVAL_PATH = DEFAULT_CLIENT_VIEW_APPROVAL_PATH
+RACMON_CLIENT_VIEW_JOIN_PATH = '/#/allocations/join_project/'
+RACMON_CLIENT_VIEW_MEMBER_PATH = '/#/allocations/membership/'
 
 # Import the local_settings.py to override some of the default settings,
 # like database settings

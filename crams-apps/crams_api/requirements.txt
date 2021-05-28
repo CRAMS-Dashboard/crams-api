@@ -13,3 +13,4 @@ urllib3==1.26.4
 sqlparse==0.4.1
 pandas==1.2.3
 PyJWT==1.7.1
+celery==4.4.7

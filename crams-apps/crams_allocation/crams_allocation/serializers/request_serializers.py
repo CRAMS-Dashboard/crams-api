@@ -787,9 +787,11 @@ class CramsRequestWithoutProjectSerializer(ReadOnlyCramsRequestWithoutProjectSer
             RequestMetaLogger.build_allocation_metadata_change_json(
                 request, existing_request_instance, current_user, message=log_message,
                 contact=current_contact, sz_context=self.context)
-
+        print('---- before email processing fn ....')
         email_processing_fn = allocation_config.get_email_processing_fn(
             allocation_config.ERB_System_Allocation_Submit_Email_fn_dict, request.e_research_system)
+
+        print('---- after email processing fn ....{}'.format(email_processing_fn))
         if email_processing_fn:
             is_clone_action = crams_action_state.is_clone_action
             email_sent = email_processing_fn(

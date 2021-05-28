@@ -46,7 +46,7 @@ cd ../crams_reports
 python setup.py sdist
 
 cd ../crams_api
-
+pip install --upgrade pip
 pip install ../merc_common/dist/merc_common-1.0.0.tar.gz
 pip install ../crams_log/dist/crams_log-1.0.0.tar.gz
 pip install ../crams_contact/dist/crams_contact-1.0.0.tar.gz

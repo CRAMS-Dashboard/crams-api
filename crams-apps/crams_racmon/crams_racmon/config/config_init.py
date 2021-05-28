@@ -11,7 +11,7 @@ RDSM_ERB_LOWER = settings.CRAMS_DEMO_ERB.lower()
 ENABLE_EXT_SUPPORT_EMAIL = False
 
 # Support EMail
-RDSM_REPLY_TO_EMAIL = "FIX ME"
+RDSM_REPLY_TO_EMAIL = "helpdesk@crams.com"
 racmon_support_email_dict = {
-    'key': 'FreshDeskRacmon',
-    'email': 'merc-rdsm-support@monash.edu'}
+    'key': 'CRAMS',
+    'email': 'helpdesk@crams.com'}

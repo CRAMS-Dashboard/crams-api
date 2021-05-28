@@ -108,5 +108,5 @@ def get_email_processing_fn(erbs_email_dict, erb_system_obj):
     print('----- erb_system_obj:{}'.format(erb_system_obj))
     if not isinstance(erb_system_obj, EResearchBodySystem):
         return None
-    f_key = (erb_system_obj.name, erb_system_obj.e_research_body.name)
+    f_key = (erb_system_obj.name.lower(), erb_system_obj.e_research_body.name.lower())
     return erbs_email_dict.get(f_key)

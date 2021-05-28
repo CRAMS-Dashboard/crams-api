@@ -1,4 +1,4 @@
-{% extends "notification/racmon/base.html" %}{% load racmon_tags %}{% block preamble %}{% autoescape off %}{% with dear=request.project|display_dc_and_app_contacts %} {% if request.request_status.code == 'X' %}Allocation Amend/Extend for Project: {{ request.project.title }}
+{% extends "notification/base.html" %}{% load racmon_tags %}{% block preamble %}{% autoescape off %}{% with dear=request.project|display_dc_and_app_contacts %} {% if request.request_status.code == 'X' %}Allocation Amend/Extend for Project: {{ request.project.title }}
 
 {{ dear }},
 

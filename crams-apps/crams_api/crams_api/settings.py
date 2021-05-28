@@ -64,7 +64,6 @@ INSTALLED_APPS = [
     'crams_reports',
     'crams_racmon',
     'crams_api'
-
 ]
 
 AUTH_USER_MODEL = 'crams.User'
@@ -87,13 +86,15 @@ CORS_ORIGIN_ALLOW_ALL = True
 APPEND_SLASH = True
 
 ROOT_URLCONF = 'crams_api.urls'
+print('---- BASE_DIR: {}'.format(BASE_DIR))
 
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [],
-        'APP_DIRS': True,
         'OPTIONS': {
+            'loaders': [
+                'django.template.loaders.app_directories.Loader',
+            ],
             'context_processors': [
                 'django.template.context_processors.debug',
                 'django.template.context_processors.request',
@@ -103,7 +104,6 @@ TEMPLATES = [
         },
     },
 ]
-
 WSGI_APPLICATION = 'crams_allocation.wsgi.application'
 
 # Database

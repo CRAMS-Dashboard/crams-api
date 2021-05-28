@@ -1,4 +1,4 @@
-{% extends "notification/racmon/base.html" %}{% load racmon_tags %}{% block preamble %}{% with dear=request.project|display_dc_and_app_contacts %}{% autoescape off %}
+{% extends "notification/base.html" %}{% load racmon_tags %}{% block preamble %}{% with dear=request.project|display_dc_and_app_contacts %}{% autoescape off %}
 Allocation Declined for Project: {{ request.project.title }}
 
 {{ dear }},

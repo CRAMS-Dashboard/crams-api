@@ -47,7 +47,7 @@ python setup.py sdist
 
 cd ../crams_api
 pip install --upgrade pip
-pip uninstall -y merc_common
+pip uninstall -y merc-common
 pip install ../merc_common/dist/merc_common-1.0.0.tar.gz
 pip uninstall -y crams_log
 pip install ../crams_log/dist/crams_log-1.0.0.tar.gz

@@ -54,7 +54,7 @@ def send_support_email(request):
     # TODO : move the key and email to some db table
     key = racmon_support_email_dict.get('key')
     support_email = racmon_support_email_dict.get('email')
-
+    print('---- support_email : {}'.format(support_email))
     sys_key = EResearchBodyIDKey.objects.filter(
         key=key, e_research_body=erb)
 
@@ -78,6 +78,7 @@ def send_support_email(request):
                 recipient_list = [support_email]
                 template = temp.template_file_path
                 mail_message = mail_util.render_mail_content(template, mail_content)
+                print('---- mail message : {}'.format(mail_message))
                 mail_sender.send_email(
                     sender=reply_to,
                     subject=subject,

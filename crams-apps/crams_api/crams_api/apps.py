@@ -12,7 +12,6 @@ class CramsAPIConfig(AppConfig):
     name = 'crams_api'
 
     def ready(self):
-        print(settings.INSTALLED_APPS)
         for aspect_settings in settings.CRAMS_ASPECT_CONFIG_LIST:
             try:
                 print('.... importing', aspect_settings)

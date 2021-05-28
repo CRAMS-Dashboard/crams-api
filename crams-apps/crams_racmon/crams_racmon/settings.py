@@ -38,8 +38,12 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'rest_framework',
     'rest_framework.authtoken',
-    'crams',
     'merc_common',
+    'crams',
+    'crams_contact',
+    'crams_notification',
+    'crams_collection',
+    'crams_allocation',
     'crams_racmon',
 ]
 

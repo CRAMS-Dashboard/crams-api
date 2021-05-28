@@ -124,6 +124,7 @@ CRAMS_ASPECT_CONFIG_LIST = [
     'crams_collection.config.aspect_config',
     'crams_allocation.config.aspect_config',
     'crams_member.config.aspect_config',
+    'crams_racmon.config.aspect_config',
 ]
 
 REST_FRAMEWORK = {

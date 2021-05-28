@@ -10,7 +10,7 @@ from crams.models import EResearchBodyIDKey
 from crams_notification.tasks import mail_sender
 from crams_notification.utils import mail_util
 
-from crams_racmon.config.config_init import support_email_dict, RDSM_REPLY_TO_EMAIL
+from crams_racmon.config.config_init import racmon_support_email_dict, RDSM_REPLY_TO_EMAIL
 from crams_collection.serializers.project_contact_serializer import ProjectContactSerializer
 
 from crams_allocation.models import NotificationTemplate
@@ -52,8 +52,8 @@ def send_support_email(request):
     erb = request.e_research_system.e_research_body
 
     # TODO : move the key and email to some db table
-    key = support_email_dict.get('key')
-    support_email = support_email_dict.get('email')
+    key = racmon_support_email_dict.get('key')
+    support_email = racmon_support_email_dict.get('email')
 
     sys_key = EResearchBodyIDKey.objects.filter(
         key=key, e_research_body=erb)

@@ -6,6 +6,7 @@ from crams_contact.models import EResearchContactIdentifier
 from crams_collection.models import Project
 from crams_collection.models import ProjectID
 from crams_collection.models import ProjectContact
+from crams_allocation.models import Request
 
 register = template.Library()
 
@@ -24,7 +25,7 @@ def get_contact_name(email):
 
 @register.filter(name='get_user_contact')
 def get_user_contact(user_dict):
-    email = user_dict.get('email')
+    email = user_dict
     if email:
         qs = Contact.objects.filter(email__iexact=email)
         if qs.count() > 0:
@@ -119,6 +120,8 @@ def get_project_contacts_by_role(prj_obj, role_name):
     # This function fetches the contact roles from deserialized
     # project object, should be used for first time submission since
     # the allocation request is not saved at time calling this function
+    if not prj_obj:
+        return None
     prj_contacts = prj_obj.get('project_contacts')
 
     results = list()
@@ -138,9 +141,25 @@ def get_prj_cont_by_role(prj_contacts, role_name):
 
     return results
 
+@register.filter(name='get_req_status_code')
+def get_req_status_code(req_id):
+    request = Request.object.get(pk=req_id)
+
+    return request.request_status.code
+
 
 @register.filter(name='display_dc_and_app_contacts')
 def display_dc_and_app_contacts(prj_obj):
+    try:
+        req_id = prj_obj.get('req_id')
+
+        if not req_id:    
+            return None
+    except:
+        return None
+    # get the requests from project id
+    request = Request.objects.get(pk=req_id)
+    
     # fetch the data custodians
     dc_list = get_project_contacts_by_role(prj_obj, 'Data Custodian')
 
@@ -163,7 +182,8 @@ def display_dc_and_app_contacts(prj_obj):
     else:
         # in first submissions project_contacts do not include the applicant
         # need to fetch that from the request updated_by contact field
-        app = prj_obj.get('requests')[0].get('updated_by').get('email')
+        # app = prj_obj.get('requests')[0].get('updated_by').get('email')
+        app = request.updated_by.email
 
     if app not in dc_list:
         result += " \\ " + get_contact_name(app)

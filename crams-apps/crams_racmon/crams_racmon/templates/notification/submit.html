@@ -1,11 +1,11 @@
-{% extends "notification/base.html" %}{% load racmon_tags %}{% block preamble %}{% autoescape off %}{% with dear=request.project|display_dc_and_app_contacts %} {% if request.request_status.code == 'X' %}Allocation Amend/Extend for Project: {{ request.project.title }}
+{% extends "notification/base.html" %}{% load racmon_tags %}{% block preamble %}{% autoescape off %}{% with dear=request.req_id|display_dc_and_app_contacts %} {% if request.req_id|get_req_status_code == 'X' %}Allocation Amend/Extend for Project: {{ request.prj_title }}
 
 {{ dear }},
 
-This email is to confirm that we have received your application to alter the amount of research data storage provided by the Monash as part of {{ request.project.title }}. The request will now be reviewed by the Monash University Research Data Storage team and you may be contacted in order to provide additional clarification concerning the requirements.
+This email is to confirm that we have received your application to alter the amount of research data storage provided by the Monash as part of {{ request.prj_title }}. The request will now be reviewed by the Monash University Research Data Storage team and you may be contacted in order to provide additional clarification concerning the requirements.
 
 Further updates will be sent via email as your request progresses and you are welcome to contact us at any time using the Support Request option in the Data Dashboard if you have any questions or concerns.
-{% else %}Allocation Request for Project: {{ request.project.title }}
+{% else %}Allocation Request for Project: {{ request.prj_title }}
 
 {{ dear }},
 

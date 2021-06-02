@@ -1,93 +1,93 @@
 {% autoescape off %}{% load racmon_tags %}{% with project=request.project submitter=request.updated_by|get_name_email %}
-    {% block preamble %}{% endblock %}
-    {% with status=request.request_status.code %}
-        {% if status == 'N' %}Allocation Request Draft Saved
-        {% elif status == 'E' %}Allocation Request Received
-        {% elif status == 'A' %}Allocation Approved
-        {% elif status == 'R' %}Allocation Declined
-        {% elif status == 'J' %}Allocation Declined
-        {% elif status == 'X' %}Allocation Amendment Received
-        {% endif %}
-        ----------------------------------------
-        {% if status == 'N' %}
-        A draft allocation request has been submitted by {{ submitter }}
-        {% elif status == 'E' %}
-        An allocation request has been submitted by {{ submitter }}
-        {% elif status == 'X' %}
-        An allocation amend/extend request has been submitted by {{ submitter }}
-        {% endif %}
-        Collection title: {{ project.title }}
+{% block preamble %}{% endblock %}
+{% with status=request.request_status.code %}
+    {% if status == 'N' %}Allocation Request Draft Saved
+    {% elif status == 'E' %}Allocation Request Received
+    {% elif status == 'A' %}Allocation Approved
+    {% elif status == 'R' %}Allocation Declined
+    {% elif status == 'J' %}Allocation Declined
+    {% elif status == 'X' %}Allocation Amendment Received
+    {% endif %}
+    ----------------------------------------
+    {% if status == 'N' %}
+    A draft allocation request has been submitted by {{ submitter }}
+    {% elif status == 'E' %}
+    An allocation request has been submitted by {{ submitter }}
+    {% elif status == 'X' %}
+    An allocation amend/extend request has been submitted by {{ submitter }}
+    {% endif %}
+    Collection title: {{ project.title }}
 
-        Start date  : {{ request.start_date }}
+    Start date  : {{ request.start_date }}
 
-        Data Retention Period (Year):{{ request.request_question_responses|filter_question_response:"racm_data_retention_period" }}
+    Data Retention Period (Year):{{ request.request_question_responses|filter_question_response:"racm_data_retention_period" }}
 
-        Data Custodian(s): {% for project_contact in project|get_project_contacts_by_role:"Data Custodian" %}
-        - {{ project_contact|get_contact_name }}{% endfor %}
+    Data Custodian(s): {% for project_contact in project|get_project_contacts_by_role:"Data Custodian" %}
+    - {{ project_contact|get_contact_name }}{% endfor %}
 
-        Technical Contact(s):{% for project_contact in project|get_project_contacts_by_role:"Technical Contact" %}
-        - {{ project_contact|get_contact_name }}{% endfor %}
+    Technical Contact(s):{% for project_contact in project|get_project_contacts_by_role:"Technical Contact" %}
+    - {{ project_contact|get_contact_name }}{% endfor %}
 
-        Storage Allocation {% if status == 'A' %}Approved{% elif status == 'R' %}Declined{% else %}Requested
-    {% endif %}{% endwith %}
-        ---------------------------------------
-    {% spaceless %}
-        {% for compute_request in request.compute_requests %}
-            Instances:      {{ compute_request.instances }}
-            Cores:          {{ compute_request.cores }}
-            Hours:          {{ compute_request.core_hours }}
+    Storage Allocation {% if status == 'A' %}Approved{% elif status == 'R' %}Declined{% else %}Requested
+{% endif %}{% endwith %}
+    ---------------------------------------
+{% spaceless %}
+    {% for compute_request in request.compute_requests %}
+        Instances:      {{ compute_request.instances }}
+        Cores:          {{ compute_request.cores }}
+        Hours:          {{ compute_request.core_hours }}
+    {% endfor %}
+{% endspaceless %}
+{% spaceless %}
+    {% if request.request_status.code == 'E' %}
+        {% for storage_request in request.storage_requests %}
+            {{ storage_request.storage_product.name }} : {{ storage_request.requested_quota_change }} GB
         {% endfor %}
-    {% endspaceless %}
-    {% spaceless %}
-        {% if request.request_status.code == 'E' %}
-            {% for storage_request in request.storage_requests %}
-                {{ storage_request.storage_product.name }} : {{ storage_request.requested_quota_change }} GB
-            {% endfor %}
-        {% elif request.request_status.code == 'A' %}
-            {% for storage_request in request.storage_requests %}
-                {{ storage_request.storage_product.name }} : {{ storage_request.approved_quota_total }} GB (TOTAL)
-            {% endfor %}
-        {% elif request.request_status.code == 'X' %}
-            Current Quota:
-            {% for storage_request in request.storage_requests %}{{ storage_request.storage_product.name }} :
-                {{ storage_request.current_quota }} GB
-            {% endfor %}
-            Requested Quota Change:
-            {% for storage_request in request.storage_requests %}{{ storage_request.storage_product.name }} :
-                {{ storage_request.requested_quota_change }} GB
-            {% endfor %}
-            Resultant Total:
-            {% for storage_request in request.storage_requests %}{{ storage_request.storage_product.name }} :
-                {{ storage_request.requested_quota_total }} GB
-            {% endfor %}
-        {% elif request.request_status.code == 'A' %}
-            {% for storage_request in request.storage_requests %}{{ storage_request.storage_product.name }} :
-                {{ storage_request.requested_quota_total }} GB
-            {% endfor %}
-        {% elif request.request_status.code == 'R' %}
-            {% for storage_request in request.storage_requests %}{{ storage_request.storage_product.name }} :
-                {{ storage_request.requested_quota_change }} GB
-            {% endfor %}
-        {% elif request.request_status.code == 'J' %}
-            Current Quota:
-            {% for storage_request in request.storage_requests %}{{ storage_request.storage_product.name }} :
-                {{ storage_request.current_quota }} GB
-            {% endfor %}
-            Requested Quota Change:
-            {% for storage_request in request.storage_requests %}{{ storage_request.storage_product.name }} :
-                {{ storage_request.requested_quota_change }} GB
-            {% endfor %}
-        {% endif %}
-    {% endspaceless %}
+    {% elif request.request_status.code == 'A' %}
+        {% for storage_request in request.storage_requests %}
+            {{ storage_request.storage_product.name }} : {{ storage_request.approved_quota_total }} GB (TOTAL)
+        {% endfor %}
+    {% elif request.request_status.code == 'X' %}
+        Current Quota:
+        {% for storage_request in request.storage_requests %}{{ storage_request.storage_product.name }} :
+            {{ storage_request.current_quota }} GB
+        {% endfor %}
+        Requested Quota Change:
+        {% for storage_request in request.storage_requests %}{{ storage_request.storage_product.name }} :
+            {{ storage_request.requested_quota_change }} GB
+        {% endfor %}
+        Resultant Total:
+        {% for storage_request in request.storage_requests %}{{ storage_request.storage_product.name }} :
+            {{ storage_request.requested_quota_total }} GB
+        {% endfor %}
+    {% elif request.request_status.code == 'A' %}
+        {% for storage_request in request.storage_requests %}{{ storage_request.storage_product.name }} :
+            {{ storage_request.requested_quota_total }} GB
+        {% endfor %}
+    {% elif request.request_status.code == 'R' %}
+        {% for storage_request in request.storage_requests %}{{ storage_request.storage_product.name }} :
+            {{ storage_request.requested_quota_change }} GB
+        {% endfor %}
+    {% elif request.request_status.code == 'J' %}
+        Current Quota:
+        {% for storage_request in request.storage_requests %}{{ storage_request.storage_product.name }} :
+            {{ storage_request.current_quota }} GB
+        {% endfor %}
+        Requested Quota Change:
+        {% for storage_request in request.storage_requests %}{{ storage_request.storage_product.name }} :
+            {{ storage_request.requested_quota_change }} GB
+        {% endfor %}
+    {% endif %}
+{% endspaceless %}
 
-        Fields Of Research breakdown:
-    {% spaceless %}
-        {% for domain in project.domains %}
-            {{ domain.for_code.code }} - {{ domain.for_code.description }} ({{ domain.percentage }}%){% endfor %}
-    {% endspaceless %}
+    Fields Of Research breakdown:
+{% spaceless %}
+{% for domain in project.domains %}
+     {{ domain.for_code.code }} - {{ domain.for_code.description }} ({{ domain.percentage }}%){% endfor %}
+{% endspaceless %}
 
-        Kind Regards
-        The Monash University Research Data Storage team
-        --------
+    Kind Regards
+    The Monash University Research Data Storage team
+    --------
 {% endwith %}
 {% endautoescape %}

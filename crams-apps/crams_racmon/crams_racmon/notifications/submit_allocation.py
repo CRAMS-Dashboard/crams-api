@@ -17,7 +17,7 @@ from crams_allocation.models import NotificationTemplate
 from crams_allocation.config.allocation_config import ADMIN_ALERT_DATA_SENSITIVE
 from crams_allocation.config.allocation_config import ADMIN_ALERT_QUESTION_KEYS
 from crams_racmon.notifications.racmon_notification_utils import RacmonAllocationNotificationUtils
-
+import json
 
 def submit_allocation_emails(existing_request_instance, request, serializer_context, is_clone_action=False):
     # # send admin email if any question changes that require an admin alert
@@ -54,7 +54,6 @@ def send_support_email(request):
     # TODO : move the key and email to some db table
     key = racmon_support_email_dict.get('key')
     support_email = racmon_support_email_dict.get('email')
-    print('---- support_email : {}'.format(support_email))
     sys_key = EResearchBodyIDKey.objects.filter(
         key=key, e_research_body=erb)
 
@@ -68,6 +67,8 @@ def send_support_email(request):
         if not request.sent_ext_support_email:
             for temp in temp_list:
                 mail_content = setup_rdsm_support_email_content(request)
+                json_string = json.dumps(mail_content)
+                print('----- mail content json: {}'.format(json_string))
                 # get the user who updated the req as the sender and reply_to
                 reply_to = request.updated_by.email
                 # fill out email attributes
@@ -77,8 +78,8 @@ def send_support_email(request):
 
                 recipient_list = [support_email]
                 template = temp.template_file_path
+                print('------> template name: {}'.format(template))
                 mail_message = mail_util.render_mail_content(template, mail_content)
-                print('---- mail message : {}'.format(mail_message))
                 mail_sender.send_email(
                     sender=reply_to,
                     subject=subject,

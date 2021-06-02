@@ -1,3 +1,5 @@
+import json
+
 from django import template
 from crams_contact.models import Contact
 from crams_contact.models import ContactRole
@@ -36,8 +38,9 @@ def get_user_contact(user_dict):
 
 @register.filter(name='get_name_email')
 # tries to get contact full name, if none return email
-def get_name_email(user_dict):
-    contact = get_user_contact(user_dict)
+def get_name_email(updated_by):
+    email = updated_by.get('email')
+    contact = get_user_contact(email)
     if contact:
         return get_contact_name(contact.email)
     return None
@@ -120,8 +123,11 @@ def get_project_contacts_by_role(prj_obj, role_name):
     # This function fetches the contact roles from deserialized
     # project object, should be used for first time submission since
     # the allocation request is not saved at time calling this function
+    proj_json = json.dumps(prj_obj)
+    print('======>tag --> prj_obj json: {}'.format(proj_json))
     if not prj_obj:
         return None
+
     prj_contacts = prj_obj.get('project_contacts')
 
     results = list()
@@ -136,8 +142,14 @@ def get_project_contacts_by_role(prj_obj, role_name):
 def get_prj_cont_by_role(prj_contacts, role_name):
     results = list()
     for prj_cont in prj_contacts:
+        role1 = prj_cont.get('contact_role').lower()
+        role_required = role_name.lower()
         if prj_cont.get('contact_role').lower() == role_name.lower():
-            results.append(prj_cont.get('email'))
+            contact_dict = prj_cont.get('contact')
+            if contact_dict:
+                email = contact_dict.get('email')
+                if email:
+                    results.append(email)
 
     return results
 
@@ -150,9 +162,11 @@ def get_req_status_code(req_id):
 
 @register.filter(name='display_dc_and_app_contacts')
 def display_dc_and_app_contacts(prj_obj):
+    proj_json = json.dumps(prj_obj)
+    print('----- display_dc_and_app_contacts - proj_json: {}'.format(proj_json))
     try:
-        req_id = prj_obj.get('req_id')
-
+        req_id = prj_obj.get('id')
+        print('---- request id: {}'.format(req_id))
         if not req_id:    
             return None
     except:
@@ -162,10 +176,10 @@ def display_dc_and_app_contacts(prj_obj):
     
     # fetch the data custodians
     dc_list = get_project_contacts_by_role(prj_obj, 'Data Custodian')
-
+    print('----> dc_list: {}'.format(dc_list))
     # fetch the applicant
     app_list = get_project_contacts_by_role(prj_obj, 'Applicant')
-
+    print('----> app_list: {}'.format(app_list))
     # append string result
     result = ''
     i = 0
@@ -187,7 +201,7 @@ def display_dc_and_app_contacts(prj_obj):
 
     if app not in dc_list:
         result += " \\ " + get_contact_name(app)
-
+    print('----> result: {}'.format(result))
     return 'Dear ' + result
 
 

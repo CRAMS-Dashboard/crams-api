@@ -15,6 +15,7 @@ from crams_notification.tasks import mail_sender
 from crams_notification.utils import mail_util
 from django.conf import settings
 from django.db.models import Q
+import json
 
 LOG = logging.getLogger(__name__)
 
@@ -118,7 +119,8 @@ class RacmonAllocationNotificationUtils:
             reply_to = list()
             if alloc_req.e_research_system:
                 reply_to = None  # TODO to decide where this comes from
-
+            json_string = json.dumps(mail_content)
+            print('======> mail content json: {}'.format(json_string))
             mail_message = mail_util.render_mail_content(template, mail_content)
             mail_sender.send_email(
                 sender=reply_to,

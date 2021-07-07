@@ -555,6 +555,25 @@ class AbstractAllocation(ProvisionableItem):
         return self.current_quota + self.approved_quota_change
 
 
+class ProjectMemberStatus(models.Model):
+    """
+    ProjectMemberStatus Model
+    """
+    code = models.CharField(
+        max_length=50
+    )
+
+    status = models.CharField(
+        max_length=100
+    )
+
+    class Meta:
+        app_label = 'crams'
+
+    def __str__(self):
+        return '{} {} {}'.format(self.id, self.code, self.status)
+
+
 class AbstractNotificationTemplate(models.Model):
     funding_body = models.ForeignKey(FundingBody, blank=True, null=True, default=None,
                                      related_name='notification_templates', on_delete=models.DO_NOTHING)

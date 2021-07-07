@@ -1,9 +1,4 @@
-# coding=utf-8
-"""
-
-"""
-from django.db import migrations
-
+from django.db import migrations, models
 
 def load_crams_member_inital_data_from_sql():
     import os
@@ -14,13 +9,14 @@ def load_crams_member_inital_data_from_sql():
 
     return sql_statements
 
-
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('crams_member', '0001_initial'),
+        ('crams', '0009_projectmemberstatus'),
     ]
 
     operations = [
         migrations.RunSQL(load_crams_member_inital_data_from_sql()),
     ]
+
+

@@ -2,6 +2,7 @@ import datetime
 from rest_framework import exceptions
 
 from crams.models import CramsCommon, ArchivableModel
+from crams.models import ProjectMemberStatus
 from crams_log.models import AbstractLinkToCramsLog, CramsLog
 from crams_contact.models import ContactRole
 from crams.models import AbstractNotificationTemplate
@@ -178,8 +179,8 @@ class AllocationLog(AbstractLinkToCramsLog):
 
 class NotificationTemplate(AbstractNotificationTemplate):
     request_status = models.ForeignKey(RequestStatus, blank=True, null=True, on_delete=models.DO_NOTHING)
-    # project_member_status = models.ForeignKey(
-    # 'ProjectMemberStatus', blank=True, null=True, default=None, on_delete=models.DO_NOTHING)
+    project_member_status = models.ForeignKey(
+        ProjectMemberStatus, blank=True, null=True, default=None, on_delete=models.DO_NOTHING)
     # contact_license_status = models.ForeignKey(
     #     'SoftwareLicenseStatus', blank=True, null=True, default=None, on_delete=models.DO_NOTHING)
 

@@ -1,27 +1,9 @@
 from django.db import models
 
 from crams.models import CramsCommon
+from crams.models import ProjectMemberStatus
 from crams_collection.models import Project
 from crams_contact.models import Contact
-
-
-class ProjectMemberStatus(models.Model):
-    """
-    ProjectMemberStatus Model
-    """
-    code = models.CharField(
-        max_length=50
-    )
-
-    status = models.CharField(
-        max_length=100
-    )
-
-    class Meta:
-        app_label = 'crams_member'
-
-    def __str__(self):
-        return '{} {} {}'.format(self.id, self.code, self.status)
 
 
 class ProjectJoinInviteRequest(CramsCommon):

@@ -4,10 +4,6 @@
 
 This email is inform you that one or more of the storage products you requested through {{ project.title }} have now been provisioned.
 
-As part of our efforts to improve the RDSM service, please be aware that we will contact you in twelve months in order to review your allocation.
-By reviewing your application we can help to resolve issues as well as make you aware of new services and features that may be of use to you.
-If you require any support in accessing your allocation please let us know.
-
 Storage Products
 -----------------------
 Provisioned:{% for storage_request in request.storage_requests %}{% if storage_request.provision_details.status == 'P' %}
@@ -18,7 +14,6 @@ Pending:{% for storage_request in request.storage_requests %}{% if storage_reque
 
 
 Kind Regards,
-
-The Monash University Research Data Storage team
+CRAMS
 {% endwith %}
 {% endautoescape %}

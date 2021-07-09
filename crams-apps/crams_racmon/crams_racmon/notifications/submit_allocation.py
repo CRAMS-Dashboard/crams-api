@@ -32,6 +32,10 @@ def submit_allocation_emails(existing_request_instance, request, serializer_cont
     return True
 
 
+def send_partial_provision_notification(request_obj, serializer_context):
+    print('------------------Sending partial provision email notification-------------------')
+
+
 def setup_rdsm_support_email_content(request_obj):
     request_url = settings.RACMON_CLIENT_BASE_URL + settings.RACMON_CLIENT_VIEW_REQUEST_PATH
     prj_cont_sz = ProjectContactSerializer(request_obj.project.project_contacts, many=True).data

@@ -8,6 +8,8 @@ import copy
 from crams.constants.api import OVERRIDE_READONLY_DATA
 from crams.models import ProvisionDetails
 from crams_provision.utils.base import BaseProvisionUtils
+from crams_provision.config.provision_config import ERB_System_Partial_Provision_Email_fn_dict
+from crams_provision.config.provision_config import get_email_processing_fn
 from crams.utils.role import AbstractCramsRoleUtils
 from crams_allocation.serializers.admin_serializers import BaseAdminSerializer
 from crams_allocation.constants.db import REQUEST_STATUS_APPROVED, REQUEST_STATUS_LEGACY_APPROVED
@@ -75,11 +77,12 @@ class BaseProvisionProductUtils:
             update_request_status = False
         if cr_qs.exists():
             update_request_status = False
-
-        # TODO check partial provision email send
-        # notify_cls = allocation_notification.AllocationNotificationUtils
-        # notify_cls.send_partial_provision_notification(
-        #     request_obj, serializer_context)
+        
+        erbs = request_obj.e_research_system
+        
+        # send partial provisioned email
+        email_processing_fn = get_email_processing_fn(ERB_System_Partial_Provision_Email_fn_dict, erbs)
+        email_processing_fn(alloc_req=request_obj, serializer_context=sz_context_obj)
 
         if update_request_status:
             # update request status to provisioned

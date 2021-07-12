@@ -1,0 +1,1 @@
+INSERT INTO `crams_supportemailcontact` (`description`, `email`, `e_research_body_id`, `e_research_system_id`) VALUES('CRAMS Helpdesk','helpdesk@crams.com', (SELECT id from crams_eresearchbody where `name` = 'CRAMS-ERB'), (SELECT id from crams_eresearchbodysystem where `name` = 'CRAMS-ERB-SYS'));

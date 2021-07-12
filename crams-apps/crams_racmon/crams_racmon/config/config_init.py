@@ -1,10 +1,32 @@
 # coding=utf-8
 """
-
+All variables that need to be initialized in crams_racmon.settings need to go into this file.
 """
-
-from crams_allocation.config.allocation_config import EXTEND_ON_QUOTA_CHANGE
 from django.conf import settings
 
-# TODO: move the sample ERB system sqls for CRAMS-ERB and CRAMS-ERB-SYS to this module (from merc-common)
-EXTEND_ON_QUOTA_CHANGE.append(settings.CRAMS_DEMO_ERB_SYSTEM.lower())
+RDSM_ERB_SYSTEM_LOWER = settings.CRAMS_DEMO_ERB_SYSTEM.lower()
+RDSM_ERB_LOWER = settings.CRAMS_DEMO_ERB.lower()
+
+# Enable sending support email to external ticketing system, used to turn-off email send in non Production environment
+ENABLE_EXT_SUPPORT_EMAIL = False
+
+# Support EMail
+RDSM_REPLY_TO_EMAIL = "xm.yuau@gmail.com"
+racmon_support_email_dict = {
+    'key': 'CRAMS',
+    'email': 'xm.yuau@gmail.com'}
+
+# url path for email links
+BASE_URL = ''
+REQUEST_URL = '/#/allocations/view_request/'
+REQ_APPROVAL_URL = '/#/approval/view_request/'
+JOIN_URL = '/#/allocations/join_project/'
+MEMBER_URL = '/#/allocations/membership/'
+
+# Notification Contact ROLEs
+E_RESEARCH_BODY_ADMIN = 'E_RESEARCH_BODY Admin'
+E_RESEARCH_BODY_SYSTEM_ADMIN = 'E_RESEARCH_BODY_SYSTEM Admin'
+E_RESEARCH_SYSTEM_DELEGATE = 'E_RESEARCH_SYSTEM_DELEGATE'
+E_RESEARCH_BODY_SYSTEM_APPROVER = 'E_RESEARCH_BODY_SYSTEM_Approver'
+E_RESEARCH_BODY_SYSTEM_PROVISIONER = 'E_RESEARCH_BODY_SYSTEM_Provisioner'
+INVITEE = 'Invitee'

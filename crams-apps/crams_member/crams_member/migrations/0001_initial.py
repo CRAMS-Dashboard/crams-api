@@ -17,14 +17,6 @@ class Migration(migrations.Migration):
 
     operations = [
         migrations.CreateModel(
-            name='ProjectMemberStatus',
-            fields=[
-                ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('code', models.CharField(max_length=50)),
-                ('status', models.CharField(max_length=100)),
-            ],
-        ),
-        migrations.CreateModel(
             name='ProjectJoinInviteRequest',
             fields=[
                 ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
@@ -37,7 +29,7 @@ class Migration(migrations.Migration):
                 ('contact', models.ForeignKey(blank=True, null=True, on_delete=django.db.models.deletion.DO_NOTHING, to='crams_contact.contact')),
                 ('created_by', models.ForeignKey(blank=True, null=True, on_delete=django.db.models.deletion.DO_NOTHING, related_name='projectjoininviterequest_created_by', to=settings.AUTH_USER_MODEL)),
                 ('project', models.ForeignKey(on_delete=django.db.models.deletion.DO_NOTHING, to='crams_collection.project')),
-                ('status', models.ForeignKey(on_delete=django.db.models.deletion.DO_NOTHING, to='crams_member.projectmemberstatus')),
+                ('status', models.ForeignKey(on_delete=django.db.models.deletion.DO_NOTHING, to='crams.projectmemberstatus')),
                 ('updated_by', models.ForeignKey(blank=True, null=True, on_delete=django.db.models.deletion.DO_NOTHING, related_name='projectjoininviterequest_updated_by', to=settings.AUTH_USER_MODEL)),
             ],
         ),

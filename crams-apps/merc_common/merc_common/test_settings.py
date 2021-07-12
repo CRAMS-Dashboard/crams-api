@@ -38,6 +38,8 @@ INSTALLED_APPS = [
     'rest_framework',
     'rest_framework.authtoken',
     'crams.apps.CramsConfig',
+    'crams_log',
+    'crams_contact',
 ]
 
 AUTH_USER_MODEL = 'crams.User'

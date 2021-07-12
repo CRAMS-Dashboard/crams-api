@@ -5,6 +5,7 @@
 import logging
 import importlib
 from django.conf import settings
+from crams.models import EResearchBodySystem
 from crams.constants import db
 from crams.utils.role import AbstractCramsRoleUtils
 from crams.utils.lang_utils import strip_lower
@@ -13,9 +14,6 @@ from crams_allocation.constants.db import ADMIN_STATES
 
 # CONTEXT_PARAMS
 CRAMS_REQUEST_PARENT = 'CRAMS_REQUEST_PARENT'
-
-# Enable sending support email to external ticketing system
-ENABLE_EXT_SUPPORT_EMAIL = False
 
 REQUEST_STORAGE_PRODUCT_PER_SYSTEM = dict()
 
@@ -83,8 +81,6 @@ SYSTEM_APPLICANT_DEFAULT_ROLE[NECTAR_LOWER] = db.APPLICANT
 # Allocation list API requires returning of ERB system specific Project Ids like HPC_POSIX_GROUP_ID
 ALLOCATION_LIST_ERB_IDKEY_DICT = dict()
 
-# External Support email system EResearchBodyIDKey
-EXTERNAL_SUPPORT_EMAIL = dict()
 
 for config_settings in settings.CRAMS_APP_CONFIG_LIST:
     try:
@@ -100,3 +96,17 @@ def get_min_max_dict(min=None, max=None):
     if max:
         ret_dict[MAXIMUM] = max
     return ret_dict
+
+
+# Email Processing Module by ERB System,
+#    -dict key is tuple (erb_system_obj.name, erb_system_obj.e_reserch_body.name)
+ERB_System_Allocation_Submit_Email_fn_dict = dict()
+
+
+def get_email_processing_fn(erbs_email_dict, erb_system_obj):
+    print('----- erbs_email_dict:{}'.format(erbs_email_dict))
+    print('----- erb_system_obj:{}'.format(erb_system_obj))
+    if not isinstance(erb_system_obj, EResearchBodySystem):
+        return None
+    f_key = (erb_system_obj.name.lower(), erb_system_obj.e_research_body.name.lower())
+    return erbs_email_dict.get(f_key)

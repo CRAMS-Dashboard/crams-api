@@ -18,4 +18,5 @@ class CramsAPIConfig(AppConfig):
                 importlib.import_module(aspect_settings)  # noqa
                 print('     --> import done', aspect_settings)
             except ImportError:
+                print("aspect config file not found: {}".format(aspect_settings))
                 logging.debug("aspect config file not found: {}".format(aspect_settings))

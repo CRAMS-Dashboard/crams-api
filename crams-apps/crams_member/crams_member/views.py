@@ -10,7 +10,7 @@ from crams.models import EResearchBodyDelegate
 from crams.models import Question
 from crams.utils.django_utils import CramsModelViewSet
 from crams_member.models import ProjectJoinInviteRequest
-from crams_member.models import ProjectMemberStatus
+from crams.models import ProjectMemberStatus
 from crams_collection.models import Project
 from crams_collection.models import ProjectContact
 from crams_collection.models import ProjectID
@@ -29,6 +29,8 @@ from rest_framework import viewsets
 from rest_framework.response import Response
 from rest_framework.views import APIView
 
+from crams_member.config.member_config import ERB_System_Membership_Email_fn_dict
+from crams_member.config.member_config import get_email_processing_fn
 from crams_member.serializers import ProjectIDSerializer
 from crams_member.serializers import ProjectMemberInviteRequestSerializer
 from crams_member.serializers import ProjectMemberSerialzer
@@ -130,233 +132,9 @@ def is_admin(user_contact, erbs):
     return False
 
 
-def get_delegate(project):
-    # get request_obj
-    request_obj = project.requests.first()
-
-    # get question_key for delegate
-    del_key = DELEGATE_QUESTION_KEY_MAP.get(
-        request_obj.e_research_system.name)
-
-    if del_key:
-        q = Question.objects.get(key=del_key)
-        rq = RequestQuestionResponse.objects.filter(
-            question=q, request=request_obj)
-
-        if rq.exist():
-            del_name = rq.first().question_response
-            try:
-                return EResearchBodyDelegate.objects.get(
-                    name__iexact=del_name)
-            except:
-                return None
-
-    return None
-
-
 # gets the EResearchBodySystem from project object
 def get_erbs(project):
     return project.requests.first().e_research_system
-
-
-# get recipient list
-def get_recipient_list(prj_jn_inv_req,
-                       email_contact_roles, erbs):
-    recipient_list = []
-
-    # Get all the contact roles that whom will receive an email
-    contact_roles = []
-    for ecr in email_contact_roles:
-        contact_roles.append(ecr.contact_role.name)
-
-    # invitee is the user that has been invited or has requested
-    # to join the project
-    if db.INVITEE in contact_roles:
-        recipient_list.append(prj_jn_inv_req.email)
-
-    # add regular project contact emails
-    if contact_roles:
-        prj_contacts = ProjectContact.objects.filter(
-            contact_role__name__in=contact_roles,
-            project=prj_jn_inv_req.project)
-        for prj_cont in prj_contacts:
-            recipient_list.append(prj_cont.contact.email)
-
-    # add erb admin contact emails
-    if db.E_RESEARCH_BODY_ADMIN in contact_roles:
-        erb_admin_contacts = CramsERBUserRoles.objects.filter(
-            role_erb=erbs.e_research_body, is_erb_admin=True)
-        for admin_contact in erb_admin_contacts:
-            recipient_list.append(admin_contact.contact.email)
-
-    # add erbs admin contact emails
-    if db.E_RESEARCH_BODY_SYSTEM_ADMIN in contact_roles:
-        erbs_admin_contacts = CramsERBUserRoles.objects.all()
-        for erbs_admin_contact in erbs_admin_contacts:
-            for erb_system in erbs_admin_contact.admin_erb_systems.all():
-                if erb_system == erbs:
-                    recipient_list.append(erbs_admin_contact.contact.email)
-                    break
-
-    # add erbs approver contact emails
-    if db.E_RESEARCH_BODY_SYSTEM_APPROVER in contact_roles:
-        erbs_approver_contacts = CramsERBUserRoles.objects.all()
-        for erbs_approver_contact in erbs_approver_contacts:
-            for erb_system in erbs_approver_contact.approver_erb_systems.all():
-                if erb_system == erbs:
-                    recipient_list.append(erbs_approver_contact.contact.email)
-                    break
-
-    # add providers(provisioner) contact emails
-    if db.E_RESEARCH_BODY_SYSTEM_PROVISIONER in contact_roles:
-        provider_contacts = CramsERBUserRoles.objects.filter(
-            role_erb=erbs.e_research_body,
-            providers__isnull=False).distinct()
-
-        for prv_contact in provider_contacts:
-            recipient_list.append(prv_contact.contact.email)
-
-    # add delegates contact emails
-    if db.E_RESEARCH_SYSTEM_DELEGATE in contact_roles:
-        # get the project share if available
-        delegate = get_delegate(prj_jn_inv_req.project)
-        delegate_contacts = CramsERBUserRoles.objects.all()
-        for delegate_contact in delegate_contacts:
-            for delg in delegate_contact.delegates.all():
-                if delg == delegate:
-                    recipient_list.append(delegate_contact.contact.email)
-                    break
-
-    # remove duplicate emails in the recipient list
-    recipient_list = list(set(recipient_list))
-
-    return recipient_list
-
-
-# Send email notification from template
-def send_crams_notification(subject, prj_join_invite_request,
-                            member_status_code, prj_lead_contacts=[],
-                            additional_params=None):
-    # TODO send_crams_notification
-    pass
-    # project = prj_join_invite_request.project
-    # erbs = get_erbs(project)
-    #
-    # # try and get project_system_id
-    # project_system_id = None
-    # try:
-    #     project_system_id = ProjectID.objects.get(
-    #         project=project).identifier
-    #
-    #     project_full_title = project_system_id + " - " + project.title
-    # except:
-    #     project_full_title = project.title
-    #
-    # # email subject
-    # subject = subject + project_full_title
-    #
-    # # invitee name - first name + last name
-    # # if unable to retrieve the fullname, display their email
-    # try:
-    #     invitee_name = (prj_join_invite_request.given_name + ' ' +
-    #                     prj_join_invite_request.surname)
-    # except:
-    #     invitee_name = prj_join_invite_request.email
-    #
-    # # set name
-    # # if more than 1 project leader in group remains then the name is NULL
-    # # will be up to the template to set a plural name
-    # # i.e Project Leaders, Chief Investigators..
-    # prj_lead_name = None
-    # if len(prj_lead_contacts) == 1:
-    #     try:
-    #         prj_lead_name = (prj_lead_contacts[0].given_name +
-    #                          ' ' + prj_lead_contacts[0].surname)
-    #         # append title to ci if exist
-    #         if prj_lead_contacts[0].title:
-    #             prj_lead_name = (prj_lead_contacts[0].title +
-    #                              ' ' + prj_lead_name)
-    #     except:
-    #         prj_lead_name = prj_lead_contacts[0].email
-    #
-    # # crams url
-    # base_url = get_funding_body_base_url(erbs.name)
-    #
-    # # request url
-    # request_url = get_funding_body_request_url(erbs.name)
-    # # append the request id
-    # req = project.requests.all().filter(current_request=None).first()
-    # if req:
-    #     request_url = request_url + str(req.id)
-    #
-    # # join url
-    # join_url = get_funding_body_join_url(erbs.name)
-    #
-    # # member url
-    # member_url = get_funding_body_member_url(erbs.name) + str(project.id)
-    # # hpc user posix id
-    # try:
-    #     erb_id_key = EResearchBodyIDKey.objects.get(key='HPC_POSIX_USERID')
-    #     erb_contact_id = EResearchContactIdentifier.objects.get(
-    #         contact__email=prj_join_invite_request.email, system_id=erb_id_key)
-    #     hpc_user_posix_id = erb_contact_id.identifier
-    # except:
-    #     hpc_user_posix_id = None
-    #
-    # # get all the templates
-    # notification_temps = NotificationTemplate.objects.filter(
-    #     e_research_system=erbs,
-    #     project_member_status__code=member_status_code)
-    #
-    # # sends out all the notification emails for membership status
-    # for notification_temp in notification_temps:
-    #     template = notification_temp.template_file_path
-    #
-    #     # get the notification contacts,
-    #     # any additional recipients of the email
-    #     email_contact_roles = NotificationContactRole.objects.filter(
-    #         notification=notification_temp)
-    #
-    #     mail_content = {"invitee_name": invitee_name,
-    #                     "invitee_email": prj_join_invite_request.email,
-    #                     "invitee_fname": prj_join_invite_request.given_name,
-    #                     "invitee_lname": prj_join_invite_request.surname,
-    #                     "prj_lead_name": prj_lead_name,
-    #                     "base_url": base_url,
-    #                     "request_url": request_url,
-    #                     "join_url": join_url,
-    #                     "member_url": member_url,
-    #                     "project_full_title": project_full_title,
-    #                     "user_id": hpc_user_posix_id,
-    #                     "project_id": project_system_id
-    #                     }
-    #
-    #     # add any additional dict to mail_content
-    #     if additional_params:
-    #         mail_content.update(additional_params)
-    #
-    #     # compile the list of recipients to email
-    #     recipient_list = get_recipient_list(
-    #         prj_jn_inv_req=prj_join_invite_request,
-    #         email_contact_roles=email_contact_roles,
-    #         erbs=erbs)
-    #
-    #     reply_to = eSYSTEM_REPLY_TO_EMAIL_MAP.get(
-    #         erbs.e_research_body.name.strip().lower())
-    #
-    #     # send email invitation to user
-    #     # try:
-    #     #     send_email_notification.delay(sender=reply_to,
-    #     #                                   subject=subject,
-    #     #                                   mail_content=mail_content,
-    #     #                                   template_name=template,
-    #     #                                   recipient_list=recipient_list,
-    #     #                                   cc_list=None,
-    #     #                                   bcc_list=None,
-    #     #                                   reply_to=reply_to,
-    #     #                                   fail_silently=False)
-    #     # except Exception as ex:
-    #     #     logger.error('Error sending email notification: ' + str(ex))
 
 
 def reset_quota_change(project_obj, context, prj_sz=None):
@@ -615,7 +393,7 @@ class ProjectAdminAddUserViewSet(APIView):
                 "project_contact.")
 
         # get e_research_body_system
-        erbs = self.project.requests.first().e_research_system
+        erbs = get_erbs(self.project)
 
         # check if user is valid project leader
         if not is_valid_project_lead(self.admin_user_contact, self.project):
@@ -627,12 +405,13 @@ class ProjectAdminAddUserViewSet(APIView):
 
         # send notification
         if self.sent_email:
-            send_crams_notification(
-                subject="Project membership to: ",
-                prj_join_invite_request=prj_join_inv_req,
-                member_status_code='M',
-                # using admin to populate the name in template
-                prj_lead_contacts=[self.admin_user_contact])
+            email_processing_fn = get_email_processing_fn(ERB_System_Membership_Email_fn_dict, erbs)
+            email_processing_fn(subject="Project membership to: ",
+                                prj_join_invite_request=prj_join_inv_req,
+                                member_status_code='M',
+                                # using admin to populate the name in template
+                                prj_lead_contacts=[self.admin_user_contact],
+                                erbs=erbs)
 
         return Response({"detail": "User added"},
                         status=status.HTTP_200_OK)
@@ -760,15 +539,19 @@ class ProjectLeaderSetRoleViewSet(APIView):
         prj_jn_inv_req.surname = self.contact.surname
         prj_jn_inv_req.save()
 
-        # send notification
-        send_crams_notification(subject="User role changed in project: ",
-                                prj_join_invite_request=prj_jn_inv_req,
-                                member_status_code='U',
-                                prj_lead_contacts=[self.prj_lead_user_contact],
-                                additional_params={
-                                    "old_role": old_role,
-                                    "new_role": self.new_role.name})
+        # get e_research_body_system from project
+        erbs = get_erbs(self.project)
 
+        # send notification
+        email_processing_fn = get_email_processing_fn(ERB_System_Membership_Email_fn_dict, erbs)
+        email_processing_fn(subject="User role changed in project: ",
+                            prj_join_invite_request=prj_jn_inv_req,
+                            member_status_code='U',
+                            prj_lead_contacts=[self.prj_lead_user_contact],
+                            additional_params={
+                                "old_role": old_role,
+                                "new_role": self.new_role.name},
+                            erbs=erbs)
         return Response({"detail": "User role changed"},
                         status=status.HTTP_200_OK)
 
@@ -980,12 +763,17 @@ class ProjectLeaderInviteViewSet(APIView):
         else:
             prj_lead_contact = Contact.objects.get(
                 email=prj_invite.created_by.email)
+        
+        # get e_research_body_system from project
+        erbs = get_erbs(self.project)
 
         # send invitation to user
-        send_crams_notification(subject='Invite to project: ',
-                                prj_join_invite_request=prj_invite,
-                                member_status_code="I",
-                                prj_lead_contacts=[prj_lead_contact])
+        email_processing_fn = get_email_processing_fn(ERB_System_Membership_Email_fn_dict, erbs)
+        email_processing_fn(subject='Invite to project: ',
+                            prj_join_invite_request=prj_invite,
+                            member_status_code="I",
+                            prj_lead_contacts=[prj_lead_contact],
+                            erbs=erbs)
 
         return Response({"detail": "Invitation Sent"},
                         status=status.HTTP_200_OK)
@@ -1281,11 +1069,13 @@ class ProjectLeaderRequestViewSet(APIView):
                     if not self.accept_member(prj_invite, request.user):
                         raise exceptions.ParseError("Error accepting member")
                     if self.sent_email:
-                        send_crams_notification(
+                        email_processing_fn = get_email_processing_fn(ERB_System_Membership_Email_fn_dict, erbs)
+                        email_processing_fn(
                             subject='Project membership successful: ',
                             prj_join_invite_request=prj_invite,
                             member_status_code='M',
-                            prj_lead_contacts=[self.prj_lead_user_contact]
+                            prj_lead_contacts=[self.prj_lead_user_contact],
+                            erbs=erbs
                         )
 
                     return Response(
@@ -1300,11 +1090,13 @@ class ProjectLeaderRequestViewSet(APIView):
                         raise exceptions.ParseError("Error accepting member")
 
                     if self.sent_email:
-                        send_crams_notification(
+                        email_processing_fn = get_email_processing_fn(ERB_System_Membership_Email_fn_dict, erbs)
+                        email_processing_fn(
                             subject='Project membership successful: ',
                             prj_join_invite_request=prj_invite,
                             member_status_code='M',
-                            prj_lead_contacts=[self.prj_lead_user_contact])
+                            prj_lead_contacts=[self.prj_lead_user_contact],
+                            erbs=erbs)
 
                     return Response(
                         {"detail": "User accepted"},
@@ -1352,11 +1144,13 @@ class ProjectLeaderRequestViewSet(APIView):
                     self.reject_member(prj_invite, request.user)
 
                     if self.sent_email:
-                        send_crams_notification(
+                        email_processing_fn = get_email_processing_fn(ERB_System_Membership_Email_fn_dict, erbs)
+                        email_processing_fn(
                             subject='Membership Revoked: ',
                             prj_join_invite_request=prj_invite,
                             member_status_code='V',
-                            prj_lead_contacts=[self.prj_lead_user_contact])
+                            prj_lead_contacts=[self.prj_lead_user_contact],
+                            erbs=erbs)
 
                     return Response(
                         {"detail": "User project membership revoked."},
@@ -1369,12 +1163,13 @@ class ProjectLeaderRequestViewSet(APIView):
                                        'C', request.user)
 
                     if self.sent_email:
-                        send_crams_notification(subject='Project invite declined: ',
-                                                prj_join_invite_request=prj_invite,
-                                                member_status_code='C',
-                                                prj_lead_contacts=[
-                                                    self.prj_lead_user_contact])
-
+                        email_processing_fn = get_email_processing_fn(ERB_System_Membership_Email_fn_dict, erbs)
+                        email_processing_fn(subject='Project invite declined: ',
+                                            prj_join_invite_request=prj_invite,
+                                            member_status_code='C',
+                                            prj_lead_contacts=[
+                                                self.prj_lead_user_contact],
+                                            erbs=erbs)
                     return Response(
                         {"detail": "User invitation declined."},
                         status=status.HTTP_200_OK)
@@ -1386,11 +1181,13 @@ class ProjectLeaderRequestViewSet(APIView):
                                        'E', request.user)
 
                     if self.sent_email:
-                        send_crams_notification(subject='Project request declined: ',
-                                                prj_join_invite_request=prj_invite,
-                                                member_status_code='E',
-                                                prj_lead_contacts=[
-                                                    self.prj_lead_user_contact])
+                        email_processing_fn = get_email_processing_fn(ERB_System_Membership_Email_fn_dict, erbs)
+                        email_processing_fn(subject='Project request declined: ',
+                                            prj_join_invite_request=prj_invite,
+                                            member_status_code='E',
+                                            prj_lead_contacts=[
+                                                self.prj_lead_user_contact],
+                                            erbs=erbs)
 
                     return Response(
                         {"detail": "User request has been rejected."},
@@ -1552,14 +1349,17 @@ class ProjectMemberRequestViewSet(APIView):
         self.prj_jn_inv_req.save()
 
     def send_notification(self):
+        # get e_research_body_system from project
+        erbs = get_erbs(self.project)
         if self.action == ACCEPT:
             # send notifications - admin and user
-            send_crams_notification(subject='Invite Accepted: ',
-                                    prj_join_invite_request=self.prj_jn_inv_req,
-                                    member_status_code='M',
-                                    prj_lead_contacts=[self.prj_lead_contact])
+            email_processing_fn = get_email_processing_fn(ERB_System_Membership_Email_fn_dict, erbs)
+            email_processing_fn(subject='Invite Accepted: ',
+                                prj_join_invite_request=self.prj_jn_inv_req,
+                                member_status_code='M',
+                                prj_lead_contacts=[self.prj_lead_contact],
+                                erbs=erbs)
         else:
-
             # user declined CI invite
             if self.member_status.code == 'I':
                 # project leader who invited user to join
@@ -1575,10 +1375,12 @@ class ProjectMemberRequestViewSet(APIView):
                 subject = 'Project request declined: '
                 status_code = 'L'
 
-            send_crams_notification(subject=subject,
-                                    prj_join_invite_request=self.prj_jn_inv_req,
-                                    member_status_code=status_code,
-                                    prj_lead_contacts=project_lead_contacts)
+            email_processing_fn = get_email_processing_fn(ERB_System_Membership_Email_fn_dict, erbs)
+            email_processing_fn(subject=subject,
+                                prj_join_invite_request=self.prj_jn_inv_req,
+                                member_status_code=status_code,
+                                prj_lead_contacts=project_lead_contacts,
+                                erbs=erbs)
 
     def post(self, request):
         # get request data
@@ -1681,10 +1483,12 @@ class ProjectMemberJoinViewSet(APIView):
         for prj_contact in prj_contacts:
             prj_lead_contacts.append(prj_contact.contact)
 
-        send_crams_notification(subject='Request to join Project: ',
-                                prj_join_invite_request=self.prj_jn_inv_req,
-                                member_status_code='R',
-                                prj_lead_contacts=prj_lead_contacts)
+        email_processing_fn = get_email_processing_fn(ERB_System_Membership_Email_fn_dict, erbs)
+        email_processing_fn(subject='Request to join Project: ',
+                            prj_join_invite_request=self.prj_jn_inv_req,
+                            member_status_code='R',
+                            prj_lead_contacts=prj_lead_contacts,
+                            erbs=erbs)
 
     def post(self, request):
         # get requested data
@@ -1791,10 +1595,12 @@ class ProjectMemberLeaveViewSet(APIView):
         for prj_contact in prj_contacts:
             prj_lead_contacts.append(prj_contact.contact)
 
-        send_crams_notification(subject='Membership revoked: ',
-                                prj_join_invite_request=self.prj_jn_inv_req,
-                                member_status_code='V',
-                                prj_lead_contacts=prj_lead_contacts)
+        email_processing_fn = get_email_processing_fn(ERB_System_Membership_Email_fn_dict, erbs)
+        email_processing_fn(subject='Membership revoked: ',
+                            prj_join_invite_request=self.prj_jn_inv_req,
+                            member_status_code='V',
+                            prj_lead_contacts=prj_lead_contacts,
+                            erbs=erbs)
 
     def post(self, request):
         project_id = request.data["project_id"]

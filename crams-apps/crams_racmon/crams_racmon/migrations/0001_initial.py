@@ -20,6 +20,27 @@ def load_racmon_questions_from_sql():
     return sql_statements
 
 
+def load_support_email_sql():
+    file_name = 'support_email.mysql.sql'
+    sqls_dir = os.path.abspath(os.path.join(os.path.dirname(__file__), '../sqls'))
+    sql_statements = open(os.path.join(sqls_dir, file_name), 'r').read()
+
+    return sql_statements
+
+
+def load_email_notification_sql():
+    file_name = 'email_notifcation_templetes.mysql.sql'
+    sqls_dir = os.path.abspath(os.path.join(os.path.dirname(__file__), '../sqls'))
+    sql_statements = open(os.path.join(sqls_dir, file_name), 'r').read()
+    return sql_statements
+
+
+def load_member_notification_sql():
+    file_name = 'member_notification_templates.sql'
+    sqls_dir = os.path.abspath(os.path.join(os.path.dirname(__file__), '../sqls'))
+    sql_statements = open(os.path.join(sqls_dir, file_name), 'r').read()
+    return sql_statements
+
 class Migration(migrations.Migration):
     dependencies = [
     ]
@@ -27,4 +48,7 @@ class Migration(migrations.Migration):
     operations = [
         migrations.RunSQL(load_racmon_data_from_sql()),
         migrations.RunSQL(load_racmon_questions_from_sql()),
+        migrations.RunSQL(load_support_email_sql()),
+        migrations.RunSQL(load_email_notification_sql()),
+        migrations.RunSQL(load_member_notification_sql()),
     ]

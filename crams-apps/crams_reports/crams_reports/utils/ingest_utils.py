@@ -92,10 +92,11 @@ def sum_project_product_latest_allocated_gb(
     sr_qs = StorageRequest.objects.filter(qs_filter).select_related('storage_product')
     for sr in sr_qs:
         sp = sr.storage_product
-        if sr.request.request_status.code == db.REQUEST_STATUS_APPROVED:
-            allocated_gb = sp_allocated_dict.get(sp) + sr.current_quota
-        else:
-            allocated_gb = sp_allocated_dict.get(sp) + sr.approved_quota_total
+        allocated_gb = sp_allocated_dict.get(sp) + sr.current_quota
+        # if storage product has been provisioned use the approved quota
+        if sr.provision_details:
+            if sr.provision_details.status == 'P':
+                allocated_gb = sp_allocated_dict.get(sp) + sr.approved_quota_total   
         sp_allocated_dict[sp] = allocated_gb
     return sp_allocated_dict
 

@@ -21,7 +21,7 @@ setup(
     description='Common core models for Monash University eResearch Projects',
     long_description=long_description,
 
-    url='https://https://github.com/merc_common',
+    url='https://github.com/merc_common',
 
     author='Rafi M Feroze',
     author_email='mohamed.feroze+merc_common@monash.edu',

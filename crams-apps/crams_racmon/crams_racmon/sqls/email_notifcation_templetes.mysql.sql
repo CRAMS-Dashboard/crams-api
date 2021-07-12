@@ -9,12 +9,16 @@ set @technical_contact_id = (SELECT id from crams_contact_contactrole where name
 set @data_custodian_id = (SELECT id from crams_contact_contactrole where name = 'Data Custodian' and e_research_body_id = (SELECT id from crams_eresearchbody where `name` = 'CRAMS-ERB'));
 set @approver_id = (SELECT id from crams_contact_contactrole where `name` = 'E_RESEARCH_BODY_SYSTEM_Approver');
 set @provisioner_id = (SELECT id from crams_contact_contactrole where `name` = 'E_RESEARCH_BODY_SYSTEM_Provisioner');
+
+set @erb_admin_id = (SELECT id from crams_contact_contactrole where `name` = 'E_RESEARCH_BODY Admin');
+
 set @notification_id = (SELECT id from crams_allocation_notificationtemplate where `e_research_system_id` = (SELECT id FROM crams_eresearchbodysystem WHERE `name` = 'CRAMS-ERB-SYS') and `request_status_id` = (SELECT id FROM crams_allocation_requeststatus WHERE `code` = 'E'));
 
 INSERT INTO crams_allocation_notificationcontactrole(contact_role_id, notification_id) values (@technical_contact_id, @notification_id);   -- Technical Contact Email notification
 INSERT INTO crams_allocation_notificationcontactrole(contact_role_id, notification_id) values (@data_custodian_id, @notification_id);   -- Data Custodian Email notification
 INSERT INTO crams_allocation_notificationcontactrole(contact_role_id, notification_id) values (@approver_id, @notification_id);   -- Approver Email notification
 INSERT INTO crams_allocation_notificationcontactrole(contact_role_id, notification_id) values (@applicant_id, @notification_id);   -- Applicant Email notification
+INSERT INTO crams_allocation_notificationcontactrole(contact_role_id, notification_id) values (@erb_admin_id, @notification_id);   -- ERB admin Email notification
 
 INSERT INTO `crams_allocation_notificationtemplate` (`template_file_path`, `request_status_id`, `alert_funding_body`, `funding_body_id`, `e_research_system_id`)
 VALUES('notification/submit.html', (SELECT id FROM crams_allocation_requeststatus WHERE `code` = 'X'), 0, (SELECT id from crams_fundingbody where `name` = 'CRAMS'), (SELECT id FROM crams_eresearchbodysystem WHERE `name` = 'CRAMS-ERB-SYS'));
@@ -23,6 +27,7 @@ INSERT INTO crams_allocation_notificationcontactrole(contact_role_id, notificati
 INSERT INTO crams_allocation_notificationcontactrole(contact_role_id, notification_id) values (@data_custodian_id, @notification_id);   -- Data Custodian Email notification
 INSERT INTO crams_allocation_notificationcontactrole(contact_role_id, notification_id) values (@approver_id, @notification_id);   -- Approver Email notification
 INSERT INTO crams_allocation_notificationcontactrole(contact_role_id, notification_id) values (@applicant_id, @notification_id);   -- Applicant Email notification
+INSERT INTO crams_allocation_notificationcontactrole(contact_role_id, notification_id) values (@erb_admin_id, @notification_id);   -- ERB admin Email notification
 
 INSERT INTO `crams_allocation_notificationtemplate` (`template_file_path`, `request_status_id`, `alert_funding_body`, `funding_body_id`, `e_research_system_id`)
 VALUES('notification/approve.html', (SELECT id FROM crams_allocation_requeststatus WHERE `code` = 'A'), 0, (SELECT id from crams_fundingbody where `name` = 'CRAMS'), (SELECT id FROM crams_eresearchbodysystem WHERE `name` = 'CRAMS-ERB-SYS'));
@@ -32,6 +37,7 @@ INSERT INTO crams_allocation_notificationcontactrole(contact_role_id, notificati
 INSERT INTO crams_allocation_notificationcontactrole(contact_role_id, notification_id) values (@approver_id, @notification_id);   -- Approver Email notification
 INSERT INTO crams_allocation_notificationcontactrole(contact_role_id, notification_id) values (@provisioner_id, @notification_id);   -- Provisioner Email notification
 INSERT INTO crams_allocation_notificationcontactrole(contact_role_id, notification_id) values (@applicant_id, @notification_id);   -- Applicant Email notification
+INSERT INTO crams_allocation_notificationcontactrole(contact_role_id, notification_id) values (@erb_admin_id, @notification_id);   -- ERB admin Email notification
 
 
 INSERT INTO `crams_allocation_notificationtemplate` (`template_file_path`, `request_status_id`, `alert_funding_body`, `funding_body_id`, `e_research_system_id`)
@@ -41,6 +47,7 @@ INSERT INTO crams_allocation_notificationcontactrole(contact_role_id, notificati
 INSERT INTO crams_allocation_notificationcontactrole(contact_role_id, notification_id) values (@data_custodian_id, @notification_id);   -- Data Custodian Email notification
 INSERT INTO crams_allocation_notificationcontactrole(contact_role_id, notification_id) values (@approver_id, @notification_id);   -- Approver Email notification
 INSERT INTO crams_allocation_notificationcontactrole(contact_role_id, notification_id) values (@applicant_id, @notification_id);   -- Applicant Email notification
+INSERT INTO crams_allocation_notificationcontactrole(contact_role_id, notification_id) values (@erb_admin_id, @notification_id);   -- ERB admin Email notification
 
 INSERT INTO `crams_allocation_notificationtemplate` (`template_file_path`, `request_status_id`, `alert_funding_body`, `funding_body_id`, `e_research_system_id`)
 VALUES('notification/reject.html', (SELECT id FROM crams_allocation_requeststatus WHERE `code` = 'J'), 0, (SELECT id from crams_fundingbody where `name` = 'CRAMS'), (SELECT id FROM crams_eresearchbodysystem WHERE `name` = 'CRAMS-ERB-SYS'));
@@ -49,6 +56,7 @@ INSERT INTO crams_allocation_notificationcontactrole(contact_role_id, notificati
 INSERT INTO crams_allocation_notificationcontactrole(contact_role_id, notification_id) values (@data_custodian_id, @notification_id);   -- Data Custodian Email notification
 INSERT INTO crams_allocation_notificationcontactrole(contact_role_id, notification_id) values (@approver_id, @notification_id);   -- Approver Email notification
 INSERT INTO crams_allocation_notificationcontactrole(contact_role_id, notification_id) values (@applicant_id, @notification_id);   -- Applicant Email notification
+INSERT INTO crams_allocation_notificationcontactrole(contact_role_id, notification_id) values (@erb_admin_id, @notification_id);   -- ERB admin Email notification
 
 INSERT INTO `crams_allocation_notificationtemplate` (`template_file_path`, `request_status_id`, `alert_funding_body`, `funding_body_id`, `e_research_system_id`)
 VALUES('notification/provision.html', (SELECT id FROM crams_allocation_requeststatus WHERE `code` = 'P'), 0, (SELECT id from crams_fundingbody where `name` = 'CRAMS'), (SELECT id FROM crams_eresearchbodysystem WHERE `name` = 'CRAMS-ERB-SYS'));
@@ -58,6 +66,7 @@ INSERT INTO crams_allocation_notificationcontactrole(contact_role_id, notificati
 INSERT INTO crams_allocation_notificationcontactrole(contact_role_id, notification_id) values (@approver_id, @notification_id);   -- Approver Email notification
 INSERT INTO crams_allocation_notificationcontactrole(contact_role_id, notification_id) values (@provisioner_id, @notification_id);   -- Provisioner Email notification
 INSERT INTO crams_allocation_notificationcontactrole(contact_role_id, notification_id) values (@applicant_id, @notification_id);   -- Applicant Email notification
+INSERT INTO crams_allocation_notificationcontactrole(contact_role_id, notification_id) values (@erb_admin_id, @notification_id);   -- ERB admin Email notification
 
 INSERT INTO `crams_allocation_notificationtemplate` (`template_file_path`, `request_status_id`, `alert_funding_body`, `funding_body_id`, `e_research_system_id`)
 VALUES('notification/partial_provision.html', (SELECT id FROM crams_allocation_requeststatus WHERE `code` = '_PP'), 0, (SELECT id from crams_fundingbody where `name` = 'CRAMS'), (SELECT id FROM crams_eresearchbodysystem WHERE `name` = 'CRAMS-ERB-SYS'));
@@ -66,6 +75,7 @@ INSERT INTO crams_allocation_notificationcontactrole(contact_role_id, notificati
 INSERT INTO crams_allocation_notificationcontactrole(contact_role_id, notification_id) values (@data_custodian_id, @notification_id);   -- Data Custodian Email notification
 INSERT INTO crams_allocation_notificationcontactrole(contact_role_id, notification_id) values (@approver_id, @notification_id);   -- Approver Email notification
 INSERT INTO crams_allocation_notificationcontactrole(contact_role_id, notification_id) values (@applicant_id, @notification_id);   -- Applicant Email notification
+INSERT INTO crams_allocation_notificationcontactrole(contact_role_id, notification_id) values (@erb_admin_id, @notification_id);   -- ERB admin Email notification
 
 INSERT INTO `crams_allocation_notificationtemplate` (`template_file_path`, `request_status_id`, `alert_funding_body`, `e_research_system_id`, `system_key_id`)
 VALUES('notification/freshdesk_submit.html', (SELECT id FROM crams_allocation_requeststatus WHERE `code` = 'E'), 0, (SELECT id FROM crams_eresearchbodysystem WHERE `name` = 'CRAMS-ERB-SYS'), (SELECT id FROM crams_eresearchbodyidkey WHERE `key` = 'CRAMS'));

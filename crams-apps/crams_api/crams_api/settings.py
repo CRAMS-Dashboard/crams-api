@@ -163,7 +163,7 @@ DEV_ENVIRONMENT = 'development'
 STAGING_ENVIRONMENT = 'staging'
 QAT_ENVIRONMENT = 'qat'
 PROD_ENVIRONMENT = 'production'
-CURRENT_RUN_ENVIRONMENT = DEV_ENVIRONMENT
+CURRENT_RUN_ENVIRONMENT = 'DEMO'
 
 # Internationalization
 # https://docs.djangoproject.com/en/3.1/topics/i18n/

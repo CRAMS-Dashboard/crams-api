@@ -13,6 +13,7 @@ from crams_allocation.serializers.project_request_serializers import ReadOnlyCra
 from crams_collection.serializers.base_project_serializer import ReadOnlyProjectSerializer
 from crams_notification.tasks import mail_sender
 from crams_notification.utils import mail_util
+from crams_racmon.config import config_init as conf
 from django.conf import settings
 from django.db.models import Q
 import json
@@ -116,14 +117,13 @@ class RacmonAllocationNotificationUtils:
                     p_msg = 'FB not found for request, Unable to alert FB'
                     LOG.warning(p_msg)
 
-            reply_to = list()
-            if alloc_req.e_research_system:
-                reply_to = None  # TODO to decide where this comes from
+            sender = conf.RDSM_SENDER_EMAIL
+            reply_to = conf.RDSM_REPLY_TO_EMAIL
             json_string = json.dumps(mail_content)
             print('======> mail content json: {}'.format(json_string))
             mail_message = mail_util.render_mail_content(template, mail_content)
             mail_sender.send_email(
-                sender=reply_to,
+                sender=sender,
                 subject=subject,
                 mail_content=mail_message,
                 recipient_list=recipient_list,

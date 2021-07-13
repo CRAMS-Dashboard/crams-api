@@ -1,0 +1,5 @@
+RDSM_SENDER_EMAIL = 'sender@crams.com'
+RDSM_REPLY_TO_EMAIL = ['reply@crams.com']
+racmon_support_email_dict = {
+    'key': 'CRAMS',
+    'email': 'helpdesk@crams.com'}

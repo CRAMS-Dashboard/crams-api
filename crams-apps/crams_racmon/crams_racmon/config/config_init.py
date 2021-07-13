@@ -11,11 +11,9 @@ RDSM_ERB_LOWER = settings.CRAMS_DEMO_ERB.lower()
 ENABLE_EXT_SUPPORT_EMAIL = False
 
 # Support EMail
-RDSM_SENDER_EMAIL = 'rcmonsvradm1@gmail.com'
-RDSM_REPLY_TO_EMAIL = None
-racmon_support_email_dict = {
-    'key': 'CRAMS',
-    'email': 'rcmonsvradm1@gmail.com'}
+RDSM_SENDER_EMAIL = settings.RDSM_SENDER_EMAIL
+RDSM_REPLY_TO_EMAIL = settings.RDSM_REPLY_TO_EMAIL
+racmon_support_email_dict = settings.racmon_support_email_dict
 
 # url path for email links
 BASE_URL = ''

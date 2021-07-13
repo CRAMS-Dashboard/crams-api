@@ -113,11 +113,13 @@ def send_membership_notification(subject, prj_join_invite_request,
             erbs=erbs)
     
         reply_to = conf.RDSM_REPLY_TO_EMAIL
-    
+        sender = conf.RDSM_SENDER_EMAIL
+        print('===========> reply_to: {}'.format(reply_to))
         # send email invitation to user
         try:
             mail_content = mail_util.render_mail_content(template, content)
-            mail_sender.send_email(sender=reply_to,
+            mail_sender.send_email(sender=sender,
+                                   reply_to=reply_to,
                                    subject=subject,
                                    mail_content=mail_content,
                                    recipient_list=recipient_list,

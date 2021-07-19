@@ -6,7 +6,7 @@ import ast
 from rest_framework import serializers, exceptions as rest_exceptions
 from django.core.exceptions import ObjectDoesNotExist
 # from django.core.exceptions import ValidationError as django_ValidationError
-from django.db import models
+from django.db import models, transaction
 
 from crams import models as crams_models
 # from crams import permissions
@@ -256,183 +256,183 @@ class ModelLookupSerializer(serializers.Serializer, debug.Debug):
         raise rest_exceptions.ValidationError(msg)
 
 
-# class CreateModelLookupSerializer(ModelLookupSerializer):
-#     def update_related(self, instance, validated_data):
-#         error_dict = dict()
-#         update_nested = list()
-#         if hasattr(self.Meta, 'update_nested'):
-#             update_nested = self.Meta.update_nested
-#
-#         for related_field in self.Meta.related_fk:
-#             if related_field not in validated_data:
-#                 continue
-#             validated_data.pop(related_field)
-#             sz = self.fields.get(related_field)
-#             msg = 'Serializer not found for {}'.format(related_field)
-#             if not sz:
-#                 raise rest_exceptions.ValidationError(msg)
-#
-#             if related_field not in update_nested:
-#                 validated_data[related_field] = sz.instance
-#                 continue
-#
-#             # update Nested relation data, if required
-#             related_data_initial = self.initial_data.get(related_field)
-#             new_sz = type(sz)(instance=sz.instance, data=related_data_initial)
-#             new_sz.is_valid(raise_exception=True)
-#             new_sz.save()
-#             validated_data[related_field] = new_sz.instance
-#
-#         if error_dict:
-#             raise rest_exceptions.ValidationError(error_dict)
-#
-#         return instance
-#
-#     @classmethod
-#     def model_validate_save(cls, model_instance_obj):
-#         model_name = model_instance_obj._meta.model_name
-#         try:
-#             model_instance_obj.validate_unique()
-#             model_instance_obj.save()
-#         except django_ValidationError as e:
-#             msg = ','.join(e.messages)
-#             raise rest_exceptions.ValidationError({model_name: msg})
-#         except Exception as e:
-#             raise rest_exceptions.ValidationError({model_name: str(e)})
-#
-#     def validate(self, data):
-#         data = super().validate(data)
-#         if self.instance:
-#             return data
-#         msg_base = 'field is required'
-#         err_dict = dict()
-#         for required in self.Meta.required_at_save:
-#             if required not in data:
-#                 err_dict[required] = msg_base.format(required)
-#         if err_dict:
-#             raise rest_exceptions.ValidationError(err_dict)
-#
-#         return data
-#
-#     def save_common(self, instance, validated_data):
-#         # create related fields
-#         many_to_many_dict = dict()
-#         if hasattr(self.Meta, 'many_to_many'):
-#             base_msg = 'Many to Many field {} not found for {}'
-#             for many_field in self.Meta.many_to_many:
-#                 msg = base_msg.format(many_field, self.Meta.model)
-#                 if not hasattr(self.Meta.model, many_field):
-#                     raise rest_exceptions.ValidationError(msg)
-#                 if many_field not in validated_data:
-#                     continue
-#                 many_data_list = validated_data.pop(many_field)
-#                 if many_data_list:
-#                     many_to_many_dict[many_field] = set(many_data_list)
-#
-#         reverse_dict = dict()
-#         if hasattr(self.Meta, 'reverse_fk'):
-#             for (reverse_field, instance_field) in self.Meta.reverse_fk:
-#                 if reverse_field not in validated_data:
-#                     continue
-#                 field_validated_list = validated_data.pop(reverse_field)
-#                 if not field_validated_list:
-#                     continue
-#
-#                 reverse_sz = self.fields.get(reverse_field)
-#                 error_list = list()
-#                 msg = 'Serialzer not found for {}'.format(reverse_field)
-#                 if not reverse_sz:
-#                     error_list.append(msg)
-#                 else:
-#                     msg = 'reverse serializer'
-#                     list_msg = msg + ' is not a list serializer'
-#                     if not reverse_sz.child:
-#                         error_list.append(list_msg)
-#                 if error_list:
-#                     raise rest_exceptions.ValidationError({
-#                         reverse_field: error_list
-#                     })
-#
-#                 sz_class = type(reverse_sz.child)
-#                 reverse_field_sz_list = list()
-#                 for reverse_data in self.initial_data.get(reverse_field):
-#                     sz = sz_class(data=reverse_data)
-#                     sz.is_valid(raise_exception=True)
-#                     reverse_field_sz_list.append(sz)
-#                 reverse_dict[reverse_field] = \
-#                     (reverse_field_sz_list, instance_field)
-#
-#         if hasattr(self.Meta, 'related_fk'):
-#             self.update_related(instance, validated_data)
-#
-#         if instance or self.instance:
-#             if not instance:
-#                 instance = self.instance
-#             for k, v in validated_data.items():
-#                 setattr(instance, k, v)
-#         else:
-#             instance = self.Meta.model(**validated_data)
-#         self.model_validate_save(instance)
-#
-#         if reverse_dict:
-#             error_list = list()
-#             update_sz_list = list()
-#             for reverse_field, val in reverse_dict.items():
-#                 (reverse_field_sz_list, instance_field) = val
-#                 for sz in reverse_field_sz_list:
-#                     if sz.instance:
-#                         existing = getattr(sz.instance, instance_field)
-#                         if not existing == instance:
-#                             msg = 'Cannot change reverse parent for id'
-#                             error_list.append(msg.format(reverse_sz.instance))
-#                 if error_list:
-#                     raise rest_exceptions.ValidationError({
-#                         reverse_field: error_list
-#                     })
-#                 else:
-#                     sz.validated_data[instance_field] = instance
-#                     update_sz_list.append(sz)
-#
-#             for sz in update_sz_list:
-#                 if sz.instance:
-#                     changed = False
-#                     for k, v in sz.validated_data.items():
-#                         e_v = getattr(sz.instance, k)
-#                         if not v == e_v:
-#                             setattr(sz.instance, k, v)
-#                             changed = True
-#                     if changed:
-#                         sz.instance.save()
-#                     continue
-#                 reverse_obj = sz.Meta.model(**sz.validated_data)
-#                 self.model_validate_save(reverse_obj)
-#
-#         if many_to_many_dict:
-#             error_dict = dict()
-#             for many_field, many_field_set in many_to_many_dict.items():
-#                 try:
-#                     setattr(instance, many_field, many_field_set)
-#                 except Exception as e:
-#                     error_dict[many_field] = str(e)
-#             if error_dict:
-#                 raise rest_exceptions.ValidationError(error_dict)
-#
-#         return instance
-#
-#     @transaction.atomic()
-#     def create(self, validated_data):
-#         return self.save_common(None, validated_data)
-#
-#     @transaction.atomic()
-#     def update(self, instance, validated_data):
-#         raise rest_exceptions.ValidationError('Update Not Implemented Yet')
-#
-#
+class CreateModelLookupSerializer(ModelLookupSerializer):
+    def update_related(self, instance, validated_data):
+        error_dict = dict()
+        update_nested = list()
+        if hasattr(self.Meta, 'update_nested'):
+            update_nested = self.Meta.update_nested
+
+        for related_field in self.Meta.related_fk:
+            if related_field not in validated_data:
+                continue
+            validated_data.pop(related_field)
+            sz = self.fields.get(related_field)
+            msg = 'Serializer not found for {}'.format(related_field)
+            if not sz:
+                raise rest_exceptions.ValidationError(msg)
+
+            if related_field not in update_nested:
+                validated_data[related_field] = sz.instance
+                continue
+
+            # update Nested relation data, if required
+            related_data_initial = self.initial_data.get(related_field)
+            new_sz = type(sz)(instance=sz.instance, data=related_data_initial)
+            new_sz.is_valid(raise_exception=True)
+            new_sz.save()
+            validated_data[related_field] = new_sz.instance
+
+        if error_dict:
+            raise rest_exceptions.ValidationError(error_dict)
+
+        return instance
+
+    @classmethod
+    def model_validate_save(cls, model_instance_obj):
+        model_name = model_instance_obj._meta.model_name
+        try:
+            model_instance_obj.validate_unique()
+            model_instance_obj.save()
+        except django_ValidationError as e:
+            msg = ','.join(e.messages)
+            raise rest_exceptions.ValidationError({model_name: msg})
+        except Exception as e:
+            raise rest_exceptions.ValidationError({model_name: str(e)})
+
+    def validate(self, data):
+        data = super().validate(data)
+        if self.instance:
+            return data
+        msg_base = 'field is required'
+        err_dict = dict()
+        for required in self.Meta.required_at_save:
+            if required not in data:
+                err_dict[required] = msg_base.format(required)
+        if err_dict:
+            raise rest_exceptions.ValidationError(err_dict)
+
+        return data
+
+    def save_common(self, instance, validated_data):
+        # create related fields
+        many_to_many_dict = dict()
+        if hasattr(self.Meta, 'many_to_many'):
+            base_msg = 'Many to Many field {} not found for {}'
+            for many_field in self.Meta.many_to_many:
+                msg = base_msg.format(many_field, self.Meta.model)
+                if not hasattr(self.Meta.model, many_field):
+                    raise rest_exceptions.ValidationError(msg)
+                if many_field not in validated_data:
+                    continue
+                many_data_list = validated_data.pop(many_field)
+                if many_data_list:
+                    many_to_many_dict[many_field] = set(many_data_list)
+
+        reverse_dict = dict()
+        if hasattr(self.Meta, 'reverse_fk'):
+            for (reverse_field, instance_field) in self.Meta.reverse_fk:
+                if reverse_field not in validated_data:
+                    continue
+                field_validated_list = validated_data.pop(reverse_field)
+                if not field_validated_list:
+                    continue
+
+                reverse_sz = self.fields.get(reverse_field)
+                error_list = list()
+                msg = 'Serialzer not found for {}'.format(reverse_field)
+                if not reverse_sz:
+                    error_list.append(msg)
+                else:
+                    msg = 'reverse serializer'
+                    list_msg = msg + ' is not a list serializer'
+                    if not reverse_sz.child:
+                        error_list.append(list_msg)
+                if error_list:
+                    raise rest_exceptions.ValidationError({
+                        reverse_field: error_list
+                    })
+
+                sz_class = type(reverse_sz.child)
+                reverse_field_sz_list = list()
+                for reverse_data in self.initial_data.get(reverse_field):
+                    sz = sz_class(data=reverse_data)
+                    sz.is_valid(raise_exception=True)
+                    reverse_field_sz_list.append(sz)
+                reverse_dict[reverse_field] = \
+                    (reverse_field_sz_list, instance_field)
+
+        if hasattr(self.Meta, 'related_fk'):
+            self.update_related(instance, validated_data)
+
+        if instance or self.instance:
+            if not instance:
+                instance = self.instance
+            for k, v in validated_data.items():
+                setattr(instance, k, v)
+        else:
+            instance = self.Meta.model(**validated_data)
+        self.model_validate_save(instance)
+
+        if reverse_dict:
+            error_list = list()
+            update_sz_list = list()
+            for reverse_field, val in reverse_dict.items():
+                (reverse_field_sz_list, instance_field) = val
+                for sz in reverse_field_sz_list:
+                    if sz.instance:
+                        existing = getattr(sz.instance, instance_field)
+                        if not existing == instance:
+                            msg = 'Cannot change reverse parent for id'
+                            error_list.append(msg.format(reverse_sz.instance))
+                if error_list:
+                    raise rest_exceptions.ValidationError({
+                        reverse_field: error_list
+                    })
+                else:
+                    sz.validated_data[instance_field] = instance
+                    update_sz_list.append(sz)
+
+            for sz in update_sz_list:
+                if sz.instance:
+                    changed = False
+                    for k, v in sz.validated_data.items():
+                        e_v = getattr(sz.instance, k)
+                        if not v == e_v:
+                            setattr(sz.instance, k, v)
+                            changed = True
+                    if changed:
+                        sz.instance.save()
+                    continue
+                reverse_obj = sz.Meta.model(**sz.validated_data)
+                self.model_validate_save(reverse_obj)
+
+        if many_to_many_dict:
+            error_dict = dict()
+            for many_field, many_field_set in many_to_many_dict.items():
+                try:
+                    setattr(instance, many_field, many_field_set)
+                except Exception as e:
+                    error_dict[many_field] = str(e)
+            if error_dict:
+                raise rest_exceptions.ValidationError(error_dict)
+
+        return instance
+
+    @transaction.atomic()
+    def create(self, validated_data):
+        return self.save_common(None, validated_data)
+
+    @transaction.atomic()
+    def update(self, instance, validated_data):
+        raise rest_exceptions.ValidationError('Update Not Implemented Yet')
+
+
 class RelatedModelLookupSerializer(ModelLookupSerializer):
     pass
 
 
-# class UpdateModelLookupSerializer(CreateModelLookupSerializer):
-#     @transaction.atomic()
-#     def update(self, instance, validated_data):
-#         return self.save_common(instance, validated_data)
+class UpdateModelLookupSerializer(CreateModelLookupSerializer):
+    @transaction.atomic()
+    def update(self, instance, validated_data):
+        return self.save_common(instance, validated_data)

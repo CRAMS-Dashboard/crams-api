@@ -3,6 +3,7 @@
 All variables that need to be initialized in crams_racmon.settings need to go into this file.
 """
 from django.conf import settings
+from crams_racmon import settings as mod_settings
 
 RDSM_ERB_SYSTEM_LOWER = settings.CRAMS_DEMO_ERB_SYSTEM.lower()
 RDSM_ERB_LOWER = settings.CRAMS_DEMO_ERB.lower()
@@ -11,9 +12,9 @@ RDSM_ERB_LOWER = settings.CRAMS_DEMO_ERB.lower()
 ENABLE_EXT_SUPPORT_EMAIL = False
 
 # Support EMail
-RDSM_SENDER_EMAIL = settings.RDSM_SENDER_EMAIL
-RDSM_REPLY_TO_EMAIL = settings.RDSM_REPLY_TO_EMAIL
-racmon_support_email_dict = settings.racmon_support_email_dict
+RDSM_SENDER_EMAIL = mod_settings.RDSM_SENDER_EMAIL
+RDSM_REPLY_TO_EMAIL = mod_settings.RDSM_REPLY_TO_EMAIL
+racmon_support_email_dict = mod_settings.racmon_support_email_dict
 
 # url path for email links
 BASE_URL = ''

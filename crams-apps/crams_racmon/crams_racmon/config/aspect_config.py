@@ -10,8 +10,10 @@ from crams_allocation.config.allocation_config import ADMIN_ALERT_DATA_SENSITIVE
 from crams_allocation.config.allocation_config import ADMIN_ALERT_QUESTION_KEYS
 from crams_member.config.member_config import ERB_System_Membership_Email_fn_dict
 from crams_provision.config.provision_config import ERB_System_Partial_Provision_Email_fn_dict
+from crams_software.config.software_config import ERB_System_Software_Email_fn_dict
 from crams_racmon.notifications.submit_allocation import submit_allocation_emails
 from crams_racmon.notifications.membership import send_membership_notification
+from crams_racmon.notifications.software import send_software_notification
 from crams_racmon.notifications.racmon_notification_utils import RacmonAllocationNotificationUtils as ra
 
 from django.conf import settings
@@ -24,6 +26,7 @@ fn_key = (RDSM_ERB_SYSTEM_LOWER, settings.CRAMS_DEMO_ERB.lower())
 ERB_System_Allocation_Submit_Email_fn_dict[fn_key] = submit_allocation_emails
 ERB_System_Membership_Email_fn_dict[fn_key] = send_membership_notification
 ERB_System_Partial_Provision_Email_fn_dict[fn_key] = ra.send_partial_provision_notification
+ERB_System_Software_Email_fn_dict[RDSM_ERB_LOWER] = send_software_notification
 
 
 # admin email alert when data sensitive flag changes

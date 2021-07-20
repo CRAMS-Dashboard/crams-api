@@ -11,7 +11,10 @@ from crams_contact.serializers import base_contact_serializer
 # from crams.tasks import send_email_notification
 # from crams.models import NotificationContactRole
 # from crams.models import NotificationTemplate
-from crams_software import config
+from crams_software.config.software_config import ERB_System_Software_Email_fn_dict
+from crams_software.config.software_config import get_erb_contact_id_key
+from crams_software.config.software_config import get_erb_software_group_id_key
+from crams_software.config.software_config import get_email_processing_fn
 from crams_software import models as software_models
 
 
@@ -112,7 +115,7 @@ class PosixIdProvisionDetail(model_serializers.ReadOnlyModelSerializer):
     @classmethod
     def get_posix_id(cls, contact_software_license_obj):
         erb = contact_software_license_obj.license.software.e_research_body
-        key = config.ERB_CONTACT_ID_KEY.get(erb.name)
+        key = get_erb_contact_id_key(erb.name)
         if not key:
             msg = 'Contact Key param not configured'
             raise exceptions.ValidationError(msg)
@@ -153,7 +156,7 @@ class SoftwareProvisionDetailSerializer(model_serializers.
     @classmethod
     def get_group_id(cls, software_product_obj):
         erb = software_product_obj.e_research_body
-        key = config.ERB_SOFTWARE_GROUP_ID_KEY.get(erb.name)
+        key = get_erb_software_group_id_key(erb.name)
         if not key:
             msg = 'Software Group Id Key param not configured'
             raise exceptions.ValidationError(msg)
@@ -385,7 +388,7 @@ class ContactLicenseAgreementSz(model_serializers.UpdateModelLookupSerializer,
 
     def create(self, validated_data):
         validated_data['contact'] = self.get_relevant_contact()
-        validated_data['accepted_ts'] = dateUtils.get_current_time_for_app_tz()
+        validated_data['accepted_ts'] = date_utils.get_current_time_for_app_tz()
         validated_data['status'] = software_models.ContactSoftwareLicense.REQUEST_ACCESS
         new_csl = super().create(validated_data)
 
@@ -402,8 +405,12 @@ class ContactLicenseAgreementSz(model_serializers.UpdateModelLookupSerializer,
             new_csl.status = software_models.ContactSoftwareLicense.APPROVED
             new_csl.save()
 
+        # fetch erbs
+        erb = new_csl.license.software.e_research_body
+
         # send notification after request is made
-        self.send_notification(new_csl)
+        email_processing_fn = get_email_processing_fn(ERB_System_Software_Email_fn_dict, erb)
+        email_processing_fn(new_csl)
         return new_csl
 
     def validate(self, data):
@@ -418,8 +425,12 @@ class ContactLicenseAgreementSz(model_serializers.UpdateModelLookupSerializer,
         status_change_callback_fn(self.instance)
         self.instance.save()
 
+        # fetch erbs
+        erb = self.instance.license.software.e_research_body
+
         # send notification when status changed
-        self.send_notification(self.instance)
+        email_processing_fn = get_email_processing_fn(ERB_System_Software_Email_fn_dict, erb)
+        email_processing_fn(self.instance)
 
         return self.data
 
@@ -444,82 +455,6 @@ class ContactLicenseAgreementSz(model_serializers.UpdateModelLookupSerializer,
             obj.save()
 
         return self.status_change_common(callback_fn)
-
-    def send_notification(self, contact_software_license):
-        # TODO: move code to notifcation module
-        pass
-        # erb = contact_software_license.license.software.e_research_body
-        # status = SoftwareLicenseStatus.objects.get(
-        #     code=contact_software_license.status)
-
-        # # get the notification template
-        # try:
-        #     notification_temp = NotificationTemplate.objects.get(
-        #         contact_license_status=status, e_research_body=erb)
-        # except:
-        #     # if no template exist fail siliently
-        #     return
-
-        # # get the contact role/s who should receive the email
-        # notification_roles = NotificationContactRole.objects.filter(
-        #     notification=notification_temp)
-
-        # email_list = []
-
-        # # if contact role is 'Applicant'
-        # #     get the contact from the contact license
-        # applicant = notification_roles.filter(
-        #     contact_role__name__icontains='applicant')
-        # if applicant.first():
-        #     email_list.append(contact_software_license.contact.email)
-
-        # # if contact role is 'E_RESEARCH_BODY Admin' get all erb admins
-        # # from EResearchContact
-        # admin = notification_roles.filter(
-        #     contact_role__name__icontains='e_research_body admin')
-        # if admin.first():
-        #     # append each admin email to email_list as a recipient
-        #     for er_contact in erb.contacts.filter(end_date_ts__isnull=True):
-        #         email_list.append(er_contact.contact.email)
-
-        # subject = ("Software License request: " +
-        #            contact_software_license.license.software.name)
-
-        # # append Approved or Decline at the end
-        # if status.code != 'R':
-        #     subject = subject + " - " + status.status
-
-        # contact_software_license_dict = {
-        #     "contact": {
-        #         "given_name": contact_software_license.contact.given_name,
-        #         "surname": contact_software_license.contact.surname,
-        #         "email": contact_software_license.contact.email
-        #     },
-        #     "license": {
-        #         "software": {
-        #             "name": contact_software_license.license.software.name,
-        #         },
-        #         "type": {
-        #             "type": contact_software_license.license.type.type
-        #         }
-        #     }
-        # }
-
-        # mail_content = {"software_license": contact_software_license_dict}
-
-        # reply_to = eSYSTEM_REPLY_TO_EMAIL_MAP.get(
-        #     erb.name.strip().lower())
-
-        # # send email
-        # send_email_notification.delay(sender=reply_to,
-        #                               subject=subject,
-        #                               mail_content=mail_content,
-        #                               template_name=notification_temp.template_file_path,
-        #                               recipient_list=list(set(email_list)),
-        #                               cc_list=None,
-        #                               bcc_list=None,
-        #                               fail_silently=False,
-        #                               reply_to=reply_to)
 
 
 class ContactSerializer(model_serializers.ModelLookupSerializer):

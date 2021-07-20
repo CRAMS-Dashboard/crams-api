@@ -8,6 +8,7 @@ from crams_contact import crams_api_urls as contact_urls
 from crams_provision import urls as provision_urls
 # from crams_resource_usage import urls as resource_usage_urls
 from crams_member import urls as member_urls
+from crams_software import urls as software_urls
 from crams_storage import urls as storage_urls
 from crams_reports import urls as report_urls
 from django.contrib import admin
@@ -30,5 +31,6 @@ urlpatterns = [
     path('reports/', include(report_urls)),
     path('', include(common_urls)),
     path('', include(notification_urls)),
+    path('software/', include(software_urls)),
     # path('', include(resource_usage_urls)),
 ]

@@ -62,6 +62,7 @@ INSTALLED_APPS = [
     'crams_resource_usage.storage',
     'crams_resource_usage.compute',
     'crams_reports',
+    'crams_software',
     'crams_racmon',
     'crams_api'
 ]
@@ -217,6 +218,15 @@ RACMON_CLIENT_VIEW_REQUEST_PATH = DEFAULT_CLIENT_VIEW_REQUEST_PATH
 RACMON_CLIENT_VIEW_APPROVAL_PATH = DEFAULT_CLIENT_VIEW_APPROVAL_PATH
 RACMON_CLIENT_VIEW_JOIN_PATH = '/#/allocations/join_project/'
 RACMON_CLIENT_VIEW_MEMBER_PATH = '/#/allocations/membership/'
+
+CRAMS_DEMO_ERB = 'CRAMS-ERB'
+CRAMS_DEMO_ERB_SYSTEM = 'CRAMS-ERB-SYS'
+
+ERB_CONTACT_ID_KEY = dict()
+ERB_CONTACT_ID_KEY[CRAMS_DEMO_ERB] = 'CRAMS_POSIX_USER_ID'
+
+ERB_SOFTWARE_GROUP_ID_KEY = dict()
+ERB_SOFTWARE_GROUP_ID_KEY[CRAMS_DEMO_ERB] = 'CRAMS_SOFTWARE_GROUP_ID'
 
 # Import the local_settings.py to override some of the default settings,
 # like database settings

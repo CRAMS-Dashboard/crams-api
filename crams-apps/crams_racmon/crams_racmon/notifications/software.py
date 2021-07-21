@@ -3,10 +3,10 @@ from crams_allocation.models import NotificationTemplate
 from crams_notification.tasks import mail_sender
 from crams_notification.utils import mail_util
 from crams_racmon.config import config_init as conf
-from crams_software.models import SoftwareLicenseStatus
+from crams.models import SoftwareLicenseStatus
 
 
-def send_software_notification(self, contact_software_license):
+def send_software_notification(contact_software_license):
     erb = contact_software_license.license.software.e_research_body
     status = SoftwareLicenseStatus.objects.get(
         code=contact_software_license.status)

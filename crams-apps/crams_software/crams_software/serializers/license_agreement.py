@@ -1,17 +1,13 @@
 from rest_framework import serializers, exceptions
 from django.utils import timezone
 
-# from crams.config.config_init import eSYSTEM_REPLY_TO_EMAIL_MAP
 from crams.serializers import model_serializers
 from crams.serializers.lookup_serializers import EResearchBodyIDKeySerializer
 from crams import models as crams_models
 from crams.utils import date_utils
 from crams_contact import models as contact_models
 from crams_contact.serializers import base_contact_serializer
-# from crams.tasks import send_email_notification
-# from crams.models import NotificationContactRole
-# from crams.models import NotificationTemplate
-from crams_software.config.software_config import ERB_System_Software_Email_fn_dict
+from crams_software.config.software_config import ERB_Software_Email_fn_dict
 from crams_software.config.software_config import get_erb_contact_id_key
 from crams_software.config.software_config import get_erb_software_group_id_key
 from crams_software.config.software_config import get_email_processing_fn
@@ -409,8 +405,9 @@ class ContactLicenseAgreementSz(model_serializers.UpdateModelLookupSerializer,
         erb = new_csl.license.software.e_research_body
 
         # send notification after request is made
-        email_processing_fn = get_email_processing_fn(ERB_System_Software_Email_fn_dict, erb)
-        email_processing_fn(new_csl)
+        email_processing_fn = get_email_processing_fn(ERB_Software_Email_fn_dict, erb)
+        if email_processing_fn:
+            email_processing_fn(new_csl)
         return new_csl
 
     def validate(self, data):
@@ -429,8 +426,9 @@ class ContactLicenseAgreementSz(model_serializers.UpdateModelLookupSerializer,
         erb = self.instance.license.software.e_research_body
 
         # send notification when status changed
-        email_processing_fn = get_email_processing_fn(ERB_System_Software_Email_fn_dict, erb)
-        email_processing_fn(self.instance)
+        email_processing_fn = get_email_processing_fn(ERB_Software_Email_fn_dict, erb)
+        if email_processing_fn:
+            email_processing_fn(self.instance)
 
         return self.data
 

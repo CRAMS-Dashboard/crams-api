@@ -17,4 +17,4 @@ def get_email_processing_fn(erb_email_dict, erb_obj):
     print('----- erb_system_obj:{}'.format(erb_obj))
     if not isinstance(erb_obj, EResearchBody):
         return None
-    return erb_email_dict.get(erb_obj)
+    return erb_email_dict.get(erb_obj.name.lower())

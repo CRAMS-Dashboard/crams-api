@@ -223,7 +223,7 @@ class EResearchBodyIDKeySerializer(serializers.ModelSerializer):
         """metaclass."""
 
         model = EResearchBodyIDKey
-        field = ('id', 'key')
+        fields = ('id', 'key')
 
 
 #

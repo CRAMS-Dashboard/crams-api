@@ -82,7 +82,8 @@ class BaseProvisionProductUtils:
         
         # send partial provisioned email
         email_processing_fn = get_email_processing_fn(ERB_System_Partial_Provision_Email_fn_dict, erbs)
-        email_processing_fn(alloc_req=request_obj, serializer_context=sz_context_obj)
+        if email_processing_fn:
+            email_processing_fn(alloc_req=request_obj, serializer_context=sz_context_obj)
 
         if update_request_status:
             # update request status to provisioned

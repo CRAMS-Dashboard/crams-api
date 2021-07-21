@@ -5,7 +5,7 @@ import ast
 
 from rest_framework import serializers, exceptions as rest_exceptions
 from django.core.exceptions import ObjectDoesNotExist
-# from django.core.exceptions import ValidationError as django_ValidationError
+from django.core.exceptions import ValidationError as django_ValidationError
 from django.db import models, transaction
 
 from crams import models as crams_models
@@ -411,7 +411,7 @@ class CreateModelLookupSerializer(ModelLookupSerializer):
             error_dict = dict()
             for many_field, many_field_set in many_to_many_dict.items():
                 try:
-                    setattr(instance, many_field, many_field_set)
+                    getattr(instance, many_field, many_field_set)
                 except Exception as e:
                     error_dict[many_field] = str(e)
             if error_dict:

@@ -406,12 +406,13 @@ class ProjectAdminAddUserViewSet(APIView):
         # send notification
         if self.sent_email:
             email_processing_fn = get_email_processing_fn(ERB_System_Membership_Email_fn_dict, erbs)
-            email_processing_fn(subject="Project membership to: ",
-                                prj_join_invite_request=prj_join_inv_req,
-                                member_status_code='M',
-                                # using admin to populate the name in template
-                                prj_lead_contacts=[self.admin_user_contact],
-                                erbs=erbs)
+            if email_processing_fn:
+                email_processing_fn(subject="Project membership to: ",
+                                    prj_join_invite_request=prj_join_inv_req,
+                                    member_status_code='M',
+                                    # using admin to populate the name in template
+                                    prj_lead_contacts=[self.admin_user_contact],
+                                    erbs=erbs)
 
         return Response({"detail": "User added"},
                         status=status.HTTP_200_OK)
@@ -544,14 +545,15 @@ class ProjectLeaderSetRoleViewSet(APIView):
 
         # send notification
         email_processing_fn = get_email_processing_fn(ERB_System_Membership_Email_fn_dict, erbs)
-        email_processing_fn(subject="User role changed in project: ",
-                            prj_join_invite_request=prj_jn_inv_req,
-                            member_status_code='U',
-                            prj_lead_contacts=[self.prj_lead_user_contact],
-                            additional_params={
-                                "old_role": old_role,
-                                "new_role": self.new_role.name},
-                            erbs=erbs)
+        if email_processing_fn:
+            email_processing_fn(subject="User role changed in project: ",
+                                prj_join_invite_request=prj_jn_inv_req,
+                                member_status_code='U',
+                                prj_lead_contacts=[self.prj_lead_user_contact],
+                                additional_params={
+                                    "old_role": old_role,
+                                    "new_role": self.new_role.name},
+                                erbs=erbs)
         return Response({"detail": "User role changed"},
                         status=status.HTTP_200_OK)
 
@@ -769,11 +771,12 @@ class ProjectLeaderInviteViewSet(APIView):
 
         # send invitation to user
         email_processing_fn = get_email_processing_fn(ERB_System_Membership_Email_fn_dict, erbs)
-        email_processing_fn(subject='Invite to project: ',
-                            prj_join_invite_request=prj_invite,
-                            member_status_code="I",
-                            prj_lead_contacts=[prj_lead_contact],
-                            erbs=erbs)
+        if email_processing_fn:
+            email_processing_fn(subject='Invite to project: ',
+                                prj_join_invite_request=prj_invite,
+                                member_status_code="I",
+                                prj_lead_contacts=[prj_lead_contact],
+                                erbs=erbs)
 
         return Response({"detail": "Invitation Sent"},
                         status=status.HTTP_200_OK)
@@ -1070,13 +1073,14 @@ class ProjectLeaderRequestViewSet(APIView):
                         raise exceptions.ParseError("Error accepting member")
                     if self.sent_email:
                         email_processing_fn = get_email_processing_fn(ERB_System_Membership_Email_fn_dict, erbs)
-                        email_processing_fn(
-                            subject='Project membership successful: ',
-                            prj_join_invite_request=prj_invite,
-                            member_status_code='M',
-                            prj_lead_contacts=[self.prj_lead_user_contact],
-                            erbs=erbs
-                        )
+                        if email_processing_fn:
+                            email_processing_fn(
+                                subject='Project membership successful: ',
+                                prj_join_invite_request=prj_invite,
+                                member_status_code='M',
+                                prj_lead_contacts=[self.prj_lead_user_contact],
+                                erbs=erbs
+                            )
 
                     return Response(
                         {"detail": "User accepted"},
@@ -1091,12 +1095,13 @@ class ProjectLeaderRequestViewSet(APIView):
 
                     if self.sent_email:
                         email_processing_fn = get_email_processing_fn(ERB_System_Membership_Email_fn_dict, erbs)
-                        email_processing_fn(
-                            subject='Project membership successful: ',
-                            prj_join_invite_request=prj_invite,
-                            member_status_code='M',
-                            prj_lead_contacts=[self.prj_lead_user_contact],
-                            erbs=erbs)
+                        if email_processing_fn:
+                            email_processing_fn(
+                                subject='Project membership successful: ',
+                                prj_join_invite_request=prj_invite,
+                                member_status_code='M',
+                                prj_lead_contacts=[self.prj_lead_user_contact],
+                                erbs=erbs)
 
                     return Response(
                         {"detail": "User accepted"},
@@ -1145,12 +1150,13 @@ class ProjectLeaderRequestViewSet(APIView):
 
                     if self.sent_email:
                         email_processing_fn = get_email_processing_fn(ERB_System_Membership_Email_fn_dict, erbs)
-                        email_processing_fn(
-                            subject='Membership Revoked: ',
-                            prj_join_invite_request=prj_invite,
-                            member_status_code='V',
-                            prj_lead_contacts=[self.prj_lead_user_contact],
-                            erbs=erbs)
+                        if email_processing_fn:
+                            email_processing_fn(
+                                subject='Membership Revoked: ',
+                                prj_join_invite_request=prj_invite,
+                                member_status_code='V',
+                                prj_lead_contacts=[self.prj_lead_user_contact],
+                                erbs=erbs)
 
                     return Response(
                         {"detail": "User project membership revoked."},
@@ -1164,12 +1170,13 @@ class ProjectLeaderRequestViewSet(APIView):
 
                     if self.sent_email:
                         email_processing_fn = get_email_processing_fn(ERB_System_Membership_Email_fn_dict, erbs)
-                        email_processing_fn(subject='Project invite declined: ',
-                                            prj_join_invite_request=prj_invite,
-                                            member_status_code='C',
-                                            prj_lead_contacts=[
-                                                self.prj_lead_user_contact],
-                                            erbs=erbs)
+                        if email_processing_fn:
+                            email_processing_fn(subject='Project invite declined: ',
+                                                prj_join_invite_request=prj_invite,
+                                                member_status_code='C',
+                                                prj_lead_contacts=[
+                                                    self.prj_lead_user_contact],
+                                                erbs=erbs)
                     return Response(
                         {"detail": "User invitation declined."},
                         status=status.HTTP_200_OK)
@@ -1182,12 +1189,13 @@ class ProjectLeaderRequestViewSet(APIView):
 
                     if self.sent_email:
                         email_processing_fn = get_email_processing_fn(ERB_System_Membership_Email_fn_dict, erbs)
-                        email_processing_fn(subject='Project request declined: ',
-                                            prj_join_invite_request=prj_invite,
-                                            member_status_code='E',
-                                            prj_lead_contacts=[
-                                                self.prj_lead_user_contact],
-                                            erbs=erbs)
+                        if email_processing_fn:
+                            email_processing_fn(subject='Project request declined: ',
+                                                prj_join_invite_request=prj_invite,
+                                                member_status_code='E',
+                                                prj_lead_contacts=[
+                                                    self.prj_lead_user_contact],
+                                                erbs=erbs)
 
                     return Response(
                         {"detail": "User request has been rejected."},
@@ -1354,11 +1362,12 @@ class ProjectMemberRequestViewSet(APIView):
         if self.action == ACCEPT:
             # send notifications - admin and user
             email_processing_fn = get_email_processing_fn(ERB_System_Membership_Email_fn_dict, erbs)
-            email_processing_fn(subject='Invite Accepted: ',
-                                prj_join_invite_request=self.prj_jn_inv_req,
-                                member_status_code='M',
-                                prj_lead_contacts=[self.prj_lead_contact],
-                                erbs=erbs)
+            if email_processing_fn:
+                email_processing_fn(subject='Invite Accepted: ',
+                                    prj_join_invite_request=self.prj_jn_inv_req,
+                                    member_status_code='M',
+                                    prj_lead_contacts=[self.prj_lead_contact],
+                                    erbs=erbs)
         else:
             # user declined CI invite
             if self.member_status.code == 'I':
@@ -1376,11 +1385,12 @@ class ProjectMemberRequestViewSet(APIView):
                 status_code = 'L'
 
             email_processing_fn = get_email_processing_fn(ERB_System_Membership_Email_fn_dict, erbs)
-            email_processing_fn(subject=subject,
-                                prj_join_invite_request=self.prj_jn_inv_req,
-                                member_status_code=status_code,
-                                prj_lead_contacts=project_lead_contacts,
-                                erbs=erbs)
+            if email_processing_fn:
+                email_processing_fn(subject=subject,
+                                    prj_join_invite_request=self.prj_jn_inv_req,
+                                    member_status_code=status_code,
+                                    prj_lead_contacts=project_lead_contacts,
+                                    erbs=erbs)
 
     def post(self, request):
         # get request data
@@ -1484,11 +1494,12 @@ class ProjectMemberJoinViewSet(APIView):
             prj_lead_contacts.append(prj_contact.contact)
 
         email_processing_fn = get_email_processing_fn(ERB_System_Membership_Email_fn_dict, erbs)
-        email_processing_fn(subject='Request to join Project: ',
-                            prj_join_invite_request=self.prj_jn_inv_req,
-                            member_status_code='R',
-                            prj_lead_contacts=prj_lead_contacts,
-                            erbs=erbs)
+        if email_processing_fn:
+            email_processing_fn(subject='Request to join Project: ',
+                                prj_join_invite_request=self.prj_jn_inv_req,
+                                member_status_code='R',
+                                prj_lead_contacts=prj_lead_contacts,
+                                erbs=erbs)
 
     def post(self, request):
         # get requested data
@@ -1596,11 +1607,12 @@ class ProjectMemberLeaveViewSet(APIView):
             prj_lead_contacts.append(prj_contact.contact)
 
         email_processing_fn = get_email_processing_fn(ERB_System_Membership_Email_fn_dict, erbs)
-        email_processing_fn(subject='Membership revoked: ',
-                            prj_join_invite_request=self.prj_jn_inv_req,
-                            member_status_code='V',
-                            prj_lead_contacts=prj_lead_contacts,
-                            erbs=erbs)
+        if email_processing_fn:
+            email_processing_fn(subject='Membership revoked: ',
+                                prj_join_invite_request=self.prj_jn_inv_req,
+                                member_status_code='V',
+                                prj_lead_contacts=prj_lead_contacts,
+                                erbs=erbs)
 
     def post(self, request):
         project_id = request.data["project_id"]

@@ -18,7 +18,7 @@ class ComputeRequestSerializer(ProductRequestSerializer):
 
     compute_product = AllocationComputeProductValidate(required=True)
 
-    compute_question_responses = ComputeQuestionResponseSerializer(
+    compute_request_responses = ComputeQuestionResponseSerializer(
         many=True, read_only=False, allow_null=True, required=False)
 
     remove = serializers.SerializerMethodField()
@@ -34,7 +34,7 @@ class ComputeRequestSerializer(ProductRequestSerializer):
             'core_hours',
             'approved_core_hours',
             'compute_product',
-            'compute_question_responses',
+            'compute_request_responses',
             'provision_details',
             'remove')
         read_only_fields = ['provision_details']
@@ -49,7 +49,7 @@ class ComputeRequestSerializer(ProductRequestSerializer):
             if not compute_product or 'id' not in compute_product:
                 raise ParseError('Compute product is required')
 
-            search_dict = {'pk': compute_product.geet('id')}
+            search_dict = {'pk': compute_product.get('id')}
             return AllocationComputeProductValidate.get_compute_product_obj(search_key_dict=search_dict)
 
         return AllocationComputeProductValidate.get_compute_product_obj(search_key_dict=data)

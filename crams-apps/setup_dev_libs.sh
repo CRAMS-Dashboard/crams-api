@@ -45,6 +45,9 @@ python setup.py sdist
 cd ../crams_reports
 python setup.py sdist
 
+cd ../hpc
+python setup.py sdist
+
 cd ../crams_api
 pip install --upgrade pip
 pip uninstall -y merc-common
@@ -73,6 +76,8 @@ pip uninstall -y crams_reports
 pip install ../crams_reports/dist/crams_reports-1.0.0.tar.gz
 pip uninstall -y crams_racmon
 pip install ../crams_racmon/dist/crams_racmon-1.0.0.tar.gz
+pip uninstall -y hpc
+pip install ../hpc/dist/hpc-1.0.0.tar.gz
 
 pip install -r ../crams_api/requirements.txt
 pip install -r ../crams_api/test-requirements.txt

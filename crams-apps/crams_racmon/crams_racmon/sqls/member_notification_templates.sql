@@ -1,5 +1,5 @@
 -- contact role ids
-set @applicant_id = (SELECT id from crams_contact_contactrole where `name` = 'Applicant' and e_research_body_id = (SELECT id from crams_eresearchbody where `name` = 'CRAMS-ERB'));
+set @applicant_id = (SELECT id from crams_contact_contactrole where `name` = 'Applicant' and e_research_body_id is NULL);
 set @technical_contact_id = (SELECT id from crams_contact_contactrole where name = 'Technical Contact' and e_research_body_id = (SELECT id from crams_eresearchbody where `name` = 'CRAMS-ERB'));
 set @data_custodian_id = (SELECT id from crams_contact_contactrole where name = 'Data Custodian' and e_research_body_id = (SELECT id from crams_eresearchbody where `name` = 'CRAMS-ERB'));
 set @erb_admin_id = (SELECT id from crams_contact_contactrole where name = 'E_RESEARCH_BODY Admin');

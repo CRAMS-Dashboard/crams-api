@@ -180,7 +180,7 @@ def fetch_current_requests_for_status(req_status, e_research_systems):
             'storage_requests__storage_question_responses__question',
             'compute_requests__compute_product',
             'compute_requests__provision_details',
-            'compute_requests__compute_question_responses__question',
+            'compute_requests__compute_request_responses__question',
             'history',
         )
 

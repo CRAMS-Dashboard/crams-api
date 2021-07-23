@@ -154,7 +154,7 @@ class ProjectRequestViewSet(AbstractProjectRequestViewSet):
             'requests__storage_requests__storage_question_responses__question',
             'requests__compute_requests__compute_product__provider',
             'requests__compute_requests__provision_details',
-            'requests__compute_requests__compute_question_responses__question',
+            'requests__compute_requests__compute_request_responses__question',
             'requests__e_research_system__e_research_body',
             'requests__funding_scheme__funding_body',
             'requests__request_status',

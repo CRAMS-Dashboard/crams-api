@@ -18,7 +18,7 @@ class ComputeRequestSerializer(ProductRequestSerializer):
 
     compute_product = AllocationComputeProductValidate(required=True)
 
-    compute_request_responses = ComputeQuestionResponseSerializer(
+    compute_question_responses = ComputeQuestionResponseSerializer(
         many=True, read_only=False, allow_null=True, required=False)
 
     remove = serializers.SerializerMethodField()
@@ -34,7 +34,7 @@ class ComputeRequestSerializer(ProductRequestSerializer):
             'core_hours',
             'approved_core_hours',
             'compute_product',
-            'compute_request_responses',
+            'compute_question_responses',
             'provision_details',
             'remove')
         read_only_fields = ['provision_details']

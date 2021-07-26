@@ -63,6 +63,7 @@ INSTALLED_APPS = [
     'crams_resource_usage.compute',
     'crams_reports',
     'crams_racmon',
+    'hpc',
     'crams_api'
 ]
 

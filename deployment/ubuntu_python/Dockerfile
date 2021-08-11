@@ -33,7 +33,7 @@ RUN apt-get install -y libjpeg-dev libfreetype6-dev liblcms2-dev libtiff-dev tcl
 # gpg key
 ENV GPG_KEY E3FF2839C048B25C084DEBE9B26995E310250568
 # PYTHON Version
-ENV PYTHON_VERSION 3.8.5
+ENV PYTHON_VERSION 3.8.11
 
 # disable ipv6
 RUN set -ex \
@@ -41,7 +41,7 @@ RUN set -ex \
 	&& wget -O python.tar.xz "https://www.python.org/ftp/python/${PYTHON_VERSION%%[a-z]*}/Python-$PYTHON_VERSION.tar.xz" \
 	&& wget -O python.tar.xz.asc "https://www.python.org/ftp/python/${PYTHON_VERSION%%[a-z]*}/Python-$PYTHON_VERSION.tar.xz.asc" \
 	&& export GNUPGHOME="$(mktemp -d)" && echo "disable-ipv6" >> ${GNUPGHOME}/dirmngr.conf \
-	&& gpg --batch --keyserver ha.pool.sks-keyservers.net --recv-keys "$GPG_KEY" \
+	&& gpg --batch --keyserver hkps://keys.openpgp.org --recv-keys "$GPG_KEY" \
 	&& gpg --batch --verify python.tar.xz.asc python.tar.xz \
 	&& { command -v gpgconf > /dev/null && gpgconf --kill all || :; } \
 	&& rm -rf "$GNUPGHOME" python.tar.xz.asc \

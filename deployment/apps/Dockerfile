@@ -51,7 +51,7 @@ RUN python setup.py sdist
 WORKDIR /crams-apps/crams_collection
 RUN python setup.py sdist
 
-WORKDIR /crams-apps/crams_racmon
+WORKDIR /crams-apps/crams_demo
 RUN python setup.py sdist
 
 WORKDIR /crams-apps/crams_allocation
@@ -78,7 +78,7 @@ RUN pip install ../crams_notification/dist/crams_notification-1.0.0.tar.gz
 RUN pip install ../crams_compute/dist/crams_compute-1.0.0.tar.gz
 RUN pip install ../crams_storage/dist/crams_storage-1.0.0.tar.gz
 RUN pip install ../crams_collection/dist/crams_collection-1.0.0.tar.gz
-RUN pip install ../crams_racmon/dist/crams_racmon-1.0.0.tar.gz
+RUN pip install ../crams_demo/dist/crams_demo-1.0.0.tar.gz
 RUN pip install ../crams_allocation/dist/crams_allocation-1.0.0.tar.gz
 RUN pip install ../crams_provision/dist/crams_provision-1.0.0.tar.gz
 RUN pip install ../crams_member/dist/crams_member-1.0.0.tar.gz

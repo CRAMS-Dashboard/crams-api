@@ -1,0 +1,18 @@
+{% extends "notification/base.html" %}{% load demo_tags %}{% block preamble %}{% autoescape off %}{% with dear=request.project|display_dc_and_app_contacts %}
+{% if request.id|get_req_status_code == 'X' %}
+    Allocation Amend/Extend for Project: {{ request.project.title }}
+
+    {{ dear }},
+
+    This email is to confirm that we have received your application to alter the amount of research data storage provided by the Monash as part of {{ request.project.title }}. The request will now be reviewed by the Monash University Research Data Storage team and you may be contacted in order to provide additional clarification concerning the requirements.
+
+    Further updates will be sent via email as your request progresses and you are welcome to contact us at any time using the Support Request option in the Data Dashboard if you have any questions or concerns.
+{% else %}
+    Allocation Request for Project: {{ request.project.title }}
+
+    {{ dear }},
+
+    This email is to confirm that we have received your request for Research Storage as detailed below. The request will now be reviewed by the Monash University Research Data Storage team. You may be contacted in order to provide additional clarification concerning the requirements. If the allocation is approved, you will be notified again as the request progresses to be provisioned. Instructions detailing how to access the storage will then become available.
+
+    You can review this submission within the Data Dashboard in the My Requests menu. You can modify, update, or revise this submission up until it has been approved or declined. Declined requests stay in the Data Dashboard with a note attached that may help you amend the request before re-submitting it.
+{% endif %}{% endwith %}{% endautoescape %}{% endblock %}

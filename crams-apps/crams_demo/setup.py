@@ -14,11 +14,11 @@ with open(path.join(here, 'README.rst'), encoding='utf-8') as f:
     long_description = f.read()
 
 setup(
-    name='crams_notification',
+    name='crams_demo',
 
     version='1.0.0',
 
-    description='crams_notification related module for Crams project',
+    description='crams demo related module for Crams project',
     long_description=long_description,
 
     url='https:github.com/crams_demo',
@@ -47,10 +47,10 @@ setup(
         'Programming Language :: Python :: 3.8',
     ],
 
-    keywords='monash eresearch crams racmon',
+    keywords='monash eresearch crams demo',
 
     packages=find_packages(),
 
-    install_requires=['merc_common==1.0.0',],
+    install_requires=['merc_common',],
     include_package_data=True,
 )

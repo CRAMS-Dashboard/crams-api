@@ -22,7 +22,7 @@ class ProjectRequestViewUpdateExtensionTest(UnitTestCase):
         # extending the allocation unless its a quota change
         from django.conf import settings
         settings.CRAMS_DEMO_ERB_SYSTEM = self.erbs.name
-        from crams_racmon.config import config_init
+        from crams_demo.config import config_init
         # config_init.EXTEND_ON_QUOTA_CHANGE.append(self.erbs.lower())
         
 

@@ -1,0 +1,19 @@
+{% autoescape off %}{% load demo_tags %}{% with project=request.project dear=request.project|display_dc_and_app_contacts %}{% block preamble %}{% endblock %}Allocation provisioned for Project: {{ project.title }}
+
+{{ dear }},
+
+This email is inform you that one or more of the storage products you requested through {{ project.title }} have now been provisioned.
+
+Storage Products
+-----------------------
+Provisioned:{% for storage_request in request.storage_requests %}{% if storage_request.provision_details.status == 'P' %}
+        {{ storage_request.storage_product.name }} : {{ storage_request.approved_quota_change }} GB{% endif %}{% endfor %}
+
+Pending:{% for storage_request in request.storage_requests %}{% if storage_request.provision_details.status == 'S' or storage_request.provision_details == null %}
+        {{ storage_request.storage_product.name }} : {{ storage_request.approved_quota_change }} GB{% endif %}{% endfor %}
+
+
+Kind Regards,
+CRAMS
+{% endwith %}
+{% endautoescape %}

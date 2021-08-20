@@ -50,7 +50,7 @@ INSTALLED_APPS = [
     'crams_collection',
     'crams_compute',
     'crams_storage',
-    'crams_racmon',
+    'crams_demo',
     'crams_allocation',
     'crams_provision'
 ]

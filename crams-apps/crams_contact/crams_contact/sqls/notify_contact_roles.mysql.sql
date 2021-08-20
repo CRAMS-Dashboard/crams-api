@@ -1,0 +1,4 @@
+INSERT INTO crams_contact_contactrole (`name`, project_leader, read_only, support_notification) VALUES ('NOTIFY_CONTACT', false, false, false);
+INSERT INTO crams_contact_contactrole (`name`, project_leader, read_only, support_notification) VALUES ('NOTIFY_PROJECT_LEADER', false, false, false);
+INSERT INTO crams_contact_contactrole (`name`, project_leader, read_only, support_notification) VALUES ('NOTIFY_NON_READONLY_PROJECT_CONTACT', false, false, false);
+INSERT INTO crams_contact_contactrole (`name`, project_leader, read_only, support_notification) VALUES ('NOTIFY_READ_ONLY_PROJECT_CONTACT', false, false, false);

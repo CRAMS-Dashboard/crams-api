@@ -16,6 +16,8 @@ from django.urls import path, include
 from merc_common import urls as common_urls
 from rest_framework import routers
 from crams_notification import urls as notification_urls
+from crams_compute import urls as compute_urls
+from hpc import urls as hpc_urls
 
 router = routers.SimpleRouter()
 
@@ -27,10 +29,11 @@ urlpatterns = [
     path('', include(allocation_urls)),
     path('', include(collection_urls)),
     path('member/', include(member_urls)),
-    path('ingest/', include(storage_urls)),
+    path('', include(storage_urls)),
     path('reports/', include(report_urls)),
     path('', include(common_urls)),
     path('', include(notification_urls)),
     path('software/', include(software_urls)),
-    # path('', include(resource_usage_urls)),
+    path('', include(compute_urls)),
+    path('', include(hpc_urls)),
 ]

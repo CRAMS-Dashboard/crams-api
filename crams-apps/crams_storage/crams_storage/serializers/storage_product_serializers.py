@@ -8,8 +8,7 @@ from rest_framework import serializers, exceptions
 from crams.utils.model_lookup_utils import LookupDataModel
 from crams.serializers.lookup_serializers import ZoneSerializer
 from crams_storage.models import StorageProduct, StorageType
-
-from crams.serializers.lookup_serializers import FundingBodySerializer, ProviderSerializer
+from crams.serializers.lookup_serializers import EResearchSystemSerializer, FundingBodySerializer, ProviderSerializer
 
 
 class StorageTypeSerializer(serializers.ModelSerializer):
@@ -153,3 +152,27 @@ class StorageProductZoneOnlySerializer(model_serializers.
         super().validate(attrs)
         self.verify_field_value('name', attrs, ignore_case=True)
         return attrs
+
+
+class ERBParentStorageProductSerializer(model_serializers.ReadOnlyModelSerializer):
+    class Meta(object):
+        model = StorageProduct
+        fields = ('id', 'name')
+
+
+class ERBSystemStorageProductSerializer(model_serializers.ReadOnlyModelSerializer):
+    e_research_system = EResearchSystemSerializer()
+
+    storage_type = serializers.SlugRelatedField(
+        slug_field='storage_type', read_only=True)
+
+    zone = serializers.SlugRelatedField(slug_field='name', read_only=True)
+
+    parent_storage_product = ERBParentStorageProductSerializer(
+        many=False, read_only=True)
+
+    class Meta(object):
+        model = StorageProduct
+        validators = []
+        fields = ('id', 'name', 'e_research_system', 'zone',
+                  'storage_type', 'funding_body', 'parent_storage_product')

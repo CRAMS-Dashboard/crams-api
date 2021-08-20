@@ -85,10 +85,10 @@ class ComputeRequestQuestionResponse(ArchivableModel):
     )
 
     question = models.ForeignKey(
-        Question, related_name='compute_allocation_responses', on_delete=models.DO_NOTHING)
+        Question, related_name='compute_question_responses', on_delete=models.DO_NOTHING)
 
     compute_request = models.ForeignKey(
-        ComputeRequest, related_name='compute_request_responses', on_delete=models.DO_NOTHING)
+        ComputeRequest, related_name='compute_question_responses', on_delete=models.DO_NOTHING)
 
     class Meta:
         app_label = 'crams_allocation'

@@ -49,7 +49,7 @@ class ComputeRequestSerializer(ProductRequestSerializer):
             if not compute_product or 'id' not in compute_product:
                 raise ParseError('Compute product is required')
 
-            search_dict = {'pk': compute_product.geet('id')}
+            search_dict = {'pk': compute_product.get('id')}
             return AllocationComputeProductValidate.get_compute_product_obj(search_key_dict=search_dict)
 
         return AllocationComputeProductValidate.get_compute_product_obj(search_key_dict=data)

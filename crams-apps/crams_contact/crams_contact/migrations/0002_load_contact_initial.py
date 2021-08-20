@@ -5,8 +5,15 @@ import os
 from django.db import migrations
 
 
-def load_nectar_inital_data_from_sql():
+def load_contact_roles_inital_data_from_sql():
     file_name = 'contact_initial.sql'
+    sqls_dir = os.path.abspath(os.path.join(os.path.dirname(__file__), '../sqls'))
+    sql_statements = open(os.path.join(sqls_dir, file_name), 'r').read()
+    return sql_statements
+
+
+def load_notify_contact_roles_from_sql():
+    file_name = 'notify_contact_roles.mysql.sql'
     sqls_dir = os.path.abspath(os.path.join(os.path.dirname(__file__), '../sqls'))
     sql_statements = open(os.path.join(sqls_dir, file_name), 'r').read()
     return sql_statements
@@ -18,5 +25,6 @@ class Migration(migrations.Migration):
     ]
 
     operations = [
-        migrations.RunSQL(load_nectar_inital_data_from_sql()),
+        migrations.RunSQL(load_contact_roles_inital_data_from_sql()),
+        migrations.RunSQL(load_notify_contact_roles_from_sql()),
     ]

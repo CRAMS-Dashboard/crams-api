@@ -4,7 +4,7 @@ VALUES('notification/submit.html', (SELECT id FROM crams_allocation_requeststatu
 INSERT INTO `crams_allocation_notificationtemplate` (`template_file_path`, `request_status_id`, `alert_funding_body`, `funding_body_id`, `e_research_system_id`)
 VALUES('notification/submit.html', (SELECT id FROM crams_allocation_requeststatus WHERE `code` = 'E'), 0, (SELECT id from crams_fundingbody where `name` = 'CRAMS'), (SELECT id FROM crams_eresearchbodysystem WHERE `name` = 'CRAMS-ERB-SYS'));
 
-set @applicant_id = (SELECT id from crams_contact_contactrole where `name` = 'Applicant' and e_research_body_id = (SELECT id from crams_eresearchbody where `name` = 'CRAMS-ERB'));
+set @applicant_id = (SELECT id from crams_contact_contactrole where `name` = 'Applicant' and e_research_body_id is NULL);
 set @technical_contact_id = (SELECT id from crams_contact_contactrole where name = 'Technical Contact' and e_research_body_id = (SELECT id from crams_eresearchbody where `name` = 'CRAMS-ERB'));
 set @data_custodian_id = (SELECT id from crams_contact_contactrole where name = 'Data Custodian' and e_research_body_id = (SELECT id from crams_eresearchbody where `name` = 'CRAMS-ERB'));
 set @approver_id = (SELECT id from crams_contact_contactrole where `name` = 'E_RESEARCH_BODY_SYSTEM_Approver');

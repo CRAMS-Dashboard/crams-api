@@ -13,9 +13,14 @@ Including another URLconf
     1. Import the include() function: from django.urls import include, path
     2. Add a URL to urlpatterns:  path('blog/', include('blog.urls'))
 """
-from crams_storage.views import ingest
-from django.urls import path
+from rest_framework import routers
+from crams_storage.views import ingest, lookup_api
+from django.urls import path, include
+
+router = routers.SimpleRouter()
+router.register(r'', lookup_api.ERBStorageProductViewSet, basename='erb_sps')
 
 urlpatterns = [
+    path('', include(router.urls)),
     path('recent_provision_id', ingest.recent_provision_id, name='recent_provision_id'),
 ]

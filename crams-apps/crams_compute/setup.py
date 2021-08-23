@@ -53,7 +53,8 @@ setup(
 
     install_requires=['merc_common',
                       'crams_log',
-                      'crams_contact'
+                      'crams_contact',
+                      'crams_compute',
                       ],
     include_package_data=True,
 )

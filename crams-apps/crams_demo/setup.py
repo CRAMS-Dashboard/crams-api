@@ -51,6 +51,7 @@ setup(
 
     packages=find_packages(),
 
-    install_requires=['merc_common',],
+    install_requires=['merc_common',
+                      'crams_contact',],
     include_package_data=True,
 )

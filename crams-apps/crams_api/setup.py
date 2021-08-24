@@ -127,10 +127,9 @@ class DistributeSource(Command):
         sys.exit()
 
 
-class PublishDist(Command):
+class CreateGitTag(Command):
     """Support setup.py upload."""
-
-    description = 'Publish the package.'
+    description = 'Create git tag based on the release version.'
     user_options = []
 
     def initialize_options(self):
@@ -140,12 +139,9 @@ class PublishDist(Command):
         pass
 
     def run(self):
-        status('Uploading the package to PyPI via Twine ...')
-        os.system('twine upload dist/*')
-        #
-        # status('Pushing git tags…')
-        # os.system('git tag v{0}'.format(about['__version__']))
-        # os.system('git push --tags')
+        status('Pushing git tags…')
+        os.system('git tag API_v{0}'.format(about['__version__']))
+        os.system('git push --tags')
         sys.exit()
 
 
@@ -188,7 +184,6 @@ setup(
     ],
     # setup.py dist and publish
     cmdclass={
-        'dist': DistributeSource,
-        'publish': PublishDist,
+        'tag': CreateGitTag,
     },
 )

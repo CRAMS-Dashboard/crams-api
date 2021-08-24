@@ -31,6 +31,6 @@ ADMIN_ALERT_DATA_SENSITIVE.append(RDSM_ERB_LOWER)
 
 # admin email alert when question key changes
 ADMIN_ALERT_QUESTION_KEYS.append(
-    {RDSM_ERB_LOWER: 'racm_electronic_inf_class'})
+    {RDSM_ERB_LOWER: 'crams_demo_electronic_inf_class'})
 ADMIN_ALERT_QUESTION_KEYS.append(
-    {RDSM_ERB_LOWER: 'racm_data_migration_assistance'})
+    {RDSM_ERB_LOWER: 'crams_demo_data_migration_assistance'})

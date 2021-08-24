@@ -20,7 +20,7 @@
 
     Start date  : {{ request.start_date }}
 
-    Data Retention Period (Year):{{ request.request_question_responses|filter_question_response:"racm_data_retention_period" }}
+    Data Retention Period (Year):{{ request.request_question_responses|filter_question_response:"crams_demo_data_retention_period" }}
 
     Data Custodian(s): {% for project_contact in project|get_project_contacts_by_role:"Data Custodian" %}
     - {{ project_contact|get_contact_name }}{% endfor %}

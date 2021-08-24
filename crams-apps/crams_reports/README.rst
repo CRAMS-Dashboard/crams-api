@@ -1,10 +1,8 @@
-=====
-Crams Common
-=====
+Crams Reports Package
+======================
 
-Crams Common is a Django app to ...
-
-Detailed documentation is in the "docs" directory.
+Crams Reports is a Django app package for CRAMS api open source. Detailed documentation is in the "docs" directory.
+Souce code is available at https://github.com/CRAMS-Dashboard/crams-api
 
 Quick start
 -----------
@@ -16,10 +14,6 @@ Quick start
         'crams_reports',
     ]
 
-2. Include the polls URLconf in your project urls.py like this::
+2. Include the crams_reports URLconf in your project urls.py like this::
 
-    path('crams_reports/', include('crams_reports.urls')),
-
-3. Run ``python manage.py migrate`` to create the polls models.
-
-4. Start the development server and visit http://127.0.0.1:8000/admin/
+    path('', include('crams_reports.urls')),

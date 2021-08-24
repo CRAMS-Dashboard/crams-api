@@ -87,9 +87,11 @@ except FileNotFoundError:
 # Load the package's __init__.py module as a dictionary.
 #
 about = {}
-project_slug = NAME.lower().replace("-", "_").replace(" ", "_")
-with open(os.path.join(current_dir, project_slug, '__init__.py')) as vf:
-    exec(vf.read(), about)
+# project_slug = NAME.lower().replace("-", "_").replace(" ", "_")
+# with open(os.path.join(current_dir, project_slug, '__init__.py')) as vf:
+#     exec(vf.read(), about)
+with open(os.path.join(current_dir, 'version.py'))as fv:
+    exec(fv.read(), about)
 
 current_version = about.get('__version__', None)
 if not current_version:

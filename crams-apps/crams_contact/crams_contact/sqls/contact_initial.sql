@@ -1,5 +1,6 @@
 -- noinspection SqlDialectInspectionForFile
 -- noinspection SqlNoDataSourceInspectionForFile
+INSERT INTO crams_contact_contactrole (`name`, project_leader, read_only, support_notification) VALUES ('Applicant', FALSE, FALSE, FALSE);
 INSERT INTO crams_contact_contactrole (`name`, project_leader, read_only, support_notification) VALUES ('E_RESEARCH_BODY Admin', false, false, false);
 INSERT INTO crams_contact_contactrole (`name`, project_leader, read_only, support_notification) VALUES ('E_RESEARCH_BODY_SYSTEM Admin', false, false, false);
 INSERT INTO crams_contact_contactrole (`name`, project_leader, read_only, support_notification) VALUES ('E_RESEARCH_SYSTEM_DELEGATE', false, false, false);

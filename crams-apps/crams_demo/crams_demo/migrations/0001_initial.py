@@ -12,6 +12,13 @@ def load_demo_initial_data_from_sql():
     return sql_statements
 
 
+def load_zone_data_from_sql():
+    file_name = 'zones.sql'
+    sqls_dir = os.path.abspath(os.path.join(os.path.dirname(__file__), '../sqls'))
+    sql_statements = open(os.path.join(sqls_dir, file_name), 'r').read()
+    return sql_statements
+
+
 def load_demo_compute_data_from_sql():
     file_name = 'crams_demo_compute_products.mysql.sql'
     sqls_dir = os.path.abspath(os.path.join(os.path.dirname(__file__), '../sqls'))
@@ -71,6 +78,7 @@ class Migration(migrations.Migration):
 
     operations = [
         migrations.RunSQL(load_demo_initial_data_from_sql()),
+        migrations.RunSQL(load_zone_data_from_sql()),
         migrations.RunSQL(load_contact_roles_data_from_sql()),
         migrations.RunSQL(load_demo_compute_data_from_sql()),
         migrations.RunSQL(load_demo_questions_from_sql()),

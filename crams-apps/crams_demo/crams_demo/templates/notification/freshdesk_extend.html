@@ -1,0 +1,21 @@
+{% load demo_tags %}
+Dear Support Team,
+{%with applicants=request.project_contacts|get_prj_cont_by_role:'Applicant'%} {%with data_custs=request.project_contacts|get_prj_cont_by_role:'Data Custodian'%}
+An application has been extended in the Data Dashboard.
+
+Project Title: 
+{{request.prj_title}}
+
+Applicant:
+{% if applicants %}{% for app in applicants %}{{ app }}{% endfor %}{% else %}-{% endif %}
+
+Data Custodian(s):
+{% for dc in data_custs %}{{ dc }}
+{% endfor %}
+Application:
+{{request.url}}/#/admin/allocations/view_request/{{request.req_id}}
+
+Thanks,
+CRAMS
+{%endwith%}
+{%endwith%}

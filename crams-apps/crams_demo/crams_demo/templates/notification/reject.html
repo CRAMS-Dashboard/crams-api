@@ -1,0 +1,15 @@
+{% extends "notification/base.html" %}{% load demo_tags %}{% block preamble %}{% with dear=request.project|display_dc_and_app_contacts %}{% autoescape off %}
+Allocation Declined for Project: {{ request.project.title }}
+
+{{ dear }},
+
+The Monash University Research Data Storage team has assessed your application for research data storage and regrets to inform you that your request has not been successful at this time.
+{% if request.approval_notes %}
+Reason
+---------
+{{ request.approval_notes }}
+{% endif %}
+A member of the team will be in touch with you shortly in order to discuss this in further detail. Please note that rejected applications can still be approved, although they may require some minor changes or clarification.
+
+You can view your project and request history within the Data Dashboard in the My Requests menu.
+{% endautoescape %}{% endwith %}{% endblock %}

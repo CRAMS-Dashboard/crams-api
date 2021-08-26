@@ -13,19 +13,17 @@ Including another URLconf
     1. Import the include() function: from django.urls import include, path
     2. Add a URL to urlpatterns:  path('blog/', include('blog.urls'))
 """
-from django.contrib import admin
-from django.urls import path, include
-from rest_framework import routers
-
+from crams_contact.auth import rapidconnect_auth
 from crams_contact.auth.auth_api import CramsBasicLoginAuthToken
 from crams_contact.auth.user_roles_api import CurrentUserRolesView
-from crams_contact.auth import rapidconnect_auth
-from crams_contact.views.contact import ContactViewSet
+from crams_contact.views.contact import ContactViewSet, AdminContactViewSet
 from crams_contact.views.contact_role import ContactRoleViewSet
 from crams_contact.views.organisation import DepartmentViewSet
 from crams_contact.views.organisation import FacultyViewSet
 from crams_contact.views.organisation import OrganisationViewSet
 from django.conf.urls import url
+from django.urls import path, include
+from rest_framework import routers
 
 router = routers.SimpleRouter()
 router.register(r'contact_role', ContactRoleViewSet)
@@ -33,6 +31,7 @@ router.register(r'department', DepartmentViewSet)
 router.register(r'faculty', FacultyViewSet)
 router.register(r'organisation', OrganisationViewSet)
 router.register(r'searchcontact', ContactViewSet)
+router.register(r'admin_contact', AdminContactViewSet)
 
 urlpatterns = [
     path('', include(router.urls)),

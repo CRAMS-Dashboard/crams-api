@@ -1,0 +1,2 @@
+INSERT INTO crams_compute_computeproduct(id, `name`, funding_body_id, provider_id, e_research_system_id, operational_cost, unit_cost, cost_unit_type_id, capacity) VALUES (1, 'CRAMS Compute', (SELECT id from crams_fundingbody where `name` = 'CRAMS'), (SELECT id from crams_provider where `name` = 'CRAMS'), (SELECT id from crams_eresearchbodysystem where `name` = 'CRAMS-ERB-SYS'), 0, 0, null, 0);
+INSERT INTO crams_allocation_allocationhome(id, code, description) VALUES (2, 'crams', 'CRAMS');

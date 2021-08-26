@@ -1,0 +1,3 @@
+INSERT INTO crams_contact_contactrole (`name`, e_research_body_id, project_leader, read_only, support_notification) VALUES ('Technical Contact', (SELECT id from crams_eresearchbody where `name` = 'CRAMS-ERB'), FALSE, FALSE, FALSE);
+INSERT INTO crams_contact_contactrole (`name`, e_research_body_id, project_leader, read_only, support_notification) VALUES ('Data Custodian', (SELECT id from crams_eresearchbody where `name` = 'CRAMS-ERB'), TRUE, FALSE, FALSE);
+INSERT INTO crams_contact_contactrole (`name`, e_research_body_id, project_leader, read_only, support_notification) VALUES ('Data Provider', (SELECT id from crams_eresearchbody where `name` = 'CRAMS-ERB'), FALSE, FALSE, FALSE);

@@ -28,7 +28,7 @@ from crams_allocation.views.project_request_list import EResearchAllocationsCoun
 from crams_allocation.views.approve_request_list import ApproveRequestListView
 # from crams_allocation.views.provision_request_list import ProvisionRequestListView
 from crams_allocation.views.request_history import RequestHistoryViewSet
-from crams_allocation.views.lookup_api import fb_storage_product
+# from crams_allocation.views.lookup_api import fb_storage_product
 # from crams_allocation.viewsets.provision_request import ProvisionProjectViewSet
 from crams_allocation.viewsets.decline_request import DeclineRequestViewSet
 from crams_allocation.viewsets.approve_request import ApproveRequestViewSet
@@ -50,7 +50,7 @@ urlpatterns = [
     path('', include(router.urls)),
     # path('admin/', admin.site.urls),
     path('accounts/login', auth_views.LoginView.as_view()),
-    re_path(r'storage_products/(?P<fb_name>[-\w]+)', fb_storage_product, name='storage_products'),
+    # re_path(r'storage_products/(?P<fb_name>[-\w]+)', fb_storage_product, name='storage_products'),
     # allocation urls
     path(r'alloc_counter', EResearchAllocationsCounter.as_view()),
     path(r'approve_list', ApproveRequestListView.as_view()),

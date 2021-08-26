@@ -1,5 +1,5 @@
 #!/bin/bash
-source  ~/.pyenv/versions/crams_py38/bin/activate
+source  ~/.pyenv/versions/crams_demo_py38/bin/activate
 
 export PATH=/usr/local/mysql/bin:$PATH
 
@@ -27,7 +27,7 @@ python setup.py sdist
 cd ../crams_collection
 python setup.py sdist
 
-cd ../crams_racmon
+cd ../crams_demo
 python setup.py sdist
 
 cd ../crams_allocation
@@ -45,39 +45,63 @@ python setup.py sdist
 cd ../crams_reports
 python setup.py sdist
 
-cd ../hpc
-python setup.py sdist
 
 cd ../crams_api
 pip install --upgrade pip
-pip uninstall -y merc-common
-pip install ../merc_common/dist/merc_common-1.0.0.tar.gz
-pip uninstall -y crams_log
-pip install ../crams_log/dist/crams_log-1.0.0.tar.gz
-pip uninstall -y crams_contact
-pip install ../crams_contact/dist/crams_contact-1.0.0.tar.gz
-pip uninstall -y crams_notification
-pip install ../crams_notification/dist/crams_notification-1.0.0.tar.gz
-pip uninstall -y crams_compute
-pip install ../crams_compute/dist/crams_compute-1.0.0.tar.gz
-pip uninstall -y crams_storage
-pip install ../crams_storage/dist/crams_storage-1.0.0.tar.gz
-pip uninstall -y crams_collection
-pip install ../crams_collection/dist/crams_collection-1.0.0.tar.gz
-pip uninstall -y crams_allocation
-pip install ../crams_allocation/dist/crams_allocation-1.0.0.tar.gz
-pip uninstall -y crams_provision
-pip install ../crams_provision/dist/crams_provision-1.0.0.tar.gz
-pip uninstall -y crams_member
-pip install ../crams_member/dist/crams_member-1.0.0.tar.gz
-pip uninstall -y crams_resource_usage
-pip install ../crams_resource_usage/dist/crams_resource_usage-1.0.0.tar.gz
-pip uninstall -y crams_reports
-pip install ../crams_reports/dist/crams_reports-1.0.0.tar.gz
-pip uninstall -y crams_racmon
-pip install ../crams_racmon/dist/crams_racmon-1.0.0.tar.gz
-pip uninstall -y hpc
-pip install ../hpc/dist/hpc-1.0.0.tar.gz
 
-pip install -r ../crams_api/requirements.txt
-pip install -r ../crams_api/test-requirements.txt
+cd ../merc_common
+pip uninstall -y merc-common
+pip install -e .
+
+cd ../crams_log
+pip uninstall -y crams_log
+pip install -e .
+
+cd ../crams_contact
+pip uninstall -y crams_contact
+pip install -e .
+
+cd ../crams_notification
+pip uninstall -y crams_notification
+pip install -e .
+
+cd ../crams_compute
+pip uninstall -y crams_compute
+pip install -e .
+
+cd ../crams_storage
+pip uninstall -y crams_storage
+pip install -e .
+
+cd ../crams_collection
+pip uninstall -y crams_collection
+pip install -e .
+
+cd ../crams_allocation
+pip uninstall -y crams_allocation
+pip install -e .
+
+cd ../crams_provision
+pip uninstall -y crams_provision
+pip install -e .
+
+cd ../crams_member
+pip uninstall -y crams_member
+pip install -e .
+
+cd ../crams_resource_usage
+pip uninstall -y crams_resource_usage
+pip install -e .
+
+cd ../crams_reports
+pip uninstall -y crams_reports
+pip install -e .
+
+cd ../crams_demo
+pip uninstall -y crams_demo
+pip install -e .
+
+
+cd ..
+pip install -r crams_api/requirements.txt
+pip install -r crams_api/test-requirements.txt

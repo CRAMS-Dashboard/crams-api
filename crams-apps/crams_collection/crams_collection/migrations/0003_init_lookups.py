@@ -13,23 +13,11 @@ def load_crams_collection_inital_data_from_sql():
     return sql_statements
 
 
-def load_monash_org_inital_data_from_sql():
-    import os
-
-    file_name = 'organisation_faculty_dept.mysql.sql'
-    sql_dir = os.path.abspath(os.path.join(os.path.dirname(__file__), '../sqls'))
-    sql_statements = open(os.path.join(sql_dir, file_name), 'r').read()
-
-    return sql_statements
-
-
 class Migration(migrations.Migration):
-
     dependencies = [
         ('crams_collection', '0002_project_crams_id'),
     ]
 
     operations = [
         migrations.RunSQL(load_crams_collection_inital_data_from_sql()),
-        migrations.RunSQL(load_monash_org_inital_data_from_sql()),
     ]

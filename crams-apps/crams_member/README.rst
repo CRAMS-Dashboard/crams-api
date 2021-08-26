@@ -1,28 +1,19 @@
-=====
-Crams Member
-=====
+Crams Member Package
+===========================
 
-Crams Member is a Django app to ...
-
-Detailed documentation is in the "docs" directory.
+Crams Member is a Django app package for CRAMS api open source. Detailed documentation is in the "docs" directory.
+Souce code is available at https://github.com/CRAMS-Dashboard/crams-api
 
 Quick start
 -----------
 
-1. Add "polls" to your INSTALLED_APPS setting like this::
+1. Add "crams_member" to your INSTALLED_APPS setting like this::
 
     INSTALLED_APPS = [
         ...
         'crams_member',
     ]
 
-2. Include the polls URLconf in your project urls.py like this::
+2. Include the crams_member URLconf in your project urls.py like this::
 
-    path('crams_member/', include('crams_member.urls')),
-
-3. Run ``python manage.py migrate`` to create the polls models.
-
-4. Start the development server and visit http://127.0.0.1:8000/admin/
-   to create a poll (you'll need the Admin app enabled).
-
-5. Visit http://127.0.0.1:8000/polls/ to participate in the poll.
+    path('', include('crams_member.urls')),

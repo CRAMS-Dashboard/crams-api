@@ -63,8 +63,8 @@ INSTALLED_APPS = [
     'crams_resource_usage.compute',
     'crams_reports',
     'crams_software',
-    'crams_racmon',
-    'hpc',
+    'crams_review',
+    'crams_demo',
     'crams_api'
 ]
 
@@ -120,12 +120,12 @@ DATABASES = {
 # API module Integration
 CRAMS_ASPECT_CONFIG_LIST = [
     # erb System configs
-    'crams_racmon.config.config_init',
+    'crams_demo.config.config_init',
     # Aspect config
     'crams_collection.config.aspect_config',
     'crams_allocation.config.aspect_config',
     'crams_member.config.aspect_config',
-    'crams_racmon.config.aspect_config',
+    'crams_demo.config.aspect_config',
 ]
 
 REST_FRAMEWORK = {

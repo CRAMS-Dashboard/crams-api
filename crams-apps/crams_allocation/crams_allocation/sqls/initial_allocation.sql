@@ -15,4 +15,3 @@ INSERT INTO crams_allocation_requeststatus (id, code, status, transient) VALUES 
 INSERT INTO crams_allocation_requeststatus (id, code, status, transient) VALUES (13, 'U', 'Application Updated', false);
 
 INSERT INTO crams_allocation_allocationhome(id, code, description) VALUES (1, 'national', 'National/Unassigned');
-INSERT INTO crams_allocation_allocationhome(id, code, description) VALUES (2, 'crams', 'CRAMS');

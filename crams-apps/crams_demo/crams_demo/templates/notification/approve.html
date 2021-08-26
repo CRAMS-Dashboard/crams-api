@@ -1,0 +1,12 @@
+{% extends "notification/base.html" %}{% load demo_tags %}{% block preamble %}{% with dear=request.project|display_dc_and_app_contacts %}{% autoescape off %}
+Allocation Approved for Project: {{ request.project.title }}
+
+{{ dear }},
+
+The Monash University Research Data Storage team has assessed your application for research data storage and we are pleased to inform you that your request has been approved.
+
+The next step is to provision your storage allocation and ensure that it is ready for use. While your storage is being provisioned you may be contacted by a team member if we require any additional information. We will notify you via email in order to let you know that your storage has been provisioned and to provide you with instructions for accessing it.
+
+You can view your project and request history within the Data Dashboard in the My Requests menu.
+{% endautoescape %}{% endwith %}{% endblock %}
+

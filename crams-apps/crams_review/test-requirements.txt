@@ -1,0 +1,10 @@
+coverage==5.5
+flake8==3.9.0
+pep8==1.7.1
+pyflakes==2.3.1
+tox==3.23.0
+pytest==6.2.3
+pytest-django==4.1.0
+hypothesis==6.8.6
+mixer==7.1.2
+pytest-cov==2.11.1

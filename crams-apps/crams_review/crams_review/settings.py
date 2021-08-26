@@ -9,7 +9,6 @@ https://docs.djangoproject.com/en/3.1/topics/settings/
 For the full list of settings and their values, see
 https://docs.djangoproject.com/en/3.1/ref/settings/
 """
-import importlib
 import logging
 import os
 from pathlib import Path
@@ -26,7 +25,7 @@ SECRET_KEY = 'vix)4vqajw@i5=2ed0&3_7nq6zw#x5fl*&0sezzjbw148j%9-z'
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ['*', 'localhost', '127.0.0.1']
+ALLOWED_HOSTS = ['*']
 
 NECTAR_NOTIFICATION_REPLY_TO = "email@me"
 CRAMS_APP_CONFIG_LIST = []
@@ -51,20 +50,12 @@ INSTALLED_APPS = [
     'crams_log',
     'crams_notification',
     'crams_contact',
-    'crams_manager',
+    'crams_allocation',
     'crams_collection',
     'crams_compute',
     'crams_storage',
-    'crams_allocation',
-    'crams_provision',
-    'crams_member',
-    'crams_resource_usage',
-    'crams_resource_usage.storage',
-    'crams_resource_usage.compute',
-    'crams_reports',
-    'crams_review',
     'crams_demo',
-    'crams_api'
+    'crams_review',
 ]
 
 AUTH_USER_MODEL = 'crams.User'
@@ -86,15 +77,14 @@ CORS_ORIGIN_ALLOW_ALL = True
 # append the back slash
 APPEND_SLASH = True
 
-ROOT_URLCONF = 'crams_api.urls'
+ROOT_URLCONF = 'crams_review.urls'
 
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
+        'DIRS': [],
+        'APP_DIRS': True,
         'OPTIONS': {
-            'loaders': [
-                'django.template.loaders.app_directories.Loader',
-            ],
             'context_processors': [
                 'django.template.context_processors.debug',
                 'django.template.context_processors.request',
@@ -104,28 +94,12 @@ TEMPLATES = [
         },
     },
 ]
-WSGI_APPLICATION = 'crams_allocation.wsgi.application'
+
+WSGI_APPLICATION = 'crams_review.wsgi.application'
 
 # Database
 # https://docs.djangoproject.com/en/3.1/ref/settings/#databases
 
-DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': BASE_DIR / 'db.sqlite3',
-    }
-}
-
-# API module Integration
-CRAMS_ASPECT_CONFIG_LIST = [
-    # erb System configs
-    'crams_demo.config.config_init',
-    # Aspect config
-    'crams_collection.config.aspect_config',
-    'crams_allocation.config.aspect_config',
-    'crams_member.config.aspect_config',
-    'crams_demo.config.aspect_config',
-]
 
 REST_FRAMEWORK = {
     'DEFAULT_AUTHENTICATION_CLASSES': (
@@ -159,43 +133,20 @@ AUTH_PASSWORD_VALIDATORS = [
     },
 ]
 
-# Run environment settings
-DEV_ENVIRONMENT = 'development'
-STAGING_ENVIRONMENT = 'staging'
-QAT_ENVIRONMENT = 'qat'
-PROD_ENVIRONMENT = 'production'
-CURRENT_RUN_ENVIRONMENT = 'DEMO'
-
 # Internationalization
 # https://docs.djangoproject.com/en/3.1/topics/i18n/
 
-LANGUAGE_CODE = 'en-au'
-TIME_ZONE = 'Australia/Melbourne'
+LANGUAGE_CODE = 'en-us'
+
+TIME_ZONE = 'UTC'
+
 USE_I18N = True
+
 USE_L10N = True
+
 USE_TZ = True
+
 import logging
-
-# Celery broker configuration for Rabbit MQ
-CELERY_BROKER_URL = 'amqp://mq_admin:mq_admin_pwd@mq_ip_address:5672/crams_opensource'
-CELERY_ACCEPT_CONTENT = ['application/json']
-CELERY_RESULT_SERIALIZER = 'json'
-CELERY_TASK_SERIALIZER = 'json'
-CELERY_TIMEZONE = TIME_ZONE
-# ref to http://docs.celeryproject.org/en/latest/userguide/periodic-tasks.html#crontab-schedules
-# CELERY Cron Job
-CELERY_BEAT_SCHEDULE = {}
-# end of Celery Configuration
-
-# Enable Rabbit MQ to send email, default is False
-MQ_MAIL_ENABLED = False
-# Send email to the console by default
-EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
-# EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
-# Or have an smtp backend, it will send email to admin user
-EMAIL_HOST = 'smtp.crams.com'
-MAILER_EMAIL_BACKEND = EMAIL_BACKEND
-EMAIL_SENDER = 'sender@crams.com'
 
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/3.1/howto/static-files/
@@ -209,25 +160,11 @@ STATICFILES_FINDERS = [
     "django.contrib.staticfiles.finders.FileSystemFinder",
     "django.contrib.staticfiles.finders.AppDirectoriesFinder",
 ]
-
-DEFAULT_CLIENT_VIEW_REQUEST_PATH = '/#/allocations/view_request/'
-DEFAULT_CLIENT_VIEW_APPROVAL_PATH = '/#/approval/view_request/'
-
-RACMON_CLIENT_BASE_URL = 'https://127.0.0.1'
-RACMON_CLIENT_VIEW_REQUEST_PATH = DEFAULT_CLIENT_VIEW_REQUEST_PATH
-RACMON_CLIENT_VIEW_APPROVAL_PATH = DEFAULT_CLIENT_VIEW_APPROVAL_PATH
-RACMON_CLIENT_VIEW_JOIN_PATH = '/#/allocations/join_project/'
-RACMON_CLIENT_VIEW_MEMBER_PATH = '/#/allocations/membership/'
-
 # Import the local_settings.py to override some of the default settings,
 # like database settings
 try:
-    from crams_api.local.local_settings import *
+    from crams_review.local.local_settings import *  # noqa
+
+    print('---- local settings found.')
 except ImportError:
     logging.debug("No local_settings file found.")
-
-# override the celery settings
-try:
-    from crams_api.local.celery_settings import *
-except ImportError:
-    logging.debug("No celery_settings file found.")

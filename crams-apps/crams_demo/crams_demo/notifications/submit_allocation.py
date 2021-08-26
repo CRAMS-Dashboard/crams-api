@@ -13,7 +13,7 @@ from crams_notification.utils import mail_util
 from crams_demo.config import config_init as conf
 from crams_demo.config.config_init import racmon_support_email_dict, RDSM_REPLY_TO_EMAIL
 from crams_collection.serializers.project_contact_serializer import ProjectContactSerializer
-
+from crams_review.utils import set_review
 from crams_allocation.models import NotificationTemplate
 from crams_allocation.config.allocation_config import ADMIN_ALERT_DATA_SENSITIVE
 from crams_allocation.config.allocation_config import ADMIN_ALERT_QUESTION_KEYS
@@ -21,6 +21,10 @@ from crams_demo.notifications.racmon_notification_utils import RacmonAllocationN
 import json
 
 def submit_allocation_emails(existing_request_instance, request, serializer_context, is_clone_action=False):
+    # if alloaction status is provision set the review
+    if request.request_status.code == 'P':
+        set_review(request)
+    
     # # send admin email if any question changes that require an admin alert
     send_admin_email_alert(existing_request_instance, request)
 
@@ -34,6 +38,8 @@ def submit_allocation_emails(existing_request_instance, request, serializer_cont
 
 
 def send_partial_provision_notification(request_obj, serializer_context):
+    # set the review
+    set_review(request_obj)
     print('------------------Sending partial provision email notification-------------------')
 
 

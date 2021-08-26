@@ -16,6 +16,7 @@ from merc_common import urls as common_urls
 from rest_framework import routers
 from crams_notification import urls as notification_urls
 from crams_compute import urls as compute_urls
+from crams_review import urls as review_urls
 
 router = routers.SimpleRouter()
 
@@ -32,4 +33,5 @@ urlpatterns = [
     path('', include(common_urls)),
     path('', include(notification_urls)),
     path('', include(compute_urls)),
+    path('review/', include(review_urls)),
 ]

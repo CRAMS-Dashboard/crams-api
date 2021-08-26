@@ -77,5 +77,5 @@ class Migration(migrations.Migration):
         migrations.RunSQL(load_support_email_sql()),
         migrations.RunSQL(load_demo_org_faculty_data_sql()),
         migrations.RunSQL(load_email_notification_sql()),
-        migrations.RunSQL(load_member_notification_sql())
+        migrations.RunSQL(load_member_notification_sql()),
     ]

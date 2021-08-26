@@ -1,14 +1,15 @@
 from crams.permissions import IsCramsAuthenticated
-from crams_compute import models
+from crams_compute.models import ComputeProduct
 from crams_compute.serializers.compute_product import ERBSystemComputeProductSerializer
 from rest_framework import viewsets, decorators
 from rest_framework.response import Response
+from crams.models import EResearchBodySystem
 
 
 class ERBComputeProductViewSet(viewsets.ViewSet):
     serializer_class = ERBSystemComputeProductSerializer
-    # permission_classes = [IsCramsAuthenticated]
-    queryset = models.ComputeProduct.objects.none()
+    permission_classes = [IsCramsAuthenticated]
+    queryset = ComputeProduct.objects.none()
 
     @decorators.action(detail=False,
                        url_path='compute_products/(?P<e_research_body>[-\w]+)/(?P<e_research_system>[-\w]+)')

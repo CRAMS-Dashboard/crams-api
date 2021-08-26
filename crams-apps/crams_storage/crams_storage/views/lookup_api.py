@@ -5,9 +5,10 @@ from rest_framework import viewsets, decorators
 from rest_framework.response import Response
 from crams.models import EResearchBodySystem
 
+
 class ERBStorageProductViewSet(viewsets.ViewSet):
     serializer_class = ERBSystemStorageProductSerializer
-    # permission_classes = [IsCramsAuthenticated]
+    permission_classes = [IsCramsAuthenticated]
     queryset = StorageProduct.objects.none()
 
     @decorators.action(detail=False,

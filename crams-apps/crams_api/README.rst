@@ -1,28 +1,32 @@
-=====
-Crams Common
-=====
+Crams API
+==========
 
-Crams Common is a Django app to ...
+Crams API is a Django application which integrated with all crams modulars.
 
 Detailed documentation is in the "docs" directory.
 
 Quick start
 -----------
 
-1. Add "polls" to your INSTALLED_APPS setting like this::
+1. Add "all crams modulars" to your INSTALLED_APPS setting like this::
 
     INSTALLED_APPS = [
         ...
-        'crams_common',
+        'merc_common',
+        'crams_log',
+        ...
     ]
 
-2. Include the polls URLconf in your project urls.py like this::
+2. Include the all crams modulars URLconf in your project urls.py like this::
 
-    path('crams_common/', include('crams_common.urls')),
+    path('', include('merc_common.urls')),
+    path('', include('crams_contact.urls')),
 
-3. Run ``python manage.py migrate`` to create the polls models.
+    ...
+
+3. Run ``python manage.py migrate`` to create the crams api models.
 
 4. Start the development server and visit http://127.0.0.1:8000/admin/
-   to create a poll (you'll need the Admin app enabled).
+   to see crams (you'll need the Admin app enabled).
 
-5. Visit http://127.0.0.1:8000/polls/ to participate in the poll.
+5. Visit http://127.0.0.1:8000 to test CRAMS Api.

@@ -1,137 +1,143 @@
 import logging
+from collections import OrderedDict
 
+from crams.models import EResearchBodyIDKey
+from crams.serializers.model_serializers import ModelLookupSerializer
 from crams.serializers.model_serializers import ReadOnlyModelSerializer
+from crams.utils.provision_detail_utils import ProvisionDetailUtils
 from crams.utils.role import AbstractCramsRoleUtils
 from crams_collection.models import ProjectID, Project
 from crams_collection.serializers import project_id_serializer
+from crams_collection.utils import project_user_utils
+from crams_contact.models import Contact
 from crams_contact.serializers.contact_id_sz import ContactIDSerializer
+from crams_contact.serializers.organisation_serializers import ReadOnlyOrganisationSerializer
+from crams_provision.utils import base
 from django.contrib import auth
 from django.db import transaction
 from django.db.models import Q
 from rest_framework import serializers, exceptions
-
-from crams_provision.utils import base
 
 LOG = logging.getLogger(__name__)
 User = auth.get_user_model()
 CLASS_SZ = project_id_serializer.ERBProjectIDSerializer
 
 
-# class ContactIDProvisionSerializer(ModelLookupSerializer):
-#     """class ContactIDProvisionSerializer."""
-#
-#     id = serializers.SerializerMethodField()
-#     given_name = serializers.SerializerMethodField()
-#     surname = serializers.SerializerMethodField()
-#     email = serializers.SerializerMethodField()
-#     organisation = ReadOnlyOrganisationSerializer(many=False, allow_null=True)
-#
-#     # contact = serializers.SerializerMethodField()
-#
-#     contact_ids = serializers.SerializerMethodField()
-#
-#     class Meta(object):
-#         model = Contact
-#         fields = ('id', 'given_name', 'surname', 'email', 'contact_ids')
-#
-#     # def get_contact(self, contact_obj):
-#     #     return contact_serializers.ContactLookupSerializer(contact_obj).data
-#
-#     @classmethod
-#     def get_id(cls, contact_obj):
-#         return contact_obj.id
-#
-#     @classmethod
-#     def get_given_name(cls, contact_obj):
-#         return contact_obj.given_name
-#
-#     @classmethod
-#     def get_surname(cls, contact_obj):
-#         return contact_obj.surname
-#
-#     @classmethod
-#     def get_email(cls, contact_obj):
-#         return contact_obj.email
-#
-#     def get_current_user(self):
-#         return project_user_utils.get_current_user_from_context(self)
-#
-#     @classmethod
-#     def get_contact_ids(cls, contact_obj):
-#         ret_ids = []
-#         for contact_id in contact_obj.system_identifiers.all():
-#             id_dict = OrderedDict()
-#             id_dict['id'] = contact_id.id
-#             # check contact_id.provision_details
-#             # if is not none and status is 'Provisioned' then true, else false
-#             if contact_id.provision_details is None:
-#                 provision_detail = \
-#                     ProvisionDetailUtils.update_or_get_new_provisiondetails_object(
-#                         contact_id, False)
-#                 provision_detail.save()
-#                 contact_id.provision_details = provision_detail
-#                 contact_id.save()
-#                 id_dict['provisioned'] = False
-#             else:
-#                 id_dict['provisioned'] = False
-#                 if contact_id.provision_details.status == 'Provisioned':
-#                     id_dict['provisioned'] = True
-#             ret_ids.append(id_dict)
-#
-#             id_dict['identifier'] = contact_id.identifier
-#             id_dict['key'] = contact_id.system.key
-#             id_dict['e_research_body'] = contact_id.system.e_research_body.name
-#         return ret_ids
-#
-#     @classmethod
-#     def fetch_system_obj(cls, key, erb_name):
-#         try:
-#             return EResearchBodyIDKey.objects.get(
-#                 key=key, e_research_body__name__iexact=erb_name)
-#         except EResearchBodyIDKey.DoesNotExist:
-#             msg = 'ERB System key not found for {}/{}'
-#             raise exceptions.ValidationError(msg.format(key, erb_name))
-#
-#     def validate_contact_ids(self):
-#         if not isinstance(self.instance, Contact):
-#             raise exceptions.ValidationError(
-#                 'existing instance not Contact object')
-#
-#         ret_list = list()
-#
-#         user_erb_roles = \
-#             project_user_utils.fetch_erb_userroles_with_provision_privileges(
-#                 self.get_current_user())
-#         sz_cls = ContactIDSerializer
-#         for contact_data in self.initial_data.get('contact_ids'):
-#             key = contact_data.get('key')
-#             erb_name = contact_data.get('e_research_body')
-#             system_obj = self.fetch_system_obj(key, erb_name)
-#             contact_data['system'] = {'system_obj': system_obj}
-#             obj = sz_cls.fetch_save_object_sz(
-#                 contact_data, self.instance, user_erb_roles)
-#             if obj:
-#                 ret_list.append(obj)
-#
-#         return ret_list
-#
-#     def validate(self, data):
-#         data['contact_ids'] = self.validate_contact_ids()
-#         return data
-#
-#     @transaction.atomic
-#     def update(self, instance, validated_data):
-#         erb_contact_list_sz = validated_data.pop('contact_ids', [])
-#         ret_contact_system_ids = list()
-#         contact_id_objs = list()
-#         for sz in erb_contact_list_sz:
-#             contact_id_objs.append(sz.save())
-#             ret_contact_system_ids.append(sz.data)
-#         validated_data['contact_ids'] = ret_contact_system_ids
-#         # notify erb_contacts
-#         # provisionSerializers.BaseProvisionMessageSerializer.\
-#         # send_contact_id_email(contact_id_objs)
-#         return instance   # return contact instance to allow proper display
+class ContactIDProvisionSerializer(ModelLookupSerializer):
+    """class ContactIDProvisionSerializer."""
+
+    id = serializers.SerializerMethodField()
+    given_name = serializers.SerializerMethodField()
+    surname = serializers.SerializerMethodField()
+    email = serializers.SerializerMethodField()
+    organisation = ReadOnlyOrganisationSerializer(many=False, allow_null=True)
+
+    # contact = serializers.SerializerMethodField()
+
+    contact_ids = serializers.SerializerMethodField()
+
+    class Meta(object):
+        model = Contact
+        fields = ('id', 'given_name', 'surname', 'email', 'contact_ids')
+
+    # def get_contact(self, contact_obj):
+    #     return contact_serializers.ContactLookupSerializer(contact_obj).data
+
+    @classmethod
+    def get_id(cls, contact_obj):
+        return contact_obj.id
+
+    @classmethod
+    def get_given_name(cls, contact_obj):
+        return contact_obj.given_name
+
+    @classmethod
+    def get_surname(cls, contact_obj):
+        return contact_obj.surname
+
+    @classmethod
+    def get_email(cls, contact_obj):
+        return contact_obj.email
+
+    def get_current_user(self):
+        return project_user_utils.get_current_user_from_context(self)
+
+    @classmethod
+    def get_contact_ids(cls, contact_obj):
+        ret_ids = []
+        for contact_id in contact_obj.system_identifiers.all():
+            id_dict = OrderedDict()
+            id_dict['id'] = contact_id.id
+            # check contact_id.provision_details
+            # if is not none and status is 'Provisioned' then true, else false
+            if contact_id.provision_details is None:
+                provision_detail = \
+                    ProvisionDetailUtils.update_or_get_new_provisiondetails_object(
+                        contact_id, False)
+                provision_detail.save()
+                contact_id.provision_details = provision_detail
+                contact_id.save()
+                id_dict['provisioned'] = False
+            else:
+                id_dict['provisioned'] = False
+                if contact_id.provision_details.status == 'Provisioned':
+                    id_dict['provisioned'] = True
+            ret_ids.append(id_dict)
+
+            id_dict['identifier'] = contact_id.identifier
+            id_dict['key'] = contact_id.system.key
+            id_dict['e_research_body'] = contact_id.system.e_research_body.name
+        return ret_ids
+
+    @classmethod
+    def fetch_system_obj(cls, key, erb_name):
+        try:
+            return EResearchBodyIDKey.objects.get(
+                key=key, e_research_body__name__iexact=erb_name)
+        except EResearchBodyIDKey.DoesNotExist:
+            msg = 'ERB System key not found for {}/{}'
+            raise exceptions.ValidationError(msg.format(key, erb_name))
+
+    def validate_contact_ids(self):
+        if not isinstance(self.instance, Contact):
+            raise exceptions.ValidationError(
+                'existing instance not Contact object')
+
+        ret_list = list()
+
+        user_erb_roles = \
+            project_user_utils.fetch_erb_userroles_with_provision_privileges(
+                self.get_current_user())
+        sz_cls = ContactIDSerializer
+        for contact_data in self.initial_data.get('contact_ids'):
+            key = contact_data.get('key')
+            erb_name = contact_data.get('e_research_body')
+            system_obj = self.fetch_system_obj(key, erb_name)
+            contact_data['system'] = {'system_obj': system_obj}
+            obj = sz_cls.fetch_save_object_sz(
+                contact_data, self.instance, user_erb_roles)
+            if obj:
+                ret_list.append(obj)
+
+        return ret_list
+
+    def validate(self, data):
+        data['contact_ids'] = self.validate_contact_ids()
+        return data
+
+    @transaction.atomic
+    def update(self, instance, validated_data):
+        erb_contact_list_sz = validated_data.pop('contact_ids', [])
+        ret_contact_system_ids = list()
+        contact_id_objs = list()
+        for sz in erb_contact_list_sz:
+            contact_id_objs.append(sz.save())
+            ret_contact_system_ids.append(sz.data)
+        validated_data['contact_ids'] = ret_contact_system_ids
+        # notify erb_contacts
+        # provisionSerializers.BaseProvisionMessageSerializer.\
+        # send_contact_id_email(contact_id_objs)
+        return instance   # return contact instance to allow proper display
 
 
 class ProvisionProjectIDUtils(CLASS_SZ, base.BaseProvisionUtils):

@@ -1,10 +1,9 @@
-=====
-Crams RacMon
-=====
+Crams Demo
+===============
 
-Crams RacMon is a Django app to ...
+Crams Demo is a Django app package for CRAMS api open source. Detailed documentation is in the "docs" directory.
+Souce code is available at https://github.com/CRAMS-Dashboard/crams-api
 
-Detailed documentation is in the "docs" directory.
 
 Quick start
 -----------
@@ -18,11 +17,4 @@ Quick start
 
 2. Include the crams_demo URLconf in your project urls.py like this::
 
-    path('crams_demo/', include('crams_demo.urls')),
-
-3. Run ``python manage.py migrate`` to create the crams_demo models.
-
-4. Start the development server and visit http://127.0.0.1:8000/admin/
-   to create a crams_demo (you'll need the Admin app enabled).
-
-5. Visit http://127.0.0.1:8000/crams_demo/ to participate in the crams_demo.
+    path('', include('crams_demo.urls')),

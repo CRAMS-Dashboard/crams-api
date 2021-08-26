@@ -12,7 +12,7 @@ def load_demo_init_review_sql():
 
 class Migration(migrations.Migration):
     dependencies = [
-        ('crams_demo', '0001_initial'),
+        ('crams_demo', '0002_software_notification'),
         ('crams_review', '0001_initial'),
     ]
 

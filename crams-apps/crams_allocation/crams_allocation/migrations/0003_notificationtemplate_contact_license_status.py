@@ -8,7 +8,7 @@ class Migration(migrations.Migration):
 
     dependencies = [
         ('crams', '0011_softwarelicensestatus'),
-        ('crams_allocation', '0003_notificationtemplate_project_member_status'),
+        ('crams_allocation', '0002_init_lookups'),
     ]
 
     operations = [

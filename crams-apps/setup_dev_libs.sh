@@ -45,6 +45,11 @@ python setup.py sdist
 cd ../crams_reports
 python setup.py sdist
 
+cd ../crams_review
+python setup.py sdist
+
+cd ../crams_software
+python setup.py sdist
 
 cd ../crams_api
 pip install --upgrade pip
@@ -101,6 +106,13 @@ cd ../crams_demo
 pip uninstall -y crams_demo
 pip install -e .
 
+cd ../crams_software
+pip uninstall -y crams_software
+pip install -e .
+
+cd ../crams_review
+pip uninstall -y crams_review
+pip install -e .
 
 cd ..
 pip install -r crams_api/requirements.txt

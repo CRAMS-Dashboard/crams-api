@@ -32,59 +32,59 @@ RUN chown crams:crams -Rf /crams-apps
 
 WORKDIR /crams-apps/merc_common
 RUN python setup.py sdist
+RUN pip install -e .
 
 WORKDIR /crams-apps/crams_log
 RUN python setup.py sdist
+RUN pip install -e .
 
 WORKDIR /crams-apps/crams_contact
 RUN python setup.py sdist
+RUN pip install -e .
 
 WORKDIR /crams-apps/crams_notification
 RUN python setup.py sdist
+RUN pip install -e .
 
 WORKDIR /crams-apps/crams_compute
 RUN python setup.py sdist
+RUN pip install -e .
 
 WORKDIR /crams-apps/crams_storage
 RUN python setup.py sdist
+RUN pip install -e .
 
 WORKDIR /crams-apps/crams_collection
 RUN python setup.py sdist
+RUN pip install -e .
+
+WORKDIR /crams-apps/crams_allocation
+RUN python setup.py sdist
+RUN pip install -e .
+
+WORKDIR /crams-apps/crams_provision
+RUN python setup.py sdist
+RUN pip install -e .
+
+WORKDIR /crams-apps/crams_member
+RUN python setup.py sdist
+RUN pip install -e .
+
+WORKDIR /crams-apps/crams_resource_usage
+RUN python setup.py sdist
+RUN pip install -e .
+
+WORKDIR /crams-apps/crams_reports
+RUN python setup.py sdist
+RUN pip install -e .
 
 WORKDIR /crams-apps/crams_demo
 RUN python setup.py sdist
 
-WORKDIR /crams-apps/crams_allocation
-RUN python setup.py sdist
+RUN pip install -e .
 
-WORKDIR /crams-apps/crams_provision
-RUN python setup.py sdist
-
-WORKDIR /crams-apps/crams_member
-RUN python setup.py sdist
-
-WORKDIR /crams-apps/crams_resource_usage
-RUN python setup.py sdist
-
-WORKDIR /crams-apps/crams_reports
-RUN python setup.py sdist
 
 WORKDIR /crams-apps/crams_api
-
-RUN pip install ../merc_common/dist/merc_common-1.0.0.tar.gz
-RUN pip install ../crams_log/dist/crams_log-1.0.0.tar.gz
-RUN pip install ../crams_contact/dist/crams_contact-1.0.0.tar.gz
-RUN pip install ../crams_notification/dist/crams_notification-1.0.0.tar.gz
-RUN pip install ../crams_compute/dist/crams_compute-1.0.0.tar.gz
-RUN pip install ../crams_storage/dist/crams_storage-1.0.0.tar.gz
-RUN pip install ../crams_collection/dist/crams_collection-1.0.0.tar.gz
-RUN pip install ../crams_demo/dist/crams_demo-1.0.0.tar.gz
-RUN pip install ../crams_allocation/dist/crams_allocation-1.0.0.tar.gz
-RUN pip install ../crams_provision/dist/crams_provision-1.0.0.tar.gz
-RUN pip install ../crams_member/dist/crams_member-1.0.0.tar.gz
-RUN pip install ../crams_resource_usage/dist/crams_resource_usage-1.0.0.tar.gz
-RUN pip install ../crams_reports/dist/crams_reports-1.0.0.tar.gz
-
 
 RUN pip install -r requirements.txt
 RUN pip install -r test-requirements.txt

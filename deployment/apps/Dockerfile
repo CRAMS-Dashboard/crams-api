@@ -78,6 +78,14 @@ WORKDIR /crams-apps/crams_reports
 RUN python setup.py sdist
 RUN pip install -e .
 
+WORKDIR /crams-apps/crams_software
+RUN python setup.py sdist
+RUN pip install -e .
+
+WORKDIR /crams-apps/crams_review
+RUN python setup.py sdist
+RUN pip install -e .
+
 WORKDIR /crams-apps/crams_demo
 RUN python setup.py sdist
 

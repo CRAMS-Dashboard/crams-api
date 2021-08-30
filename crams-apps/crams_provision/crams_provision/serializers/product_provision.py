@@ -81,6 +81,14 @@ class ComputeRequestProvisionSerializer(compute_request.ComputeRequestSerializer
                                                             user_obj=current_user)
         return BaseProvisionProductUtils.update_request_status(instance.request, sz_context_obj=self.context)
 
+    def update(self, instance, validated_data):
+        if instance.request.request_status.code == REQUEST_STATUS_APPROVED:
+            # update request_status and provision_status
+            # validated_data['provisioned'] = True
+            self.update_provisionable(instance, validated_data)
+
+        return instance
+
 
 class StorageRequestProvisionSerializer(storage_request_serializers.StorageRequestSerializer):
     provisioned = serializers.SerializerMethodField()
@@ -97,17 +105,6 @@ class StorageRequestProvisionSerializer(storage_request_serializers.StorageReque
                   'storage_question_responses', 'provisioned', 'message', 'id']
         read_only_fields = ['current_quota', 'requested_quota_change',
                             'approved_quota_change']
-
-    # TODO
-    # def get_project_ids(self, sr_obj):
-    #     project = sr_obj.request.project
-    #     erb = sr_obj.request.e_research_system.e_research_body
-    #     qs = project.archive_project_ids.filter(
-    #         parent_erb_project_id__isnull=True, system__e_research_body=erb)
-    #     if qs.exists:
-    #         sz = projectid_contact_provision.ProvisionProjectIDSerializer
-    #         return sz(qs, many=True, context=self.context).data
-    #     return list()
 
     def get_provisioned(self, sr_obj):
         return BaseProvisionSerializer.get_provisioned(sr_obj, self.get_current_user())
@@ -162,7 +159,7 @@ class StorageRequestUpdateSerializer(StorageRequestProvisionSerializer):
     def update(self, instance, validated_data):
         if instance.request.request_status.code == REQUEST_STATUS_APPROVED:
             # update request_status and provision_status
-            validated_data['provisioned'] = True
+            # validated_data['provisioned'] = True
             super().update_provisionable(instance, validated_data)
 
         return instance

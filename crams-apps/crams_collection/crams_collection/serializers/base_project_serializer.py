@@ -15,6 +15,7 @@ from crams_contact.serializers.util_sz import CramsAPIActionStateModelSerializer
 from crams_collection.serializers import publication_serializers
 from crams_collection.serializers.provision_details import CollectionProvisionDetailsSerializer
 from crams_collection.serializers.project_contact_serializer import ProjectContactSerializer
+from crams_collection.serializers.project_id_serializer import ERBProjectIDSerializer
 from crams_collection.models import Project
 from crams.models import ArchivableModel
 
@@ -151,8 +152,7 @@ class ReadOnlyProjectSerializer(CramsAPIActionStateModelSerializer):
     @classmethod
     def get_project_ids(cls, project_obj):
         # TODO: define rules for showing project ids
-        return list()
-        # return ProvisionProjectIDSerializer(project_obj.project_ids.all(), many=True).data
+        return ERBProjectIDSerializer(project_obj.project_ids.all(), many=True).data
 
     @staticmethod
     def is_historic(project_obj):

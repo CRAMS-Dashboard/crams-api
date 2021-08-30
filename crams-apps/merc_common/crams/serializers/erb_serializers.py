@@ -10,6 +10,7 @@ from crams.utils.role import AbstractCramsRoleUtils
 from rest_framework import serializers, exceptions
 from crams.serializers import model_serializers
 from crams.utils import rest_utils
+from abc import abstractmethod
 
 
 class EResearchBodyIDKeySerializer(model_serializers.ModelLookupSerializer):
@@ -112,7 +113,6 @@ class EResearchBodyIDKeySerializer(model_serializers.ModelLookupSerializer):
 
 
 class BaseIdentifierSerializer(model_serializers.ReadOnlyModelSerializer):
-
     system = EResearchBodyIDKeySerializer()
 
     class Meta(object):
@@ -149,10 +149,12 @@ class BaseIdentifierSerializer(model_serializers.ReadOnlyModelSerializer):
             raise exceptions.ValidationError(msg.format(
                 model.__class__, search_data))
 
-    # def get_user_erb_roles(self):
-    #     role_fn = user_utils.fetch_erb_userroles_with_provision_privileges
-    #     user, context = user_utils.get_current_user_from_context(self)
-    #     return role_fn(user)
+    @abstractmethod
+    def get_user_erb_roles(self):
+        #
+        # role_fn = user_utils.fetch_erb_userroles_with_provision_privileges
+        # user, context = user_utils.get_current_user_from_context(self)
+        return []
 
     def validate_system(self, system_obj):
         if not isinstance(system_obj, models.EResearchBodyIDKey):

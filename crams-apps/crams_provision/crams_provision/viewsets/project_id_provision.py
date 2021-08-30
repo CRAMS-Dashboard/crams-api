@@ -5,6 +5,7 @@
 from crams.models import ProvisionDetails
 from crams.permissions import IsCramsAuthenticated
 from crams_collection.models import Project, ProjectID
+from crams_collection.serializers.project_id_serializer import ERBProjectIDSerializer
 from django.db.models import Q
 from rest_framework import decorators, exceptions
 from rest_framework.response import Response
@@ -16,7 +17,7 @@ from crams_provision.viewsets.base import ProvisionCommonViewSet
 class ProjectIDProvisionViewSet(ProvisionCommonViewSet):
     permission_classes = [IsCramsAuthenticated]
     queryset = ProjectID.objects.none()
-    serializer_class = projectid_contact_provision.ProvisionProjectIDUtils
+    serializer_class = ERBProjectIDSerializer
 
     @decorators.action(detail=False, methods=['get'], url_path='members')
     def project_members(self, request, *args, **kwargs):

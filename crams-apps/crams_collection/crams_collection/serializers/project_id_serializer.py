@@ -17,7 +17,6 @@ from django.db import transaction
 from django.contrib import auth
 from rest_framework import serializers, exceptions
 
-
 LOG = logging.getLogger(__name__)
 User = auth.get_user_model()
 
@@ -39,17 +38,19 @@ def fetch_project_obj(project_data):
 
 
 class ERBProjectIDSerializer(erb_serializers.BaseIdentifierSerializer):
-
     class Meta(object):
         """meta Class."""
 
         model = ProjectID
         fields = ('identifier', 'system')
 
+    def get_user_erb_roles(self):
+        return contact_utils.fetch_related_user_erb_list(serializer_self=self)
+
     @classmethod
     def build_project_id_list_json(cls, project_id_obj_list):
         def build_json(project, id_list):
-            sz = cls(id_list, many=True)
+            sz = ERBProjectIDSerializer(id_list, many=True)
             return {
                 'id': project.id,
                 'title': project.title,
@@ -103,7 +104,7 @@ class ERBProjectIDSerializer(erb_serializers.BaseIdentifierSerializer):
                 'current_user': current_user
             }
             for sid in project_ids:
-                sz = cls(data=sid, context=context)
+                sz = ERBProjectIDSerializer(data=sid, context=context)
                 sz.is_valid(raise_exception=False)
                 if sz.errors:
                     sid['error_message'] = sz.errors

@@ -78,9 +78,12 @@ class ProjectIDRequestProvisionViewSet(RequestProvisionViewSet):
             http_request.data, self.get_current_user())
 
         # update provision status for input StorageRequest and ComputeRequest
-        in_request_data_list = http_request.data.get('requests')
-        ret_dict['requests'] = self.update_allocation_requests(
-            in_request_data_list=in_request_data_list, http_request=http_request)
+        project_data_list = http_request.data
+        ret_dict['allocation_provision'] = project_data_list
+        for project_data in project_data_list:
+            in_request_data_list = project_data.get('requests')
+            project_data['requests'] = self.update_allocation_requests(
+                in_request_data_list=in_request_data_list, http_request=http_request)
 
         return Response(ret_dict)
 

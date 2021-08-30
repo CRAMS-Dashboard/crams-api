@@ -6,6 +6,7 @@ from crams.permissions import IsCramsAuthenticated, IsActiveProvider
 from crams.utils.role import AbstractCramsRoleUtils
 from crams_allocation.models import Request
 from crams_allocation.product_allocation.models import StorageRequest, ComputeRequest
+from crams_provision.viewsets.project_id_provision import ProjectIDProvisionViewSet
 from crams_storage.models import StorageProduct
 from rest_framework import decorators, exceptions
 from rest_framework.response import Response
@@ -33,12 +34,18 @@ class RequestProvisionViewSet(ProvisionCommonViewSet):
             msg = msg + ' for {}'.format(erb_obj.name)
         raise exceptions.ValidationError(msg)
 
-    @decorators.action(detail=False, methods=['post'], url_path='update')
-    def update_provision_list(self, http_request, *args, **kwargs):
+    def update_allocation_requests(self, in_request_data_list, http_request):
         ret_data = list()
-        for req_data in http_request.data:
+        for req_data in in_request_data_list:
             ret_data.append(
                 self.provision_request_data(req_data, http_request))
+        return ret_data
+
+    @decorators.action(detail=False, methods=['post'], url_path='update')
+    def update_provision_list(self, http_request, *args, **kwargs):
+        in_request_data_list = http_request.data
+        ret_data = self.update_allocation_requests(
+            in_request_data_list=in_request_data_list, http_request=http_request)
         return Response(ret_data)
 
     @classmethod
@@ -60,6 +67,22 @@ class RequestProvisionViewSet(ProvisionCommonViewSet):
                     http_request, compute_requests, sz_class)
 
         return ret_data
+
+
+class ProjectIDRequestProvisionViewSet(RequestProvisionViewSet):
+    @decorators.action(detail=False, methods=['post'], url_path='update')
+    def update_provision_list(self, http_request, *args, **kwargs):
+        ret_dict = dict()
+        # update provision status for input Project Ids, exception thrown if errors found
+        ret_dict['project_ids'] = ProjectIDProvisionViewSet.update_provision_data_input(
+            http_request.data, self.get_current_user())
+
+        # update provision status for input StorageRequest and ComputeRequest
+        in_request_data_list = http_request.data.get('requests')
+        ret_dict['requests'] = self.update_allocation_requests(
+            in_request_data_list=in_request_data_list, http_request=http_request)
+
+        return Response(ret_dict)
 
 
 class StorageRequestProvisionViewSet(ProvisionCommonViewSet):

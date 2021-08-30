@@ -2,6 +2,7 @@ from django.conf.urls import url, include
 from rest_framework import routers
 
 from crams_provision.viewsets.allocation_provision import RequestProvisionViewSet
+from crams_provision.viewsets.allocation_provision import ProjectIDRequestProvisionViewSet
 from crams_provision.viewsets.allocation_provision import StorageRequestProvisionViewSet
 from crams_provision.viewsets.allocation_provision import ComputeRequestProvisionViewSet
 from crams_provision.viewsets.contact_id_provision import ContactProvisionViewSet
@@ -17,6 +18,7 @@ router.register(r'provision/project_ids', ProjectIDProvisionViewSet)
 router.register(r'provision/requests', RequestProvisionViewSet)
 router.register(r'provision/storage_requests', StorageRequestProvisionViewSet)
 router.register(r'provision/compute_requests', ComputeRequestProvisionViewSet)
+router.register(r'provision/project_id_requests', ProjectIDRequestProvisionViewSet)
 
 router.register(r'provision_project/list', ProvisionProjectViewSet)
 router.register(r'provision_request/list', ProvisionRequestViewSet)

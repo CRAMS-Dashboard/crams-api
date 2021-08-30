@@ -65,7 +65,7 @@ class RequestProvisionViewSet(ProvisionCommonViewSet):
 class StorageRequestProvisionViewSet(ProvisionCommonViewSet):
     permission_classes = [IsCramsAuthenticated, IsActiveProvider]
     queryset = StorageRequest.objects.none()
-    serializer_class = product_provision.StorageRequestProvisionSerializer
+    serializer_class = product_provision.StorageRequestUpdateSerializer
 
     def get_queryset(self):
         roles_dict = AbstractCramsRoleUtils.fetch_cramstoken_roles_dict(self.request.user)

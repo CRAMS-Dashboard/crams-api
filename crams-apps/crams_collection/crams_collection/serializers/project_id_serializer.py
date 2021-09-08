@@ -71,8 +71,7 @@ class ERBProjectIDSerializer(erb_serializers.BaseIdentifierSerializer):
         return ret_list
 
     @classmethod
-    def validate_project_identifiers_in_project_list(
-            cls, project_data_list, current_user, id_key='project_ids'):
+    def validate_project_identifiers_in_project_list(cls, project_data_list, current_user, id_key='project_ids'):
         def build_project_error(project_data, message, id_err_list=None):
             err_dict = copy.copy(project_data)
             err_dict.pop('project_obj', None)
@@ -123,12 +122,68 @@ class ERBProjectIDSerializer(erb_serializers.BaseIdentifierSerializer):
         return project_data_list
 
     @classmethod
+    def validate_project_identifiers_in_project(cls, project_data, current_user, id_key='project_ids'):
+
+        def set_project_error(project_data, message, id_err_list=None):
+            err_dict = copy.copy(project_data)
+            err_dict.pop('project_obj', None)
+            err_dict['error'] = True
+            err_dict['error_message'] = message
+            if id_err_list:
+                err_dict[id_key] = id_err_list
+            return err_dict
+
+        role_fn = contact_utils.fetch_erb_userroles_with_provision_privileges
+        user_erb_roles = role_fn(current_user)
+        err_list = list()
+
+        project_ids = project_data.pop(id_key, list())
+        project, err_msg = fetch_project_obj(project_data)
+        if not project:
+            if not err_msg:
+                err_msg = 'Project not found'
+            err_list.append(set_project_error(project_data, err_msg))
+
+        project_data['project_obj'] = project
+        id_err_list = list()
+        project_id_sz_list = list()
+        project_data[id_key] = project_id_sz_list
+        context = {
+            'project': project,
+            'user_erb_roles': user_erb_roles,
+            'current_user': current_user
+        }
+        for sid in project_ids:
+            sz = ERBProjectIDSerializer(data=sid, context=context)
+            sz.is_valid(raise_exception=False)
+            if sz.errors:
+                sid['error_message'] = sz.errors
+                id_err_list.append(sid)
+                continue
+            project_id_sz_list.append(sz)
+
+        if id_err_list:
+            msg = 'Error processing Project Ids'
+            err_list.append(set_project_error(project_data, msg, id_err_list))
+
+        if err_list:
+            raise exceptions.ValidationError(err_list)
+        return project_data
+
+    @classmethod
     def update_project_data_list(cls, id_key, project_data_list):
         project_id_obj_list = list()
         for project_data in project_data_list:
             for sz in project_data.get(id_key):
                 project_id_obj_list.append(sz.save())
 
+        return project_id_obj_list
+
+    @classmethod
+    def update_project_ids_data(cls, id_key, project_data):
+        project_id_obj_list = list()
+        for sz in project_data.get(id_key):
+            project_id_obj_list.append(sz.save())
         return project_id_obj_list
 
     def validate_project(self, validated_data):

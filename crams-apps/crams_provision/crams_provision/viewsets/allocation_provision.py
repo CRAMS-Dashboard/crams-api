@@ -37,8 +37,7 @@ class RequestProvisionViewSet(ProvisionCommonViewSet):
     def update_allocation_requests(self, in_request_data_list, http_request):
         ret_data = list()
         for req_data in in_request_data_list:
-            ret_data.append(
-                self.provision_request_data(req_data, http_request))
+            ret_data.append(self.provision_request_data(req_data, http_request))
         return ret_data
 
     @decorators.action(detail=False, methods=['post'], url_path='update')
@@ -53,7 +52,7 @@ class RequestProvisionViewSet(ProvisionCommonViewSet):
         ret_data = dict()
 
         storage_requests = data.get('storage_requests')
-        sz_class = product_provision.StorageRequestProvisionSerializer
+        sz_class = product_provision.StorageRequestUpdateSerializer
         if storage_requests:
             ret_data['storage_requests'] = \
                 cls.provision_product_for_http_request(
@@ -70,6 +69,7 @@ class RequestProvisionViewSet(ProvisionCommonViewSet):
 
 
 class ProjectIDRequestProvisionViewSet(RequestProvisionViewSet):
+    # TODO: don't use this viewset, use ProjectAllocationProvisionViewSet instead
     @decorators.action(detail=False, methods=['post'], url_path='update')
     def update_provision_list(self, http_request, *args, **kwargs):
         ret_dict = dict()
@@ -79,12 +79,32 @@ class ProjectIDRequestProvisionViewSet(RequestProvisionViewSet):
 
         # update provision status for input StorageRequest and ComputeRequest
         project_data_list = http_request.data
-        ret_dict['allocation_provision'] = project_data_list
+        ret_dict['allocation_provision'] = []
         for project_data in project_data_list:
             in_request_data_list = project_data.get('requests')
-            project_data['requests'] = self.update_allocation_requests(
-                in_request_data_list=in_request_data_list, http_request=http_request)
+            ret_dict['requests'] = self.update_allocation_requests(in_request_data_list=in_request_data_list,
+                                                                       http_request=http_request)
+        ret_dict['allocation_provision'].append(ret_dict['requests'])
+        return Response(ret_dict)
 
+
+class ProjectAllocationProvisionViewSet(RequestProvisionViewSet):
+    permission_classes = [IsCramsAuthenticated, IsActiveProvider]
+
+    @decorators.action(detail=False, methods=['post'], url_path='update')
+    def update_provision_list(self, http_request, *args, **kwargs):
+        ret_dict = dict()
+        post_data = http_request.data
+
+        # update provision status for input StorageRequest and ComputeRequest
+        for project_data in post_data:
+            # update provision status for input Project Ids, exception thrown if errors found
+            ret_dict['projects'] = ProjectIDProvisionViewSet.update_proj_ids_provision_data(project_data,
+                                                                                               self.get_current_user())
+            in_request_data_list = project_data.get('requests')
+            alloc_request_json = self.update_allocation_requests(in_request_data_list=in_request_data_list,
+                                                                 http_request=http_request)
+            ret_dict['projects'][0]['requests'] = alloc_request_json
         return Response(ret_dict)
 
 

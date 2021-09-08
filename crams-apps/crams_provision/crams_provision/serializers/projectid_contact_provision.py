@@ -156,9 +156,12 @@ class ProvisionProjectIDUtils(CLASS_SZ, base.BaseProvisionUtils):
 
     @classmethod
     def update_project_data_list(cls, id_key, project_data_list):
-        project_id_obj_list = \
-            super().update_project_data_list(id_key, project_data_list)
+        project_id_obj_list = super().update_project_data_list(id_key, project_data_list)
+        return project_id_obj_list
 
+    @classmethod
+    def update_project_ids_data(cls, id_key, project_data):
+        project_id_obj_list = super().update_project_ids_data(id_key, project_data)
         return project_id_obj_list
 
     def clone_to_new_project(self, new_project_obj, user_erb_roles):

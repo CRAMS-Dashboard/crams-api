@@ -70,20 +70,25 @@ class ProjectIDProvisionViewSet(ProvisionCommonViewSet):
 
     @decorators.action(detail=False, methods=['post'], url_path='update')
     def update_provision(self, request, *args, **kwargs):
-        ret_data = self.update_provision_data_input(
-            request.data, self.get_current_user())
+        ret_data = self.update_provision_data_input(request.data, self.get_current_user())
         return Response(ret_data)
 
     @classmethod
     def update_provision_data_input(cls, data, current_user):
         id_key = 'project_ids'
         sz_class = projectid_contact_provision.ProvisionProjectIDUtils
-        project_id_data_list = \
-            sz_class.validate_project_identifiers_in_project_list(
-                data, current_user, id_key)
+        project_id_data_list = sz_class.validate_project_identifiers_in_project_list(data, current_user, id_key)
+        id_obj_list = sz_class.update_project_data_list(id_key, project_id_data_list)
+        ret_data = sz_class.build_project_id_list_json(id_obj_list)
+        return ret_data
 
-        id_obj_list = sz_class.update_project_data_list(
-            id_key, project_id_data_list)
-
+    @classmethod
+    def update_proj_ids_provision_data(cls, data, current_user):
+        id_key = 'project_ids'
+        sz_class = projectid_contact_provision.ProvisionProjectIDUtils
+        # validate project ids data
+        project_id_data = sz_class.validate_project_identifiers_in_project(data, current_user, id_key)
+        # provision project ids
+        id_obj_list = sz_class.update_project_ids_data(id_key, project_id_data)
         ret_data = sz_class.build_project_id_list_json(id_obj_list)
         return ret_data

@@ -84,7 +84,7 @@ class ComputeRequestProvisionSerializer(compute_request.ComputeRequestSerializer
     def update(self, instance, validated_data):
         if instance.request.request_status.code == REQUEST_STATUS_APPROVED:
             # update request_status and provision_status
-            # validated_data['provisioned'] = True
+            validated_data['provisioned'] = True
             self.update_provisionable(instance, validated_data)
 
         return instance
@@ -159,7 +159,7 @@ class StorageRequestUpdateSerializer(StorageRequestProvisionSerializer):
     def update(self, instance, validated_data):
         if instance.request.request_status.code == REQUEST_STATUS_APPROVED:
             # update request_status and provision_status
-            # validated_data['provisioned'] = True
+            validated_data['provisioned'] = True
             super().update_provisionable(instance, validated_data)
 
         return instance

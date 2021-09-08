@@ -38,7 +38,7 @@ from setuptools import find_packages, setup, Command
 
 # Package meta-data.
 NAME = 'crams_allocation'
-VERSION = '1.0.0'
+VERSION = '1.0.2'
 DESCRIPTION = 'CRAMS API opensource crams allocation package.'
 URL = 'https://github.com/CRAMS-Dashboard/crams-api'
 AUTHOR = 'Monash University e-Research Centre'
